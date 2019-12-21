@@ -1,0 +1,8 @@
+import os
+import sys
+
+env=DefaultEnvironment().Clone()
+BIN_DIR=os.environ['BIN_DIR'];
+
+env.Program(os.path.join(BIN_DIR, 'demo_button'), ["button.cpp"]);
+env.Program(os.path.join(BIN_DIR, 'demo_basic'), ["basic.cpp"]);
