@@ -17,7 +17,7 @@ os.environ['LIB_DIR'] = APP_LIB_DIR;
 
 APP_LIBS = ['awtk-cpp']
 APP_LIBPATH = [APP_LIB_DIR]
-APP_CPPPATH= [APP_SRC_DIR]
+APP_CPPPATH= [APP_SRC_DIR, APP_ROOT]
 APP_CCFLAGS = ''
 
 DefaultEnvironment(
