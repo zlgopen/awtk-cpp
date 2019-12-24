@@ -29,11 +29,13 @@ static ret_t OpenWindow(const char* name);
 
 static ret_t OnClick(void* ctx, event_t* e) {
   TWidget w = TWidget(WIDGET(e->target));
-  TWindow win = TWindow::cast(w.GetWindow());
+  TWindow win = TWindow::Cast(w.GetWindow());
 
   string name = w.GetName();
   if(name == "close") {
     win.Close();
+  } else if(name == "quit") {
+    TDialog::Cast(win).Quit(0);
   } else if(name == "exit") {
     TGlobal::Quit();
   } else if(name.find("open:") == 0) {
@@ -54,13 +56,30 @@ static ret_t OnWidget(void* ctx, const void* data) {
 }
 
 static ret_t OpenWindow(const char* name) {
-  
-  TWindow::Open(name).Foreach(OnWidget, NULL);
+ 
+  if(name == string("toast")) {
+    return TDialog::Toast("Hello AWTK, This is a Toast!", 3000);
+  } else if(name == string("info")) {
+    return TDialog::Info("Info", "Hello AWTK, Timeout!");
+  } else if(name == string("warn")) {
+    return TDialog::Info("Warnning", "Hello AWTK, Timeout!");
+  } else if(name == string("confirm")) {
+    return TDialog::Info("Confirm", "Hello AWTK, Are You Sure to Quit?");
+  }
+
+  TWidget win = TWindow::Open(name);
+  win.Foreach(OnWidget, NULL);
+
+  if(win.IsDialog()) {
+    TDialog::Cast(win).Modal();
+  }
 
   return RET_OK;
 }
 
 bool Application::Init(void) {
+  TWindow::Open("system_bar");
+
   OpenWindow("main");
   return true;
 }
