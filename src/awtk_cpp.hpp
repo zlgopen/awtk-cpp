@@ -1745,6 +1745,17 @@ class TVgcanvas {
   ret_t ClosePath();
 
   /**
+   * 设置路径填充实心与否。
+   *
+   *>CCW(1)为实心，CW(2)为镂空，设置其他则默认根据非零环绕规则判断(nonzero)。
+   * 
+   * @param dir 填充方法。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t PathWinding(bool dir);
+
+  /**
    * 旋转。
    * 
    * @param rad 角度
@@ -2170,6 +2181,14 @@ class TWidget {
    * @return 在父控件中的索引编号。
    */
   int32_t IndexOf();
+
+  /**
+   * 关闭控件所在的窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t CloseWindow();
 
   /**
    * 移动控件。

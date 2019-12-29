@@ -575,6 +575,10 @@ ret_t TVgcanvas::ClosePath() {
   return vgcanvas_close_path(((vgcanvas_t*)(this->nativeObj)));
 }
 
+ret_t TVgcanvas::PathWinding(bool dir) {
+  return vgcanvas_path_winding(((vgcanvas_t*)(this->nativeObj)), dir);
+}
+
 ret_t TVgcanvas::Rotate(float_t rad) {
   return vgcanvas_rotate(((vgcanvas_t*)(this->nativeObj)), rad);
 }
@@ -753,6 +757,10 @@ TWidget TWidget::GetChild(int32_t index) {
 
 int32_t TWidget::IndexOf() {
   return widget_index_of(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TWidget::CloseWindow() {
+  return widget_close_window(((widget_t*)(this->nativeObj)));
 }
 
 ret_t TWidget::Move(xy_t x, xy_t y) {
