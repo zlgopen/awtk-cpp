@@ -15,6 +15,7 @@ class TWindow;
  */
 class TEvent {
  public:
+  //nativeObj is public for internal use only.
   event_t* nativeObj;
 
   TEvent(event_t* nativeObj) {
@@ -79,6 +80,7 @@ class TEvent {
  */
 class TRect {
  public:
+  //nativeObj is public for internal use only.
   rect_t* nativeObj;
 
   TRect(rect_t* nativeObj) {
@@ -166,6 +168,7 @@ class TRect {
  */
 class TPointf {
  public:
+  //nativeObj is public for internal use only.
   pointf_t* nativeObj;
 
   TPointf(pointf_t* nativeObj) {
@@ -191,6 +194,7 @@ class TPointf {
  */
 class TPoint {
  public:
+  //nativeObj is public for internal use only.
   point_t* nativeObj;
 
   TPoint(point_t* nativeObj) {
@@ -216,6 +220,7 @@ class TPoint {
  */
 class TEmitter {
  public:
+  //nativeObj is public for internal use only.
   emitter_t* nativeObj;
 
   TEmitter(emitter_t* nativeObj) {
@@ -324,6 +329,7 @@ class TEmitter {
  */
 class TBitmap {
  public:
+  //nativeObj is public for internal use only.
   bitmap_t* nativeObj;
 
   TBitmap(bitmap_t* nativeObj) {
@@ -426,6 +432,7 @@ class TBitmap {
  */
 class TValue {
  public:
+  //nativeObj is public for internal use only.
   value_t* nativeObj;
 
   TValue(value_t* nativeObj) {
@@ -1144,6 +1151,7 @@ class TGlobal {
  */
 class TFontManager {
  public:
+  //nativeObj is public for internal use only.
   font_manager_t* nativeObj;
 
   TFontManager(font_manager_t* nativeObj) {
@@ -1220,6 +1228,7 @@ class TIdle {
  */
 class TImageManager {
  public:
+  //nativeObj is public for internal use only.
   image_manager_t* nativeObj;
 
   TImageManager(image_manager_t* nativeObj) {
@@ -1256,6 +1265,15 @@ class TImageManager {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t GetBitmap(char* name, TBitmap& image);
+
+  /**
+   * 预加载指定的图片。
+   * 
+   * @param name 图片名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Preload(char* name);
 };
 
 /**
@@ -1276,6 +1294,7 @@ class TImageManager {
  */
 class TInputMethod {
  public:
+  //nativeObj is public for internal use only.
   input_method_t* nativeObj;
 
   TInputMethod(input_method_t* nativeObj) {
@@ -1327,6 +1346,7 @@ class TInputMethod {
  */
 class TLocaleInfo {
  public:
+  //nativeObj is public for internal use only.
   locale_info_t* nativeObj;
 
   TLocaleInfo(locale_info_t* nativeObj) {
@@ -1393,6 +1413,7 @@ class TLocaleInfo {
  */
 class TStyle {
  public:
+  //nativeObj is public for internal use only.
   style_t* nativeObj;
 
   TStyle(style_t* nativeObj) {
@@ -1476,6 +1497,7 @@ class TStyle {
  */
 class TTheme {
  public:
+  //nativeObj is public for internal use only.
   theme_t* nativeObj;
 
   TTheme(theme_t* nativeObj) {
@@ -1580,6 +1602,7 @@ class TTimer {
  */
 class TVgcanvas {
  public:
+  //nativeObj is public for internal use only.
   vgcanvas_t* nativeObj;
 
   TVgcanvas(vgcanvas_t* nativeObj) {
@@ -2139,6 +2162,7 @@ class TVgcanvas {
  */
 class TWidget {
  public:
+  //nativeObj is public for internal use only.
   widget_t* nativeObj;
 
   TWidget(widget_t* nativeObj) {
@@ -2488,6 +2512,15 @@ class TWidget {
   ret_t SetOpacity(uint8_t opacity);
 
   /**
+   * 设置控件脏矩形超出控件本身大小的最大范围(一般不用指定)。
+   * 
+   * @param dirty_rect_tolerance 控件脏脏矩形超出控件本身大小的最大范。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDirtyRectTolerance(uint16_t dirty_rect_tolerance);
+
+  /**
    * 销毁全部子控件。
    * 
    *
@@ -2816,6 +2849,14 @@ class TWidget {
   bool IsPopup();
 
   /**
+   * 检查控件弹出窗口控件是否已经打开了。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsOpenedPopup();
+
+  /**
    * 布局当前控件及子控件。
    * 
    *
@@ -2975,6 +3016,14 @@ class TWidget {
   bool GetFloating() const;
 
   /**
+   * 脏矩形超出控件本身大小的最大范围(一般不用指定)。
+   *
+   *> 如果 border 太粗或 offset 太大等原因，导致脏矩形超出控件本身大小太多（大于缺省值）时，才需要指定。
+   *
+   */
+  uint16_t GetDirtyRectTolerance() const;
+
+  /**
    * 父控件
    *
    */
@@ -2987,6 +3036,7 @@ class TWidget {
  */
 class TTimerManager {
  public:
+  //nativeObj is public for internal use only.
   timer_manager_t* nativeObj;
 
   TTimerManager(timer_manager_t* nativeObj) {
@@ -3037,6 +3087,7 @@ class TTimeNow {
  */
 class TCanvas {
  public:
+  //nativeObj is public for internal use only.
   canvas_t* nativeObj;
 
   TCanvas(canvas_t* nativeObj) {
@@ -3339,6 +3390,7 @@ class TCanvas {
  */
 class TNamedValue {
  public:
+  //nativeObj is public for internal use only.
   named_value_t* nativeObj;
 
   TNamedValue(named_value_t* nativeObj) {
@@ -3412,6 +3464,7 @@ class TNamedValue {
  */
 class TIdleManager {
  public:
+  //nativeObj is public for internal use only.
   idle_manager_t* nativeObj;
 
   TIdleManager(idle_manager_t* nativeObj) {
@@ -3437,6 +3490,7 @@ class TIdleManager {
  */
 class TClipBoard {
  public:
+  //nativeObj is public for internal use only.
   clip_board_t* nativeObj;
 
   TClipBoard(clip_board_t* nativeObj) {
@@ -3481,6 +3535,7 @@ class TClipBoard {
  */
 class TDateTime {
  public:
+  //nativeObj is public for internal use only.
   date_time_t* nativeObj;
 
   TDateTime(date_time_t* nativeObj) {
@@ -3572,6 +3627,7 @@ class TDateTime {
  */
 class TColor {
  public:
+  //nativeObj is public for internal use only.
   color_t* nativeObj;
 
   TColor(color_t* nativeObj) {
@@ -3677,6 +3733,7 @@ class TColor {
  */
 class TAssetInfo {
  public:
+  //nativeObj is public for internal use only.
   asset_info_t* nativeObj;
 
   TAssetInfo(asset_info_t* nativeObj) {
@@ -3767,6 +3824,7 @@ class TAssetInfo {
  */
 class TAssetsManager {
  public:
+  //nativeObj is public for internal use only.
   assets_manager_t* nativeObj;
 
   TAssetsManager(assets_manager_t* nativeObj) {
@@ -5523,6 +5581,14 @@ class TListView : public TWidget {
   ret_t SetAutoHideScrollBar(bool auto_hide_scroll_bar);
 
   /**
+   * list_view重新初始化。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Reinit();
+
+  /**
    * 列表项的高度。如果 item_height 0，所有列表项使用固定高度，否则使用列表项自身的高度。
    *
    */
@@ -6469,6 +6535,56 @@ class TLineNumber : public TWidget {
 };
 
 /**
+ * 输入法候选字词控件。
+ *
+ *如果希望启用用数字选择对应的候选字，请设置属性grab_keys="true"。如：
+ *
+ *```xml
+ *<candidates x="0" y="0" w="100%" h="30" grab_keys="true"/>
+ *```
+ *
+ *>相关文件： assets/default/raw/ui/kb_default.xml
+ *
+ *如果希望通过左右键切换不同的候选字，除了设置属性grab_keys="true"，还需要设置按钮的focused状态的style。
+ *
+ *```xml
+ *<style name="candidates" text_color="black">
+ *<normal  />
+ *<pressed    bg_color="#c0c0c0" border_color="#a0a0a0"/>
+ *<over       bg_color="#e0e0e0" border_color="#a0a0a0"/>
+ *<focused    border_color="#a0a0a0"/>
+ *</style>
+ *```
+ *
+ *>相关文件：assets/default/raw/styles/keyboard.xml
+ *
+ */
+class TCandidates : public TWidget {
+ public:
+  TCandidates(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TCandidates(const candidates_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TCandidates Cast(widget_t* nativeObj) {
+    return TCandidates(nativeObj);
+  }
+
+  static TCandidates Cast(const widget_t* nativeObj) {
+    return TCandidates((widget_t*)nativeObj);
+  }
+
+  static TCandidates Cast(TWidget& obj) {
+    return TCandidates(obj.nativeObj);
+  }
+
+  static TCandidates Cast(const TWidget& obj) {
+    return TCandidates(obj.nativeObj);
+  }
+};
+
+/**
  * 图片值控件。
  *
  *可以用图片来表示如电池电量、WIFI信号强度和其它各种数值的值。
@@ -7041,16 +7157,16 @@ class TGuagePointer : public TWidget {
   char* GetImage() const;
 
   /**
-   * 旋转锚点x坐标。
+   * 图片旋转锚点x坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
    *
    */
-  float_t GetAnchorX() const;
+  char* GetAnchorX() const;
 
   /**
-   * 旋转锚点y坐标。
+   * 图片旋转锚点x坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
    *
    */
-  float_t GetAnchorY() const;
+  char* GetAnchorY() const;
 };
 
 /**
@@ -7421,6 +7537,14 @@ class TWindowManager : public TWidget {
   bool GetPointerPressed();
 
   /**
+   * 获取当前窗口动画是否正在播放。
+   * 
+   *
+   * @return 返回TRUE表示正在播放，FALSE表示没有播放。
+   */
+  bool IsAnimating();
+
+  /**
    * 设置是否显示FPS。
    * 
    * @param show_fps 是否显示FPS。
@@ -7477,6 +7601,16 @@ class TWindowManager : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t BackTo(const char* target);
+
+  /**
+   * 调整原生窗口的大小。
+   * 
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Resize(wh_t w, wh_t h);
 };
 
 /**
@@ -12022,9 +12156,29 @@ class TWindow : public TWindowBase {
  *| tab            | tab键           |
  *| space          | 空格键          |
  *| close          | 关闭软键盘      |
- *| 前缀key:       | 键值            |
- *| 前缀page:      | 切换到页面      |
+ *| 前缀key:        | 键值           |
+ *| 前缀hard_key:   | 模拟物理键盘    |
+ *| 前缀page:       | 切换到页面      |
  *
+ *示例：
+ *
+ ** 按键"a"，提交输入法处理。
+ *
+ *```xml
+ *<button repeat="300" name="key:a" text="a"/>
+ *```
+ *
+ ** 字符"a"，直接提交到编辑器。
+ *
+ *```xml
+ *<button repeat="300" name="a" text="a"/>
+ *```
+ *
+ ** 模拟物理键盘数字"1"，触发key down/up事件（可以用来选择候选字）。
+ *
+ *```xml
+ *<button repeat="300" name="hard_key:1" text="1"/>
+ *```
  *
  *> 更多用法请参考：
  *[kb_default](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/kb_default.xml)

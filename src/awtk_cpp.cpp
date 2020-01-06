@@ -448,6 +448,10 @@ ret_t TImageManager::GetBitmap(char* name, TBitmap& image) {
                                   ((bitmap_t*)(image.nativeObj)));
 }
 
+ret_t TImageManager::Preload(char* name) {
+  return image_manager_preload(((image_manager_t*)(this->nativeObj)), name);
+}
+
 ret_t TInputMethod::CommitText(char* text) {
   return input_method_commit_text(((input_method_t*)(this->nativeObj)), text);
 }
@@ -875,6 +879,10 @@ ret_t TWidget::SetOpacity(uint8_t opacity) {
   return widget_set_opacity(((widget_t*)(this->nativeObj)), opacity);
 }
 
+ret_t TWidget::SetDirtyRectTolerance(uint16_t dirty_rect_tolerance) {
+  return widget_set_dirty_rect_tolerance(((widget_t*)(this->nativeObj)), dirty_rect_tolerance);
+}
+
 ret_t TWidget::DestroyChildren() {
   return widget_destroy_children(((widget_t*)(this->nativeObj)));
 }
@@ -1021,6 +1029,10 @@ bool TWidget::IsPopup() {
   return widget_is_popup(((widget_t*)(this->nativeObj)));
 }
 
+bool TWidget::IsOpenedPopup() {
+  return widget_is_opened_popup(((widget_t*)(this->nativeObj)));
+}
+
 ret_t TWidget::Layout() {
   return widget_layout(((widget_t*)(this->nativeObj)));
 }
@@ -1107,6 +1119,10 @@ bool TWidget::GetWithFocusState() const {
 
 bool TWidget::GetFloating() const {
   return ((widget_t*)(this->nativeObj))->floating;
+}
+
+uint16_t TWidget::GetDirtyRectTolerance() const {
+  return ((widget_t*)(this->nativeObj))->dirty_rect_tolerance;
 }
 
 TWidget TWidget::GetParent() const {
@@ -1884,6 +1900,10 @@ ret_t TListView::SetAutoHideScrollBar(bool auto_hide_scroll_bar) {
   return list_view_set_auto_hide_scroll_bar(((widget_t*)(this->nativeObj)), auto_hide_scroll_bar);
 }
 
+ret_t TListView::Reinit() {
+  return list_view_reinit(((widget_t*)(this->nativeObj)));
+}
+
 int32_t TListView::GetItemHeight() const {
   return ((list_view_t*)(this->nativeObj))->item_height;
 }
@@ -2320,11 +2340,11 @@ char* TGuagePointer::GetImage() const {
   return ((guage_pointer_t*)(this->nativeObj))->image;
 }
 
-float_t TGuagePointer::GetAnchorX() const {
+char* TGuagePointer::GetAnchorX() const {
   return ((guage_pointer_t*)(this->nativeObj))->anchor_x;
 }
 
-float_t TGuagePointer::GetAnchorY() const {
+char* TGuagePointer::GetAnchorY() const {
   return ((guage_pointer_t*)(this->nativeObj))->anchor_y;
 }
 
@@ -2425,6 +2445,10 @@ bool TWindowManager::GetPointerPressed() {
   return window_manager_get_pointer_pressed(((widget_t*)(this->nativeObj)));
 }
 
+bool TWindowManager::IsAnimating() {
+  return window_manager_is_animating(((widget_t*)(this->nativeObj)));
+}
+
 ret_t TWindowManager::SetShowFps(bool show_fps) {
   return window_manager_set_show_fps(((widget_t*)(this->nativeObj)), show_fps);
 }
@@ -2447,6 +2471,10 @@ ret_t TWindowManager::BackToHome() {
 
 ret_t TWindowManager::BackTo(const char* target) {
   return window_manager_back_to(((widget_t*)(this->nativeObj)), target);
+}
+
+ret_t TWindowManager::Resize(wh_t w, wh_t h) {
+  return window_manager_resize(((widget_t*)(this->nativeObj)), w, h);
 }
 
 char* TWindowBase::GetTheme() const {
