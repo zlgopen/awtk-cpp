@@ -1404,6 +1404,36 @@ ret_t TAssetsManager::Unref(TAssetInfo& info) {
                               ((asset_info_t*)(info.nativeObj)));
 }
 
+ret_t TStyleMutable::SetName(const char* name) {
+  return style_mutable_set_name(((style_t*)(this->nativeObj)), name);
+}
+
+ret_t TStyleMutable::SetInt(const char* state, const char* name, uint32_t val) {
+  return style_mutable_set_int(((style_t*)(this->nativeObj)), state, name, val);
+}
+
+TStyle TStyleMutable::Create(TWidget& widget, TStyle& default_style) {
+  return TStyleMutable((style_t*)(style_mutable_create(((widget_t*)(widget.nativeObj)),
+                                                       ((style_t*)(default_style.nativeObj)))));
+}
+
+char* TStyleMutable::GetName() const {
+  return ((style_mutable_t*)(this->nativeObj))->name;
+}
+
+TWidget TColorPicker::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TColorPicker(
+      (widget_t*)(color_picker_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TColorPicker::SetColor(const char* color) {
+  return color_picker_set_color(((widget_t*)(this->nativeObj)), color);
+}
+
+const char* TColorPicker::GetValue() const {
+  return ((color_picker_t*)(this->nativeObj))->value;
+}
+
 TWidget TTimeClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTimeClock((widget_t*)(time_clock_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -1585,10 +1615,6 @@ float_t TSwitch::GetMaxXoffsetRatio() const {
   return ((switch_t*)(this->nativeObj))->max_xoffset_ratio;
 }
 
-TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TView((widget_t*)(view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
 const char* TPropChangeEvent::GetName() const {
   return ((prop_change_event_t*)(this->nativeObj))->name;
 }
@@ -1599,6 +1625,22 @@ TValue TPropChangeEvent::GetValue() const {
 
 uint32_t TProgressEvent::GetPercent() const {
   return ((progress_event_t*)(this->nativeObj))->percent;
+}
+
+ret_t TDoneEvent::GetResult() const {
+  return ((done_event_t*)(this->nativeObj))->result;
+}
+
+int32_t TErrorEvent::GetCode() const {
+  return ((error_event_t*)(this->nativeObj))->code;
+}
+
+const char* TErrorEvent::GetMessage() const {
+  return ((error_event_t*)(this->nativeObj))->message;
+}
+
+TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TView((widget_t*)(view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TSlideView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -1887,6 +1929,10 @@ bool TScrollBar::GetAnimatable() const {
   return ((scroll_bar_t*)(this->nativeObj))->animatable;
 }
 
+TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TTabControl((widget_t*)(tab_control_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
 TWidget TListView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TListView((widget_t*)(list_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -1919,10 +1965,6 @@ bool TListView::GetAutoHideScrollBar() const {
   return ((list_view_t*)(this->nativeObj))->auto_hide_scroll_bar;
 }
 
-TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TTabControl((widget_t*)(tab_control_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
 TWidget TListViewH::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TListViewH((widget_t*)(list_view_h_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -1941,10 +1983,6 @@ int32_t TListViewH::GetItemWidth() const {
 
 int32_t TListViewH::GetSpacing() const {
   return ((list_view_h_t*)(this->nativeObj))->spacing;
-}
-
-TWidget TListItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TListItem((widget_t*)(list_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TTabButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2002,6 +2040,10 @@ bool TTabButtonGroup::GetCompact() const {
 
 bool TTabButtonGroup::GetScrollable() const {
   return ((tab_button_group_t*)(this->nativeObj))->scrollable;
+}
+
+TWidget TListItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TListItem((widget_t*)(list_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget THscrollLabel::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2262,6 +2304,22 @@ bool TMledit::GetReadonly() const {
   return ((mledit_t*)(this->nativeObj))->readonly;
 }
 
+uint8_t TMledit::GetTopMargin() const {
+  return ((mledit_t*)(this->nativeObj))->top_margin;
+}
+
+uint8_t TMledit::GetBottomMargin() const {
+  return ((mledit_t*)(this->nativeObj))->bottom_margin;
+}
+
+uint8_t TMledit::GetLeftMargin() const {
+  return ((mledit_t*)(this->nativeObj))->left_margin;
+}
+
+uint8_t TMledit::GetRightMargin() const {
+  return ((mledit_t*)(this->nativeObj))->right_margin;
+}
+
 char* TMledit::GetTips() const {
   return ((mledit_t*)(this->nativeObj))->tips;
 }
@@ -2276,26 +2334,6 @@ uint32_t TMledit::GetMaxLines() const {
 
 float_t TMledit::GetScrollLine() const {
   return ((mledit_t*)(this->nativeObj))->scroll_line;
-}
-
-TWidget TLineNumber::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TLineNumber((widget_t*)(line_number_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TLineNumber::SetTopMargin(int32_t top_margin) {
-  return line_number_set_top_margin(((widget_t*)(this->nativeObj)), top_margin);
-}
-
-ret_t TLineNumber::SetBottomMargin(int32_t bottom_margin) {
-  return line_number_set_bottom_margin(((widget_t*)(this->nativeObj)), bottom_margin);
-}
-
-ret_t TLineNumber::SetLineHeight(int32_t line_height) {
-  return line_number_set_line_height(((widget_t*)(this->nativeObj)), line_height);
-}
-
-ret_t TLineNumber::SetYoffset(int32_t yoffset) {
-  return line_number_set_yoffset(((widget_t*)(this->nativeObj)), yoffset);
 }
 
 TWidget TRow::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2341,6 +2379,26 @@ bool TProgressBar::GetVertical() const {
 
 bool TProgressBar::GetShowText() const {
   return ((progress_bar_t*)(this->nativeObj))->show_text;
+}
+
+TWidget TLineNumber::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TLineNumber((widget_t*)(line_number_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TLineNumber::SetTopMargin(int32_t top_margin) {
+  return line_number_set_top_margin(((widget_t*)(this->nativeObj)), top_margin);
+}
+
+ret_t TLineNumber::SetBottomMargin(int32_t bottom_margin) {
+  return line_number_set_bottom_margin(((widget_t*)(this->nativeObj)), bottom_margin);
+}
+
+ret_t TLineNumber::SetLineHeight(int32_t line_height) {
+  return line_number_set_line_height(((widget_t*)(this->nativeObj)), line_height);
+}
+
+ret_t TLineNumber::SetYoffset(int32_t yoffset) {
+  return line_number_set_yoffset(((widget_t*)(this->nativeObj)), yoffset);
 }
 
 TWidget TPages::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2557,8 +2615,16 @@ int32_t TLabel::GetLength() const {
   return ((label_t*)(this->nativeObj))->length;
 }
 
-TFileChooser TFileChooser::Create(const char* init_dir, const char* filter) {
-  return TFileChooser((emitter_t*)(file_chooser_create(init_dir, filter)));
+TFileChooser TFileChooser::Create() {
+  return TFileChooser((emitter_t*)(file_chooser_create()));
+}
+
+ret_t TFileChooser::SetInitDir(const char* init_dir) {
+  return file_chooser_set_init_dir(((file_chooser_t*)(this->nativeObj)), init_dir);
+}
+
+ret_t TFileChooser::SetFilter(const char* filter) {
+  return file_chooser_set_filter(((file_chooser_t*)(this->nativeObj)), filter);
 }
 
 ret_t TFileChooser::ChooseFileForSave() {
@@ -2703,19 +2769,6 @@ bool TDraggable::GetDragWindow() const {
   return ((draggable_t*)(this->nativeObj))->drag_window;
 }
 
-TWidget TColorPicker::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TColorPicker(
-      (widget_t*)(color_picker_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TColorPicker::SetColor(const char* color) {
-  return color_picker_set_color(((widget_t*)(this->nativeObj)), color);
-}
-
-const char* TColorPicker::GetValue() const {
-  return ((color_picker_t*)(this->nativeObj))->value;
-}
-
 TWidget TCanvasWidget::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TCanvasWidget(
       (widget_t*)(canvas_widget_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
@@ -2829,23 +2882,6 @@ TWidget TGridItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TGridItem((widget_t*)(grid_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TStyleMutable::SetName(const char* name) {
-  return style_mutable_set_name(((style_t*)(this->nativeObj)), name);
-}
-
-ret_t TStyleMutable::SetInt(const char* state, const char* name, uint32_t val) {
-  return style_mutable_set_int(((style_t*)(this->nativeObj)), state, name, val);
-}
-
-TStyle TStyleMutable::Create(TWidget& widget, TStyle& default_style) {
-  return TStyleMutable((style_t*)(style_mutable_create(((widget_t*)(widget.nativeObj)),
-                                                       ((style_t*)(default_style.nativeObj)))));
-}
-
-char* TStyleMutable::GetName() const {
-  return ((style_mutable_t*)(this->nativeObj))->name;
-}
-
 TWidget TEdit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TEdit((widget_t*)(edit_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -2933,6 +2969,22 @@ bool TEdit::GetSelectNoneWhenFocused() const {
 
 bool TEdit::GetOpenImWhenFocused() const {
   return ((edit_t*)(this->nativeObj))->open_im_when_focused;
+}
+
+uint8_t TEdit::GetTopMargin() const {
+  return ((edit_t*)(this->nativeObj))->top_margin;
+}
+
+uint8_t TEdit::GetBottomMargin() const {
+  return ((edit_t*)(this->nativeObj))->bottom_margin;
+}
+
+uint8_t TEdit::GetLeftMargin() const {
+  return ((edit_t*)(this->nativeObj))->left_margin;
+}
+
+uint8_t TEdit::GetRightMargin() const {
+  return ((edit_t*)(this->nativeObj))->right_margin;
 }
 
 char* TEdit::GetTips() const {

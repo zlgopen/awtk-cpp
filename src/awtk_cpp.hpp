@@ -3881,35 +3881,157 @@ class TAssetsManager {
 };
 
 /**
- * 颜色选择器的颜色分量。
- *控件的名称有严格规定：
- *COLOR_PICKER_CHILD_SV: 水平为Value/Brightness(递增)，垂直为Saturation(递减)。
- *COLOR_PICKER_CHILD_H: 水平为同色，垂直为Hue(递减)。
+ * 可变的style(可实时修改并生效，主要用于在designer中被编辑的控件，或者一些特殊控件)。
+ *
+ *style\_mutable也对style\_const进行了包装，当用户没修改某个值时，便从style\_const中获取。
  *
  */
-class TColorComponent : public TWidget {
+class TStyleMutable : public TStyle {
  public:
-  TColorComponent(widget_t* nativeObj) : TWidget(nativeObj) {
+  TStyleMutable(style_t* nativeObj) : TStyle(nativeObj) {
   }
 
-  TColorComponent(const color_component_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  TStyleMutable(const style_mutable_t* nativeObj) : TStyle((style_t*)nativeObj) {
   }
 
-  static TColorComponent Cast(widget_t* nativeObj) {
-    return TColorComponent(nativeObj);
+  static TStyleMutable Cast(style_t* nativeObj) {
+    return TStyleMutable(nativeObj);
   }
 
-  static TColorComponent Cast(const widget_t* nativeObj) {
-    return TColorComponent((widget_t*)nativeObj);
+  static TStyleMutable Cast(const style_t* nativeObj) {
+    return TStyleMutable((style_t*)nativeObj);
   }
 
-  static TColorComponent Cast(TWidget& obj) {
-    return TColorComponent(obj.nativeObj);
+  static TStyleMutable Cast(TStyle& obj) {
+    return TStyleMutable(obj.nativeObj);
   }
 
-  static TColorComponent Cast(const TWidget& obj) {
-    return TColorComponent(obj.nativeObj);
+  static TStyleMutable Cast(const TStyle& obj) {
+    return TStyleMutable(obj.nativeObj);
   }
+
+  /**
+   * 设置style的名称。
+   * 
+   * @param name 名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetName(const char* name);
+
+  /**
+   * 设置指定名称整数格式的值。
+   * 
+   * @param state 控件状态。
+   * @param name 属性名。
+   * @param val 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetInt(const char* state, const char* name, uint32_t val);
+
+  /**
+   * 创建style\_mutable对象。
+   *
+   *> 除了测试程序外不需要直接调用，widget会通过style\_factory\_create创建。
+   * 
+   * @param widget 控件
+   * @param default_style 缺省的style。
+   *
+   * @return style对象。
+   */
+  static TStyle Create(TWidget& widget, TStyle& default_style);
+
+  /**
+   * 名称。
+   *
+   */
+  char* GetName() const;
+};
+
+/**
+ * 颜色选择器。
+ *
+ *color\_picker\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于color\_picker\_t控件。
+ *
+ *在xml中使用"color\_picker"标签创建颜色选择器控件。如：
+ *
+ *```xml
+ *<color_picker x="0" y="0" w="100%" h="100%" value="orange">
+ *<color_component x="0" y="0" w="200" h="200" name="sv"/>
+ *<color_component x="210" y="0" w="20" h="200" name="h"/>
+ *<color_tile x="0" y="210" w="50%" h="20" name="new" bg_color="green"/>
+ *<color_tile x="right" y="210" w="50%" h="20" name="old" bg_color="blue"/>
+ *</color_picker>
+ *```
+ *
+ *> 更多用法请参考：
+ *[color\_picker](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/color_picker.xml)
+ *
+ *其中的子控件必须按下列规则命名：
+ *
+ ** r 红色分量。可以是spin_box、edit和slider。
+ ** g 绿色分量。可以是spin_box、edit和slider。
+ ** b 蓝色分量。可以是spin_box、edit和slider。
+ ** h Hue分量。可以是spin_box、edit、slider和color_component。
+ ** s Saturation分量。可以是spin_box、edit和slider。
+ ** v Value/Brightness分量。可以是spin_box、edit和slider。
+ ** sv Saturation和Value/Brightness分量。可以是color_component。
+ ** old 旧的值。可以是spin_box、edit和color_tile。
+ ** new 新的值。可以是spin_box、edit和color_tile。
+ *
+ */
+class TColorPicker : public TWidget {
+ public:
+  TColorPicker(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TColorPicker(const color_picker_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TColorPicker Cast(widget_t* nativeObj) {
+    return TColorPicker(nativeObj);
+  }
+
+  static TColorPicker Cast(const widget_t* nativeObj) {
+    return TColorPicker((widget_t*)nativeObj);
+  }
+
+  static TColorPicker Cast(TWidget& obj) {
+    return TColorPicker(obj.nativeObj);
+  }
+
+  static TColorPicker Cast(const TWidget& obj) {
+    return TColorPicker(obj.nativeObj);
+  }
+
+  /**
+   * 创建color_picker对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置颜色。
+   * 
+   * @param color 颜色。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetColor(const char* color);
+
+  /**
+   * 颜色。
+   *
+   */
+  const char* GetValue() const;
 };
 
 /**
@@ -4445,69 +4567,6 @@ class TSwitch : public TWidget {
 };
 
 /**
- * 一个通用的容器控件。
- *
- *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
- *子控件的布局可用layout\_children属性指定。
- *请参考[布局参数](https://github.com/zlgopen/awtk/blob/master/docs/layout.md)。
- *
- *view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于view\_t控件。
- *
- *在xml中使用"view"标签创建view。如：
- *
- *```xml
- *<view x="0" y="0" w="100%" h="100%" children_layout="default(c=2,r=2,m=5,s=5)">
- *</view>
- *```
- *
- *可用通过style来设置控件的显示风格，如背景颜色等。如：
- *
- *```xml
- *<style name="default" border_color="#a0a0a0">
- *<normal     bg_color="#f0f0f0" />
- *</style>
- *```
- *
- */
-class TView : public TWidget {
- public:
-  TView(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TView(const view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TView Cast(widget_t* nativeObj) {
-    return TView(nativeObj);
-  }
-
-  static TView Cast(const widget_t* nativeObj) {
-    return TView((widget_t*)nativeObj);
-  }
-
-  static TView Cast(TWidget& obj) {
-    return TView(obj.nativeObj);
-  }
-
-  static TView Cast(const TWidget& obj) {
-    return TView(obj.nativeObj);
-  }
-
-  /**
-   * 创建view对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-};
-
-/**
  * 对象属性变化事件。
  *
  */
@@ -4581,6 +4640,145 @@ class TProgressEvent : public TEvent {
    *
    */
   uint32_t GetPercent() const;
+};
+
+/**
+ * 执行完成事件。
+ *
+ */
+class TDoneEvent : public TEvent {
+ public:
+  TDoneEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TDoneEvent(const done_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TDoneEvent Cast(event_t* nativeObj) {
+    return TDoneEvent(nativeObj);
+  }
+
+  static TDoneEvent Cast(const event_t* nativeObj) {
+    return TDoneEvent((event_t*)nativeObj);
+  }
+
+  static TDoneEvent Cast(TEvent& obj) {
+    return TDoneEvent(obj.nativeObj);
+  }
+
+  static TDoneEvent Cast(const TEvent& obj) {
+    return TDoneEvent(obj.nativeObj);
+  }
+
+  /**
+   * 执行结果。
+   *
+   */
+  ret_t GetResult() const;
+};
+
+/**
+ * 执行完成事件。
+ *
+ */
+class TErrorEvent : public TEvent {
+ public:
+  TErrorEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TErrorEvent(const error_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TErrorEvent Cast(event_t* nativeObj) {
+    return TErrorEvent(nativeObj);
+  }
+
+  static TErrorEvent Cast(const event_t* nativeObj) {
+    return TErrorEvent((event_t*)nativeObj);
+  }
+
+  static TErrorEvent Cast(TEvent& obj) {
+    return TErrorEvent(obj.nativeObj);
+  }
+
+  static TErrorEvent Cast(const TEvent& obj) {
+    return TErrorEvent(obj.nativeObj);
+  }
+
+  /**
+   * 错误码。
+   *
+   */
+  int32_t GetCode() const;
+
+  /**
+   * 错误信息。
+   *
+   */
+  const char* GetMessage() const;
+};
+
+/**
+ * 一个通用的容器控件。
+ *
+ *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
+ *子控件的布局可用layout\_children属性指定。
+ *请参考[布局参数](https://github.com/zlgopen/awtk/blob/master/docs/layout.md)。
+ *
+ *view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于view\_t控件。
+ *
+ *在xml中使用"view"标签创建view。如：
+ *
+ *```xml
+ *<view x="0" y="0" w="100%" h="100%" children_layout="default(c=2,r=2,m=5,s=5)">
+ *</view>
+ *```
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色等。如：
+ *
+ *```xml
+ *<style name="default" border_color="#a0a0a0">
+ *<normal     bg_color="#f0f0f0" />
+ *</style>
+ *```
+ *
+ */
+class TView : public TWidget {
+ public:
+  TView(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TView(const view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TView Cast(widget_t* nativeObj) {
+    return TView(nativeObj);
+  }
+
+  static TView Cast(const widget_t* nativeObj) {
+    return TView((widget_t*)nativeObj);
+  }
+
+  static TView Cast(TWidget& obj) {
+    return TView(obj.nativeObj);
+  }
+
+  static TView Cast(const TWidget& obj) {
+    return TView(obj.nativeObj);
+  }
+
+  /**
+   * 创建view对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
@@ -5502,6 +5700,73 @@ class TScrollBar : public TWidget {
 };
 
 /**
+ * 标签控件。
+ *
+ *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
+ *
+ *标签控件通常会包含一个pages控件和一个tab\_button\_group控件。
+ *
+ *
+ *
+ *tab\_control\_t是[widget\_t](widget_t.md)的子类控件，
+ *widget\_t的函数均适用于tab\_control\_t控件。
+ *
+ *在xml中使用"tab\_control"标签创建标签控件。如：
+ *
+ *```xml
+ *<tab_control x="0" y="0" w="100%" h="100%"
+ *<pages x="c" y="20" w="90%" h="-60" value="1">
+ *...
+ *</pages>
+ *<tab_button_group>
+ *...
+ *</tab_button_group>
+ *</tab_control>
+ *```
+ *
+ *> 更多用法请参考：
+ *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
+ *
+ */
+class TTabControl : public TWidget {
+ public:
+  TTabControl(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TTabControl(const tab_control_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TTabControl Cast(widget_t* nativeObj) {
+    return TTabControl(nativeObj);
+  }
+
+  static TTabControl Cast(const widget_t* nativeObj) {
+    return TTabControl((widget_t*)nativeObj);
+  }
+
+  static TTabControl Cast(TWidget& obj) {
+    return TTabControl(obj.nativeObj);
+  }
+
+  static TTabControl Cast(const TWidget& obj) {
+    return TTabControl(obj.nativeObj);
+  }
+
+  /**
+   * 创建tab_control对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+};
+
+/**
  * 列表视图控件。
  *
  *列表视图控件是一个可以垂直滚动的列表控件。
@@ -5639,73 +5904,6 @@ class TListView : public TWidget {
 };
 
 /**
- * 标签控件。
- *
- *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
- *
- *标签控件通常会包含一个pages控件和一个tab\_button\_group控件。
- *
- *
- *
- *tab\_control\_t是[widget\_t](widget_t.md)的子类控件，
- *widget\_t的函数均适用于tab\_control\_t控件。
- *
- *在xml中使用"tab\_control"标签创建标签控件。如：
- *
- *```xml
- *<tab_control x="0" y="0" w="100%" h="100%"
- *<pages x="c" y="20" w="90%" h="-60" value="1">
- *...
- *</pages>
- *<tab_button_group>
- *...
- *</tab_button_group>
- *</tab_control>
- *```
- *
- *> 更多用法请参考：
- *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
- *
- */
-class TTabControl : public TWidget {
- public:
-  TTabControl(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TTabControl(const tab_control_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TTabControl Cast(widget_t* nativeObj) {
-    return TTabControl(nativeObj);
-  }
-
-  static TTabControl Cast(const widget_t* nativeObj) {
-    return TTabControl((widget_t*)nativeObj);
-  }
-
-  static TTabControl Cast(TWidget& obj) {
-    return TTabControl(obj.nativeObj);
-  }
-
-  static TTabControl Cast(const TWidget& obj) {
-    return TTabControl(obj.nativeObj);
-  }
-
-  /**
-   * 创建tab_control对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-};
-
-/**
  * 水平列表视图控件。
  *
  *list\_view\_h\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_view\_h\_t控件。
@@ -5802,89 +6000,6 @@ class TListViewH : public TWidget {
    *
    */
   int32_t GetSpacing() const;
-};
-
-/**
- * 列表项控件。
- *
- *列表项控件是一个简单的容器控件，一般作为列表视图中滚动视图的子控件。
- *
- *list\_item\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_item\_t控件。
- *
- *在xml中使用"list\_item"标签创建列表项控件。如：
- *
- *```xml
- *<list_view x="0"  y="30" w="100%" h="-80" item_height="60">
- *<scroll_view name="view" x="0"  y="0" w="100%" h="100%">
- *<list_item style="odd" children_layout="default(rows=1,cols=0)">
- *<image draw_type="icon" w="30" image="earth"/>
- *<label w="-30" text="1.Hello AWTK !">
- *<switch x="r:10" y="m" w="60" h="20"/>
- *</label>
- *</list_item>
- *...
- *</scroll_view>
- *</list_view>
- *```
- *
- *> 更多用法请参考：[list\_view\_m.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_m.xml)
- *
- *在c代码中使用函数list\_item\_create创建列表项控件。如：
- *
- *
- *> 列表项控件大小一般由列表控制，不需指定xywh参数。
- *
- *可以用style来实现可点击或不可点击的效果。如：
- *
- *```xml
- *<style name="odd_clickable" border_color="#a0a0a0"  border="bottom" text_color="black">
- *<normal     bg_color="#f5f5f5" />
- *<pressed    bg_color="#c0c0c0" />
- *<over       bg_color="#f5f5f5" />
- *</style>
- *```
- *
- *> 更多用法请参考：[theme default](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L372)
- *
- */
-class TListItem : public TWidget {
- public:
-  TListItem(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TListItem(const list_item_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TListItem Cast(widget_t* nativeObj) {
-    return TListItem(nativeObj);
-  }
-
-  static TListItem Cast(const widget_t* nativeObj) {
-    return TListItem((widget_t*)nativeObj);
-  }
-
-  static TListItem Cast(TWidget& obj) {
-    return TListItem(obj.nativeObj);
-  }
-
-  static TListItem Cast(const TWidget& obj) {
-    return TListItem(obj.nativeObj);
-  }
-
-  /**
-   * 创建list_item对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
@@ -6146,6 +6261,89 @@ class TTabButtonGroup : public TWidget {
    *
    */
   bool GetScrollable() const;
+};
+
+/**
+ * 列表项控件。
+ *
+ *列表项控件是一个简单的容器控件，一般作为列表视图中滚动视图的子控件。
+ *
+ *list\_item\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_item\_t控件。
+ *
+ *在xml中使用"list\_item"标签创建列表项控件。如：
+ *
+ *```xml
+ *<list_view x="0"  y="30" w="100%" h="-80" item_height="60">
+ *<scroll_view name="view" x="0"  y="0" w="100%" h="100%">
+ *<list_item style="odd" children_layout="default(rows=1,cols=0)">
+ *<image draw_type="icon" w="30" image="earth"/>
+ *<label w="-30" text="1.Hello AWTK !">
+ *<switch x="r:10" y="m" w="60" h="20"/>
+ *</label>
+ *</list_item>
+ *...
+ *</scroll_view>
+ *</list_view>
+ *```
+ *
+ *> 更多用法请参考：[list\_view\_m.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_m.xml)
+ *
+ *在c代码中使用函数list\_item\_create创建列表项控件。如：
+ *
+ *
+ *> 列表项控件大小一般由列表控制，不需指定xywh参数。
+ *
+ *可以用style来实现可点击或不可点击的效果。如：
+ *
+ *```xml
+ *<style name="odd_clickable" border_color="#a0a0a0"  border="bottom" text_color="black">
+ *<normal     bg_color="#f5f5f5" />
+ *<pressed    bg_color="#c0c0c0" />
+ *<over       bg_color="#f5f5f5" />
+ *</style>
+ *```
+ *
+ *> 更多用法请参考：[theme default](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L372)
+ *
+ */
+class TListItem : public TWidget {
+ public:
+  TListItem(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TListItem(const list_item_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TListItem Cast(widget_t* nativeObj) {
+    return TListItem(nativeObj);
+  }
+
+  static TListItem Cast(const widget_t* nativeObj) {
+    return TListItem((widget_t*)nativeObj);
+  }
+
+  static TListItem Cast(TWidget& obj) {
+    return TListItem(obj.nativeObj);
+  }
+
+  static TListItem Cast(const TWidget& obj) {
+    return TListItem(obj.nativeObj);
+  }
+
+  /**
+   * 创建list_item对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
@@ -6945,6 +7143,30 @@ class TMledit : public TWidget {
   bool GetReadonly() const;
 
   /**
+   * 上边距。
+   *
+   */
+  uint8_t GetTopMargin() const;
+
+  /**
+   * 下边距。
+   *
+   */
+  uint8_t GetBottomMargin() const;
+
+  /**
+   * 左边距。
+   *
+   */
+  uint8_t GetLeftMargin() const;
+
+  /**
+   * 右边距。
+   *
+   */
+  uint8_t GetRightMargin() const;
+
+  /**
    * 输入提示。
    *
    */
@@ -6967,113 +7189,6 @@ class TMledit : public TWidget {
    *
    */
   float_t GetScrollLine() const;
-};
-
-/**
- * 行号。多行编辑器的行号。
- *
- *line\_number\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于line\_number\_t控件。
- *
- *在xml中使用"lin\e_number"标签创建行号控件，一般配合mledit使用。如：
- *
- *```xml
- *<mledit x="c" y="10" h="40%" w="90%" focus="true" left_margin="36" right_margin="16"
- *wrap_word="true">
- *<line_number x="0" y="0" w="32" h="100%" value="0"/>
- *<scroll_bar_d x="right" y="0" w="14" h="100%" value="0"/>
- *</mledit>
- *```
- *
- *> 更多用法请参考：[mledit.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mledit.xml)
- *
- *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
- *
- *```xml
- *<line_number>
- *<style name="default">
- *<normal text_color="black" bg_color="#d0d0d0" text_align_h="right"/>
- *</style>
- *</line_number>
- *```
- *
- *> 更多用法请参考：
- *[theme default](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L556)
- *
- */
-class TLineNumber : public TWidget {
- public:
-  TLineNumber(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TLineNumber(const line_number_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TLineNumber Cast(widget_t* nativeObj) {
-    return TLineNumber(nativeObj);
-  }
-
-  static TLineNumber Cast(const widget_t* nativeObj) {
-    return TLineNumber((widget_t*)nativeObj);
-  }
-
-  static TLineNumber Cast(TWidget& obj) {
-    return TLineNumber(obj.nativeObj);
-  }
-
-  static TLineNumber Cast(const TWidget& obj) {
-    return TLineNumber(obj.nativeObj);
-  }
-
-  /**
-   * 创建line_number对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置顶部边距。
-   * 
-   * @param top_margin 顶部边距。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetTopMargin(int32_t top_margin);
-
-  /**
-   * 设置顶部边距。
-   * 
-   * @param bottom_margin 顶部边距。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetBottomMargin(int32_t bottom_margin);
-
-  /**
-   * 设置行高。
-   * 
-   * @param line_height 行高。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetLineHeight(int32_t line_height);
-
-  /**
-   * 设置y偏移。
-   * 
-   * @param yoffset 行高。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetYoffset(int32_t yoffset);
 };
 
 /**
@@ -7263,7 +7378,7 @@ class TProgressBar : public TWidget {
   uint32_t GetPercent();
 
   /**
-   * 进度条的值[0-100]。
+   * 进度条的值[0-max]。
    *
    */
   float_t GetValue() const;
@@ -7285,6 +7400,113 @@ class TProgressBar : public TWidget {
    *
    */
   bool GetShowText() const;
+};
+
+/**
+ * 行号。多行编辑器的行号。
+ *
+ *line\_number\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于line\_number\_t控件。
+ *
+ *在xml中使用"lin\e_number"标签创建行号控件，一般配合mledit使用。如：
+ *
+ *```xml
+ *<mledit x="c" y="10" h="40%" w="90%" focus="true" left_margin="36" right_margin="16"
+ *wrap_word="true">
+ *<line_number x="0" y="0" w="32" h="100%" value="0"/>
+ *<scroll_bar_d x="right" y="0" w="14" h="100%" value="0"/>
+ *</mledit>
+ *```
+ *
+ *> 更多用法请参考：[mledit.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mledit.xml)
+ *
+ *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
+ *
+ *```xml
+ *<line_number>
+ *<style name="default">
+ *<normal text_color="black" bg_color="#d0d0d0" text_align_h="right"/>
+ *</style>
+ *</line_number>
+ *```
+ *
+ *> 更多用法请参考：
+ *[theme default](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L556)
+ *
+ */
+class TLineNumber : public TWidget {
+ public:
+  TLineNumber(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TLineNumber(const line_number_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TLineNumber Cast(widget_t* nativeObj) {
+    return TLineNumber(nativeObj);
+  }
+
+  static TLineNumber Cast(const widget_t* nativeObj) {
+    return TLineNumber((widget_t*)nativeObj);
+  }
+
+  static TLineNumber Cast(TWidget& obj) {
+    return TLineNumber(obj.nativeObj);
+  }
+
+  static TLineNumber Cast(const TWidget& obj) {
+    return TLineNumber(obj.nativeObj);
+  }
+
+  /**
+   * 创建line_number对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置顶部边距。
+   * 
+   * @param top_margin 顶部边距。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTopMargin(int32_t top_margin);
+
+  /**
+   * 设置顶部边距。
+   * 
+   * @param bottom_margin 顶部边距。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetBottomMargin(int32_t bottom_margin);
+
+  /**
+   * 设置行高。
+   * 
+   * @param line_height 行高。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetLineHeight(int32_t line_height);
+
+  /**
+   * 设置y偏移。
+   * 
+   * @param yoffset 行高。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetYoffset(int32_t yoffset);
 };
 
 /**
@@ -8222,12 +8444,28 @@ class TFileChooser : public TEmitter {
   /**
    * 创建file_chooser对象
    * 
-   * @param init_dir 初始目录
-   * @param filter 过滤规则(如".jpg.png.gif")。
    *
    * @return 对象。
    */
-  static TFileChooser Create(const char* init_dir, const char* filter);
+  static TFileChooser Create();
+
+  /**
+   * 设置初始目录。
+   * 
+   * @param init_dir 初始目录
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetInitDir(const char* init_dir);
+
+  /**
+   * 设置过滤规则。
+   * 
+   * @param filter 过滤规则(如".jpg.png.gif")。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFilter(const char* filter);
 
   /**
    * 为了保存而选择文件。
@@ -8632,88 +8870,35 @@ class TDraggable : public TWidget {
 };
 
 /**
- * 颜色选择器。
- *
- *color\_picker\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于color\_picker\_t控件。
- *
- *在xml中使用"color\_picker"标签创建颜色选择器控件。如：
- *
- *```xml
- *<color_picker x="0" y="0" w="100%" h="100%" value="orange">
- *<color_component x="0" y="0" w="200" h="200" name="sv"/>
- *<color_component x="210" y="0" w="20" h="200" name="h"/>
- *<color_tile x="0" y="210" w="50%" h="20" name="new" bg_color="green"/>
- *<color_tile x="right" y="210" w="50%" h="20" name="old" bg_color="blue"/>
- *</color_picker>
- *```
- *
- *> 更多用法请参考：
- *[color\_picker](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/color_picker.xml)
- *
- *其中的子控件必须按下列规则命名：
- *
- ** r 红色分量。可以是spin_box、edit和slider。
- ** g 绿色分量。可以是spin_box、edit和slider。
- ** b 蓝色分量。可以是spin_box、edit和slider。
- ** h Hue分量。可以是spin_box、edit、slider和color_component。
- ** s Saturation分量。可以是spin_box、edit和slider。
- ** v Value/Brightness分量。可以是spin_box、edit和slider。
- ** sv Saturation和Value/Brightness分量。可以是color_component。
- ** old 旧的值。可以是spin_box、edit和color_tile。
- ** new 新的值。可以是spin_box、edit和color_tile。
+ * 颜色选择器的颜色分量。
+ *控件的名称有严格规定：
+ *COLOR_PICKER_CHILD_SV: 水平为Value/Brightness(递增)，垂直为Saturation(递减)。
+ *COLOR_PICKER_CHILD_H: 水平为同色，垂直为Hue(递减)。
  *
  */
-class TColorPicker : public TWidget {
+class TColorComponent : public TWidget {
  public:
-  TColorPicker(widget_t* nativeObj) : TWidget(nativeObj) {
+  TColorComponent(widget_t* nativeObj) : TWidget(nativeObj) {
   }
 
-  TColorPicker(const color_picker_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  TColorComponent(const color_component_t* nativeObj) : TWidget((widget_t*)nativeObj) {
   }
 
-  static TColorPicker Cast(widget_t* nativeObj) {
-    return TColorPicker(nativeObj);
+  static TColorComponent Cast(widget_t* nativeObj) {
+    return TColorComponent(nativeObj);
   }
 
-  static TColorPicker Cast(const widget_t* nativeObj) {
-    return TColorPicker((widget_t*)nativeObj);
+  static TColorComponent Cast(const widget_t* nativeObj) {
+    return TColorComponent((widget_t*)nativeObj);
   }
 
-  static TColorPicker Cast(TWidget& obj) {
-    return TColorPicker(obj.nativeObj);
+  static TColorComponent Cast(TWidget& obj) {
+    return TColorComponent(obj.nativeObj);
   }
 
-  static TColorPicker Cast(const TWidget& obj) {
-    return TColorPicker(obj.nativeObj);
+  static TColorComponent Cast(const TWidget& obj) {
+    return TColorComponent(obj.nativeObj);
   }
-
-  /**
-   * 创建color_picker对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置颜色。
-   * 
-   * @param color 颜色。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetColor(const char* color);
-
-  /**
-   * 颜色。
-   *
-   */
-  const char* GetValue() const;
 };
 
 /**
@@ -9274,75 +9459,6 @@ class TGridItem : public TWidget {
 };
 
 /**
- * 可变的style(可实时修改并生效，主要用于在designer中被编辑的控件，或者一些特殊控件)。
- *
- *style\_mutable也对style\_const进行了包装，当用户没修改某个值时，便从style\_const中获取。
- *
- */
-class TStyleMutable : public TStyle {
- public:
-  TStyleMutable(style_t* nativeObj) : TStyle(nativeObj) {
-  }
-
-  TStyleMutable(const style_mutable_t* nativeObj) : TStyle((style_t*)nativeObj) {
-  }
-
-  static TStyleMutable Cast(style_t* nativeObj) {
-    return TStyleMutable(nativeObj);
-  }
-
-  static TStyleMutable Cast(const style_t* nativeObj) {
-    return TStyleMutable((style_t*)nativeObj);
-  }
-
-  static TStyleMutable Cast(TStyle& obj) {
-    return TStyleMutable(obj.nativeObj);
-  }
-
-  static TStyleMutable Cast(const TStyle& obj) {
-    return TStyleMutable(obj.nativeObj);
-  }
-
-  /**
-   * 设置style的名称。
-   * 
-   * @param name 名称。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetName(const char* name);
-
-  /**
-   * 设置指定名称整数格式的值。
-   * 
-   * @param state 控件状态。
-   * @param name 属性名。
-   * @param val 值。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetInt(const char* state, const char* name, uint32_t val);
-
-  /**
-   * 创建style\_mutable对象。
-   *
-   *> 除了测试程序外不需要直接调用，widget会通过style\_factory\_create创建。
-   * 
-   * @param widget 控件
-   * @param default_style 缺省的style。
-   *
-   * @return style对象。
-   */
-  static TStyle Create(TWidget& widget, TStyle& default_style);
-
-  /**
-   * 名称。
-   *
-   */
-  char* GetName() const;
-};
-
-/**
  * 单行编辑器控件。
  *
  *在基于SDL的平台，单行编辑器控件使用平台原生的输入法，对于嵌入式平台使用内置的输入法。
@@ -9612,6 +9728,30 @@ class TEdit : public TWidget {
    *
    */
   bool GetOpenImWhenFocused() const;
+
+  /**
+   * 上边距。
+   *
+   */
+  uint8_t GetTopMargin() const;
+
+  /**
+   * 下边距。
+   *
+   */
+  uint8_t GetBottomMargin() const;
+
+  /**
+   * 左边距。
+   *
+   */
+  uint8_t GetLeftMargin() const;
+
+  /**
+   * 右边距。
+   *
+   */
+  uint8_t GetRightMargin() const;
 
   /**
    * 输入提示。
