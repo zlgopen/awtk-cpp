@@ -1848,6 +1848,31 @@ class TVgcanvas {
   ret_t ClipRect(float_t x, float_t y, float_t w, float_t h);
 
   /**
+   * 设置一个与前一个裁剪区做交集的矩形裁剪区。
+   *如果下面这种情况，则不能直接调用 rect_intersect 函数来做矩形交集和 vgcanvas_clip_rect 函数设置裁剪区，而采用本函数做交集。
+   *由于缩放和旋转以及平移会导致 vg 的坐标系和上一个裁剪区的坐标系不同，
+   *导致直接使用做交集的话，裁剪区会出错。
+   *
+   *```
+   *vgcanvas_clip_rect(vg, old_r.x, old_r.y, old_r.w, old_r.h);
+   *vgcanvas_save(vg);
+   *vgcanvas_scale(vg, scale_x, scale_y);
+   *vgcanvas_rotate(vg, TK_D2R(15));
+   *vgcanvas_intersect_clip_rect(vg, r.x, r.y, r.w, r.h);
+   *..................
+   *vgcanvas_restore(vg);
+   *```
+   * 
+   * @param x x坐标。
+   * @param y y坐标。
+   * @param w 宽度。
+   * @param h 高度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t IntersectClipRect(float_t x, float_t y, float_t w, float_t h);
+
+  /**
    * 填充多边形。
    * 
    *
@@ -2197,6 +2222,14 @@ class TWidget {
    * @return 子控件。
    */
   TWidget GetChild(int32_t index);
+
+  /**
+   * 获取原生窗口对象。
+   * 
+   *
+   * @return 原生窗口对象。
+   */
+  TNativeWindow GetNativeWindow();
 
   /**
    * 获取控件在父控件中的索引编号。
@@ -11130,10 +11163,10 @@ class TDigitClock : public TWidget {
    ** MMM 代表月的英文缩写(支持翻译)
    *
    *如 日期时间为：2018/11/12 9:10:20
-   ** "Y/D/M"显示为"2018/11/12"
-   ** "Y-D-M"显示为"2018-11-12"
-   ** "Y-D-M h:m:s"显示为"2018-11-12 9:10:20"
-   ** "Y-D-M hh:mm:ss"显示为"2018-11-12 09:10:20"
+   ** "Y/M/D"显示为"2018/11/12"
+   ** "Y-M-D"显示为"2018-11-12"
+   ** "Y-M-D h:m:s"显示为"2018-11-12 9:10:20"
+   ** "Y-M-D hh:mm:ss"显示为"2018-11-12 09:10:20"
    *
    */
   char* GetFormat() const;
@@ -11600,6 +11633,107 @@ class TComboBox : public TEdit {
    *
    */
   int32_t GetItemHeight() const;
+};
+
+/**
+ * 原生窗口。
+ *
+ */
+class TNativeWindow : public TObject {
+ public:
+  TNativeWindow(emitter_t* nativeObj) : TObject(nativeObj) {
+  }
+
+  TNativeWindow(const native_window_t* nativeObj) : TObject((emitter_t*)nativeObj) {
+  }
+
+  static TNativeWindow Cast(emitter_t* nativeObj) {
+    return TNativeWindow(nativeObj);
+  }
+
+  static TNativeWindow Cast(const emitter_t* nativeObj) {
+    return TNativeWindow((emitter_t*)nativeObj);
+  }
+
+  static TNativeWindow Cast(TEmitter& obj) {
+    return TNativeWindow(obj.nativeObj);
+  }
+
+  static TNativeWindow Cast(const TEmitter& obj) {
+    return TNativeWindow(obj.nativeObj);
+  }
+
+  /**
+   * 移动窗口。
+   * 
+   * @param x x坐标。
+   * @param y y坐标。
+   * @param force 无论是否shared都move。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Move(xy_t x, xy_t y, bool force);
+
+  /**
+   * 调整窗口大小。
+   * 
+   * @param w 宽。
+   * @param h 高。
+   * @param force 无论是否shared都resize。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Resize(wh_t w, wh_t h, bool force);
+
+  /**
+   * 最小化窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Minimize();
+
+  /**
+   * 最大化窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Maximize();
+
+  /**
+   * 恢复窗口大小。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Restore();
+
+  /**
+   * 窗口居中。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Center();
+
+  /**
+   * 是否显示边框。
+   * 
+   * @param show 是否显示。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ShowBorder(bool show);
+
+  /**
+   * 是否全屏。
+   * 
+   * @param fullscreen 是否全屏。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFullscreen(bool fullscreen);
 };
 
 /**
