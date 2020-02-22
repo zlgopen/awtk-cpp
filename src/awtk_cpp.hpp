@@ -8,6 +8,7 @@ class TEmitter;
 class TEvent;
 class TWidget;
 class TWindow;
+class TNativeWindow;
 
 /**
  * 事件基类。
