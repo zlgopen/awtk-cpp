@@ -8,6 +8,7 @@ class TEmitter;
 class TEvent;
 class TWidget;
 class TWindow;
+class TAssetInfo;
 class TNativeWindow;
 
 /**
@@ -1146,6 +1147,49 @@ class TGlobal {
 };
 
 /**
+ * 剪切板接口。
+ *
+ */
+class TClipBoard {
+ public:
+  //nativeObj is public for internal use only.
+  clip_board_t* nativeObj;
+
+  TClipBoard(clip_board_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TClipBoard(const clip_board_t* nativeObj) {
+    this->nativeObj = (clip_board_t*)nativeObj;
+  }
+
+  static TClipBoard Cast(clip_board_t* nativeObj) {
+    return TClipBoard(nativeObj);
+  }
+
+  static TClipBoard Cast(const clip_board_t* nativeObj) {
+    return TClipBoard((clip_board_t*)nativeObj);
+  }
+
+  /**
+   * 设置文本(UTF8)数据到剪切板。
+   * 
+   * @param text 文本。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t SetText(const char* text);
+
+  /**
+   * 从剪切板中获取文本(UTF8)数据。
+   * 
+   *
+   * @return 返回文本数据。
+   */
+  static const char* GetText();
+};
+
+/**
  * 字体管理器，负责字体的加载和缓存管理。
  *(如果使用nanovg，字体由nanovg内部管理)
  *
@@ -1221,6 +1265,96 @@ class TIdle {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Remove(uint32_t idle_id);
+};
+
+/**
+ * 资源管理器。
+ *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、主题、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
+ *
+ ** 让上层不需要了解存储的方式。
+ *在没有文件系统时或者内存紧缺时，把资源转成常量数组直接编译到代码中。在有文件系统而且内存充足时，资源放在文件系统中。在有网络时，资源也可以存放在服务器上(暂未实现)。资源管理器为上层提供统一的接口，让上层而不用关心底层的存储方式。
+ *
+ ** 让上层不需要了解资源的具体格式。
+ *比如一个名为earth的图片，没有文件系统或内存紧缺，图片直接用位图数据格式存在ROM中，而有文件系统时，则用PNG格式存放在文件系统中。资源管理器让上层不需要关心图片的格式，访问时指定图片的名称即可(不用指定扩展名)。
+ *
+ ** 让上层不需要了解屏幕的密度。
+ *不同的屏幕密度下需要加载不同的图片，比如MacPro的Retina屏就需要用双倍解析度的图片，否则就出现界面模糊。AWTK以后会支持PC软件和手机软件的开发，所以资源管理器需要为此提供支持，让上层不需关心屏幕的密度。
+ *
+ ** 对资源进行内存缓存。
+ *不同类型的资源使用方式是不一样的，比如字体和主题加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
+ *
+ *当从文件系统加载资源时，目录结构要求如下：
+ *
+ *```
+ *assets/{theme}/raw/
+ *fonts   字体
+ *images  图片
+ *x1   普通密度屏幕的图片。
+ *x2   2倍密度屏幕的图片。
+ *x3   3倍密度屏幕的图片。
+ *xx   密度无关的图片。
+ *strings 需要翻译的字符串。
+ *styles  主题数据。
+ *ui      UI描述数据。
+ *```
+ *
+ */
+class TAssetsManager {
+ public:
+  //nativeObj is public for internal use only.
+  assets_manager_t* nativeObj;
+
+  TAssetsManager(assets_manager_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TAssetsManager(const assets_manager_t* nativeObj) {
+    this->nativeObj = (assets_manager_t*)nativeObj;
+  }
+
+  static TAssetsManager Cast(assets_manager_t* nativeObj) {
+    return TAssetsManager(nativeObj);
+  }
+
+  static TAssetsManager Cast(const assets_manager_t* nativeObj) {
+    return TAssetsManager((assets_manager_t*)nativeObj);
+  }
+
+  /**
+   * 获取缺省资源管理器。
+   * 
+   *
+   * @return 返回asset manager对象。
+   */
+  static TAssetsManager Instance();
+
+  /**
+   * 设置当前的主题。
+   * 
+   * @param theme 主题名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTheme(const char* theme);
+
+  /**
+   * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
+   * 
+   * @param type 资源的类型。
+   * @param name 资源的名称。
+   *
+   * @return 返回资源。
+   */
+  TAssetInfo Ref(asset_type_t type, char* name);
+
+  /**
+   * 释放指定的资源。
+   * 
+   * @param info 资源。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Unref(TAssetInfo& info);
 };
 
 /**
@@ -2318,7 +2452,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t UseStyle(char* style);
+  ret_t UseStyle(const char* style);
 
   /**
    * 设置控件的文本。
@@ -2337,7 +2471,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTrText(char* text);
+  ret_t SetTrText(const char* text);
 
   /**
    * 获取控件的值。只是对widget\_get\_prop的包装，值的意义由子类控件决定。
@@ -2363,7 +2497,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetName(char* name);
+  ret_t SetName(const char* name);
 
   /**
    * 设置theme的名称，用于动态切换主题。名称与当前主题名称相同，则重新加载全部资源。
@@ -2374,7 +2508,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTheme(char* name);
+  ret_t SetTheme(const char* name);
 
   /**
    * 设置鼠标指针的图片名。
@@ -2383,7 +2517,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetPointerCursor(char* cursor);
+  ret_t SetPointerCursor(const char* cursor);
 
   /**
    * 设置控件的动画参数(仅用于在UI文件使用)。
@@ -2449,7 +2583,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t PauseAnimator(char* name);
+  ret_t PauseAnimator(const char* name);
 
   /**
    * 停止动画(控件的相应属性回归原位)。
@@ -2463,7 +2597,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t StopAnimator(char* name);
+  ret_t StopAnimator(const char* name);
 
   /**
    * 销毁动画。
@@ -2477,7 +2611,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t DestroyAnimator(char* name);
+  ret_t DestroyAnimator(const char* name);
 
   /**
    * 设置控件的可用性。
@@ -2606,7 +2740,7 @@ class TWidget {
    *
    * @return 子控件或NULL。
    */
-  TWidget Child(char* name);
+  TWidget Child(const char* name);
 
   /**
    * 查找指定名称的子控件(返回第一个)。
@@ -2616,7 +2750,7 @@ class TWidget {
    *
    * @return 子控件或NULL。
    */
-  TWidget Lookup(char* name, bool recursive);
+  TWidget Lookup(const char* name, bool recursive);
 
   /**
    * 查找指定类型的子控件(返回第一个)。
@@ -2626,7 +2760,7 @@ class TWidget {
    *
    * @return 子控件或NULL。
    */
-  TWidget LookupByType(char* type, bool recursive);
+  TWidget LookupByType(const char* type, bool recursive);
 
   /**
    * 设置控件的可见性。
@@ -3519,49 +3653,6 @@ class TIdleManager {
 };
 
 /**
- * 剪切板接口。
- *
- */
-class TClipBoard {
- public:
-  //nativeObj is public for internal use only.
-  clip_board_t* nativeObj;
-
-  TClipBoard(clip_board_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TClipBoard(const clip_board_t* nativeObj) {
-    this->nativeObj = (clip_board_t*)nativeObj;
-  }
-
-  static TClipBoard Cast(clip_board_t* nativeObj) {
-    return TClipBoard(nativeObj);
-  }
-
-  static TClipBoard Cast(const clip_board_t* nativeObj) {
-    return TClipBoard((clip_board_t*)nativeObj);
-  }
-
-  /**
-   * 设置文本(UTF8)数据到剪切板。
-   * 
-   * @param text 文本。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  static ret_t SetText(const char* text);
-
-  /**
-   * 从剪切板中获取文本(UTF8)数据。
-   * 
-   *
-   * @return 返回文本数据。
-   */
-  static const char* GetText();
-};
-
-/**
  * 日期时间。
  *
  *> 在嵌入式平台中，在系统初始时，需要调用date\_time\_global\_init设置实际获取/设置系统时间的函数。
@@ -3831,87 +3922,6 @@ class TAssetInfo {
    *
    */
   char* GetName() const;
-};
-
-/**
- * 资源管理器。
- *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、主题、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
- *
- ** 让上层不需要了解存储的方式。
- *在没有文件系统时或者内存紧缺时，把资源转成常量数组直接编译到代码中。在有文件系统而且内存充足时，资源放在文件系统中。在有网络时，资源也可以存放在服务器上(暂未实现)。资源管理器为上层提供统一的接口，让上层而不用关心底层的存储方式。
- *
- ** 让上层不需要了解资源的具体格式。
- *比如一个名为earth的图片，没有文件系统或内存紧缺，图片直接用位图数据格式存在ROM中，而有文件系统时，则用PNG格式存放在文件系统中。资源管理器让上层不需要关心图片的格式，访问时指定图片的名称即可(不用指定扩展名)。
- *
- ** 让上层不需要了解屏幕的密度。
- *不同的屏幕密度下需要加载不同的图片，比如MacPro的Retina屏就需要用双倍解析度的图片，否则就出现界面模糊。AWTK以后会支持PC软件和手机软件的开发，所以资源管理器需要为此提供支持，让上层不需关心屏幕的密度。
- *
- ** 对资源进行内存缓存。
- *不同类型的资源使用方式是不一样的，比如字体和主题加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
- *
- *当从文件系统加载资源时，目录结构要求如下：
- *
- *```
- *assets/{theme}/raw/
- *fonts   字体
- *images  图片
- *x1   普通密度屏幕的图片。
- *x2   2倍密度屏幕的图片。
- *x3   3倍密度屏幕的图片。
- *xx   密度无关的图片。
- *strings 需要翻译的字符串。
- *styles  主题数据。
- *ui      UI描述数据。
- *```
- *
- */
-class TAssetsManager {
- public:
-  //nativeObj is public for internal use only.
-  assets_manager_t* nativeObj;
-
-  TAssetsManager(assets_manager_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TAssetsManager(const assets_manager_t* nativeObj) {
-    this->nativeObj = (assets_manager_t*)nativeObj;
-  }
-
-  static TAssetsManager Cast(assets_manager_t* nativeObj) {
-    return TAssetsManager(nativeObj);
-  }
-
-  static TAssetsManager Cast(const assets_manager_t* nativeObj) {
-    return TAssetsManager((assets_manager_t*)nativeObj);
-  }
-
-  /**
-   * 获取缺省资源管理器。
-   * 
-   *
-   * @return 返回asset manager对象。
-   */
-  static TAssetsManager Instance();
-
-  /**
-   * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
-   * 
-   * @param type 资源的类型。
-   * @param name 资源的名称。
-   *
-   * @return 返回资源。
-   */
-  TAssetInfo Ref(asset_type_t type, char* name);
-
-  /**
-   * 释放指定的资源。
-   * 
-   * @param info 资源。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Unref(TAssetInfo& info);
 };
 
 /**
@@ -7222,7 +7232,7 @@ class TMledit : public TWidget {
    * 鼠标一次滚动行数。
    *
    */
-  float_t GetScrollLine() const;
+  uint32_t GetScrollLine() const;
 };
 
 /**
@@ -7768,6 +7778,9 @@ class TCandidates : public TWidget {
  ** 2.把每个字符与image(图片文件名前缀)映射成一个图片名。
  ** 3.最后把这些图片显示出来。
  *
+ *如果设置click\_add\_delta为非0，那么点击时自动增加指定的增量，值超过最大值时回到最小值,
+ *或者值超过最小值时回到最大值。
+ *
  *image\_value\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于image\_value\_t控件。
  *
  *在xml中使用"image\_value"标签创建图片值控件。如：
@@ -7844,6 +7857,15 @@ class TImageValue : public TWidget {
   ret_t SetFormat(const char* format);
 
   /**
+   * 设置点击时加上的增量。
+   * 
+   * @param delta 增量。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetClickAddDelta(float_t delta);
+
+  /**
    * 设置值。
    * 
    * @param value 值。
@@ -7851,6 +7873,24 @@ class TImageValue : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetValue(float_t value);
+
+  /**
+   * 设置最小值。
+   * 
+   * @param min 最小值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMin(float_t min);
+
+  /**
+   * 设置最大值。
+   * 
+   * @param max 最大值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMax(float_t max);
 
   /**
    * 图片名称的前缀。
@@ -7865,10 +7905,28 @@ class TImageValue : public TWidget {
   char* GetFormat() const;
 
   /**
+   * 点击时加上一个增量。
+   *
+   */
+  float_t GetClickAddDelta() const;
+
+  /**
    * 值。
    *
    */
   float_t GetValue() const;
+
+  /**
+   * 最小值(如果设置了click\_add\_delta，到达最小值后回到最大值)。
+   *
+   */
+  float_t GetMin() const;
+
+  /**
+   * 最大值(如果设置了click\_add\_delta，到达最大值后回到最小值)。
+   *
+   */
+  float_t GetMax() const;
 };
 
 /**
@@ -12459,6 +12517,7 @@ class TObjectArray : public TObject {
  *
  *> 创建之后:
  *>
+ *> 需要用mutable\_image\_set\_create\_image设置创建图片的回调函数。
  *> 需要用mutable\_image\_set\_prepare\_image设置准备图片的回调函数。
  *
  *> 完整示例请参考：[mutable image demo](
