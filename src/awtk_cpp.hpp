@@ -4330,6 +4330,158 @@ class TTimeClock : public TWidget {
 };
 
 /**
+ * 对象属性变化事件。
+ *
+ */
+class TPropChangeEvent : public TEvent {
+ public:
+  TPropChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TPropChangeEvent(const prop_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TPropChangeEvent Cast(event_t* nativeObj) {
+    return TPropChangeEvent(nativeObj);
+  }
+
+  static TPropChangeEvent Cast(const event_t* nativeObj) {
+    return TPropChangeEvent((event_t*)nativeObj);
+  }
+
+  static TPropChangeEvent Cast(TEvent& obj) {
+    return TPropChangeEvent(obj.nativeObj);
+  }
+
+  static TPropChangeEvent Cast(const TEvent& obj) {
+    return TPropChangeEvent(obj.nativeObj);
+  }
+
+  /**
+   * 属性的名称。
+   *
+   */
+  const char* GetName() const;
+
+  /**
+   * 属性的值。
+   *
+   */
+  TValue GetValue() const;
+};
+
+/**
+ * 进度变化事件。
+ *
+ */
+class TProgressEvent : public TEvent {
+ public:
+  TProgressEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TProgressEvent(const progress_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TProgressEvent Cast(event_t* nativeObj) {
+    return TProgressEvent(nativeObj);
+  }
+
+  static TProgressEvent Cast(const event_t* nativeObj) {
+    return TProgressEvent((event_t*)nativeObj);
+  }
+
+  static TProgressEvent Cast(TEvent& obj) {
+    return TProgressEvent(obj.nativeObj);
+  }
+
+  static TProgressEvent Cast(const TEvent& obj) {
+    return TProgressEvent(obj.nativeObj);
+  }
+
+  /**
+   * 进度百分比。
+   *
+   */
+  uint32_t GetPercent() const;
+};
+
+/**
+ * 执行完成事件。
+ *
+ */
+class TDoneEvent : public TEvent {
+ public:
+  TDoneEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TDoneEvent(const done_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TDoneEvent Cast(event_t* nativeObj) {
+    return TDoneEvent(nativeObj);
+  }
+
+  static TDoneEvent Cast(const event_t* nativeObj) {
+    return TDoneEvent((event_t*)nativeObj);
+  }
+
+  static TDoneEvent Cast(TEvent& obj) {
+    return TDoneEvent(obj.nativeObj);
+  }
+
+  static TDoneEvent Cast(const TEvent& obj) {
+    return TDoneEvent(obj.nativeObj);
+  }
+
+  /**
+   * 执行结果。
+   *
+   */
+  ret_t GetResult() const;
+};
+
+/**
+ * 执行完成事件。
+ *
+ */
+class TErrorEvent : public TEvent {
+ public:
+  TErrorEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TErrorEvent(const error_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TErrorEvent Cast(event_t* nativeObj) {
+    return TErrorEvent(nativeObj);
+  }
+
+  static TErrorEvent Cast(const event_t* nativeObj) {
+    return TErrorEvent((event_t*)nativeObj);
+  }
+
+  static TErrorEvent Cast(TEvent& obj) {
+    return TErrorEvent(obj.nativeObj);
+  }
+
+  static TErrorEvent Cast(const TEvent& obj) {
+    return TErrorEvent(obj.nativeObj);
+  }
+
+  /**
+   * 错误码。
+   *
+   */
+  int32_t GetCode() const;
+
+  /**
+   * 错误信息。
+   *
+   */
+  const char* GetMessage() const;
+};
+
+/**
  * 文本选择器控件，通常用于选择日期和时间等。
  *
  *> XXX: 目前需要先设置options和visible_nr，再设置其它参数(在XML中也需要按此顺序)。
@@ -4608,158 +4760,6 @@ class TSwitch : public TWidget {
    *
    */
   float_t GetMaxXoffsetRatio() const;
-};
-
-/**
- * 对象属性变化事件。
- *
- */
-class TPropChangeEvent : public TEvent {
- public:
-  TPropChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TPropChangeEvent(const prop_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TPropChangeEvent Cast(event_t* nativeObj) {
-    return TPropChangeEvent(nativeObj);
-  }
-
-  static TPropChangeEvent Cast(const event_t* nativeObj) {
-    return TPropChangeEvent((event_t*)nativeObj);
-  }
-
-  static TPropChangeEvent Cast(TEvent& obj) {
-    return TPropChangeEvent(obj.nativeObj);
-  }
-
-  static TPropChangeEvent Cast(const TEvent& obj) {
-    return TPropChangeEvent(obj.nativeObj);
-  }
-
-  /**
-   * 属性的名称。
-   *
-   */
-  const char* GetName() const;
-
-  /**
-   * 属性的值。
-   *
-   */
-  TValue GetValue() const;
-};
-
-/**
- * 进度变化事件。
- *
- */
-class TProgressEvent : public TEvent {
- public:
-  TProgressEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TProgressEvent(const progress_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TProgressEvent Cast(event_t* nativeObj) {
-    return TProgressEvent(nativeObj);
-  }
-
-  static TProgressEvent Cast(const event_t* nativeObj) {
-    return TProgressEvent((event_t*)nativeObj);
-  }
-
-  static TProgressEvent Cast(TEvent& obj) {
-    return TProgressEvent(obj.nativeObj);
-  }
-
-  static TProgressEvent Cast(const TEvent& obj) {
-    return TProgressEvent(obj.nativeObj);
-  }
-
-  /**
-   * 进度百分比。
-   *
-   */
-  uint32_t GetPercent() const;
-};
-
-/**
- * 执行完成事件。
- *
- */
-class TDoneEvent : public TEvent {
- public:
-  TDoneEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TDoneEvent(const done_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TDoneEvent Cast(event_t* nativeObj) {
-    return TDoneEvent(nativeObj);
-  }
-
-  static TDoneEvent Cast(const event_t* nativeObj) {
-    return TDoneEvent((event_t*)nativeObj);
-  }
-
-  static TDoneEvent Cast(TEvent& obj) {
-    return TDoneEvent(obj.nativeObj);
-  }
-
-  static TDoneEvent Cast(const TEvent& obj) {
-    return TDoneEvent(obj.nativeObj);
-  }
-
-  /**
-   * 执行结果。
-   *
-   */
-  ret_t GetResult() const;
-};
-
-/**
- * 执行完成事件。
- *
- */
-class TErrorEvent : public TEvent {
- public:
-  TErrorEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TErrorEvent(const error_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TErrorEvent Cast(event_t* nativeObj) {
-    return TErrorEvent(nativeObj);
-  }
-
-  static TErrorEvent Cast(const event_t* nativeObj) {
-    return TErrorEvent((event_t*)nativeObj);
-  }
-
-  static TErrorEvent Cast(TEvent& obj) {
-    return TErrorEvent(obj.nativeObj);
-  }
-
-  static TErrorEvent Cast(const TEvent& obj) {
-    return TErrorEvent(obj.nativeObj);
-  }
-
-  /**
-   * 错误码。
-   *
-   */
-  int32_t GetCode() const;
-
-  /**
-   * 错误信息。
-   *
-   */
-  const char* GetMessage() const;
 };
 
 /**
@@ -5358,6 +5358,73 @@ class TSlideMenu : public TWidget {
 };
 
 /**
+ * 标签控件。
+ *
+ *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
+ *
+ *标签控件通常会包含一个pages控件和一个tab\_button\_group控件。
+ *
+ *
+ *
+ *tab\_control\_t是[widget\_t](widget_t.md)的子类控件，
+ *widget\_t的函数均适用于tab\_control\_t控件。
+ *
+ *在xml中使用"tab\_control"标签创建标签控件。如：
+ *
+ *```xml
+ *<tab_control x="0" y="0" w="100%" h="100%"
+ *<pages x="c" y="20" w="90%" h="-60" value="1">
+ *...
+ *</pages>
+ *<tab_button_group>
+ *...
+ *</tab_button_group>
+ *</tab_control>
+ *```
+ *
+ *> 更多用法请参考：
+ *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
+ *
+ */
+class TTabControl : public TWidget {
+ public:
+  TTabControl(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TTabControl(const tab_control_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TTabControl Cast(widget_t* nativeObj) {
+    return TTabControl(nativeObj);
+  }
+
+  static TTabControl Cast(const widget_t* nativeObj) {
+    return TTabControl((widget_t*)nativeObj);
+  }
+
+  static TTabControl Cast(TWidget& obj) {
+    return TTabControl(obj.nativeObj);
+  }
+
+  static TTabControl Cast(const TWidget& obj) {
+    return TTabControl(obj.nativeObj);
+  }
+
+  /**
+   * 创建tab_control对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+};
+
+/**
  * 滚动视图。
  *
  *scroll\_view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于scroll\_view\_t控件。
@@ -5744,309 +5811,6 @@ class TScrollBar : public TWidget {
 };
 
 /**
- * 标签控件。
- *
- *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
- *
- *标签控件通常会包含一个pages控件和一个tab\_button\_group控件。
- *
- *
- *
- *tab\_control\_t是[widget\_t](widget_t.md)的子类控件，
- *widget\_t的函数均适用于tab\_control\_t控件。
- *
- *在xml中使用"tab\_control"标签创建标签控件。如：
- *
- *```xml
- *<tab_control x="0" y="0" w="100%" h="100%"
- *<pages x="c" y="20" w="90%" h="-60" value="1">
- *...
- *</pages>
- *<tab_button_group>
- *...
- *</tab_button_group>
- *</tab_control>
- *```
- *
- *> 更多用法请参考：
- *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
- *
- */
-class TTabControl : public TWidget {
- public:
-  TTabControl(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TTabControl(const tab_control_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TTabControl Cast(widget_t* nativeObj) {
-    return TTabControl(nativeObj);
-  }
-
-  static TTabControl Cast(const widget_t* nativeObj) {
-    return TTabControl((widget_t*)nativeObj);
-  }
-
-  static TTabControl Cast(TWidget& obj) {
-    return TTabControl(obj.nativeObj);
-  }
-
-  static TTabControl Cast(const TWidget& obj) {
-    return TTabControl(obj.nativeObj);
-  }
-
-  /**
-   * 创建tab_control对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-};
-
-/**
- * 列表视图控件。
- *
- *列表视图控件是一个可以垂直滚动的列表控件。
- *
- *如果不需要滚动，可以用view控件配置适当的layout参数作为列表控件。
- *
- *列表视图中的列表项可以固定高度，也可以使用不同高度。请参考[变高列表项](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_vh.xml)
- *
- *列表视图控件的中可以有滚动条，也可以没有滚动条。
- *可以使用移动设备风格的滚动条，也可以使用桌面风格的滚动条。
- *
- *list\_view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_view\_t控件。
- *
- *在xml中使用"list\_view"标签创建列表视图控件。如：
- *
- *```xml
- *<list_view x="0"  y="30" w="100%" h="-80" item_height="60">
- *<scroll_view name="view" x="0"  y="0" w="100%" h="100%">
- *<list_item style="odd" children_layout="default(rows=1,cols=0)">
- *<image draw_type="icon" w="30" image="earth"/>
- *<label w="-30" text="1.Hello AWTK !">
- *<switch x="r:10" y="m" w="60" h="20"/>
- *</label>
- *</list_item>
- *...
- *</scroll_view>
- *</list_view>
- *```
- *
- *> 注意：列表项不是作为列表视图控件的直接子控件，而是作为滚动视图的子控件。
- *
- *
- *> 更多用法请参考：[list\_view\_m.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_m.xml)
- *
- *在c代码中使用函数list\_view\_create创建列表视图控件。如：
- *
- *
- *用代码构造列表视图是比较繁琐的事情，最好用XML来构造。
- *如果需要动态修改，可以使用widget\_clone来增加列表项，使用widget\_remove\_child来移出列表项。
- *
- *可用通过style来设置控件的显示风格，如背景颜色和边框颜色等(一般情况不需要)。
- *
- */
-class TListView : public TWidget {
- public:
-  TListView(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TListView(const list_view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TListView Cast(widget_t* nativeObj) {
-    return TListView(nativeObj);
-  }
-
-  static TListView Cast(const widget_t* nativeObj) {
-    return TListView((widget_t*)nativeObj);
-  }
-
-  static TListView Cast(TWidget& obj) {
-    return TListView(obj.nativeObj);
-  }
-
-  static TListView Cast(const TWidget& obj) {
-    return TListView(obj.nativeObj);
-  }
-
-  /**
-   * 创建list_view对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置列表项的高度。
-   * 
-   * @param item_height 列表项的高度。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetItemHeight(int32_t item_height);
-
-  /**
-   * 设置列表项的缺省高度。
-   * 
-   * @param default_item_height 列表项的高度。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetDefaultItemHeight(int32_t default_item_height);
-
-  /**
-   * 设置是否自动隐藏滚动条。
-   * 
-   * @param auto_hide_scroll_bar 是否自动隐藏滚动条。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetAutoHideScrollBar(bool auto_hide_scroll_bar);
-
-  /**
-   * list_view重新初始化。
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Reinit();
-
-  /**
-   * 列表项的高度。如果 item_height 0，所有列表项使用固定高度，否则使用列表项自身的高度。
-   *
-   */
-  int32_t GetItemHeight() const;
-
-  /**
-   * 列表项的缺省高度。如果item_height <= 0 而且列表项自身的高度 <= 0，则使用缺省高度。
-   *
-   */
-  int32_t GetDefaultItemHeight() const;
-
-  /**
-   * 如果不需要滚动条时，自动隐藏滚动条。
-   *
-   */
-  bool GetAutoHideScrollBar() const;
-};
-
-/**
- * 水平列表视图控件。
- *
- *list\_view\_h\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_view\_h\_t控件。
- *
- *在xml中使用"list\_view\_h"标签创建水平列表视图控件。如：
- *
- *```xml
- *<list_view_h x="center"  y="10" w="90%" h="100" item_width="200" spacing="5">
- *<scroll_view name="view" w="100%" h="100%">
- *<image style="border" draw_type="auto" image="1" text="1"/>
- *...
- *</scroll_view>
- *</list_view_h>
- *```
- *
- *> 注意：列表项不是作为列表视图控件的直接子控件，而是作为滚动视图的子控件。
- *
- *
- *> 更多用法请参考：[list\_view\_h.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_h.xml)
- *
- *在c代码中使用函数list\_view\_h\_create创建水平列表视图控件。如：
- *
- *
- *用代码构造列表视图是比较繁琐的事情，最好用XML来构造。
- *如果需要动态修改，可以使用widget\_clone来增加列表项，使用widget\_remove\_child来移出列表项。
- *
- *可用通过style来设置控件的显示风格，如背景颜色和边框颜色等(一般情况不需要)。
- *
- */
-class TListViewH : public TWidget {
- public:
-  TListViewH(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TListViewH(const list_view_h_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TListViewH Cast(widget_t* nativeObj) {
-    return TListViewH(nativeObj);
-  }
-
-  static TListViewH Cast(const widget_t* nativeObj) {
-    return TListViewH((widget_t*)nativeObj);
-  }
-
-  static TListViewH Cast(TWidget& obj) {
-    return TListViewH(obj.nativeObj);
-  }
-
-  static TListViewH Cast(const TWidget& obj) {
-    return TListViewH(obj.nativeObj);
-  }
-
-  /**
-   * 创建list_view_h对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置列表项的宽度。
-   * 
-   * @param item_width 列表项的宽度。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetItemWidth(int32_t item_width);
-
-  /**
-   * 设置列表项的间距。
-   * 
-   * @param spacing 列表项的间距。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetSpacing(int32_t spacing);
-
-  /**
-   * 列表项的宽度。
-   *
-   */
-  int32_t GetItemWidth() const;
-
-  /**
-   * 间距。
-   *
-   */
-  int32_t GetSpacing() const;
-};
-
-/**
  * 标签按钮控件。
  *
  *标签按钮有点类似单选按钮，但点击标签按钮之后会自动切换当前的标签页。
@@ -6305,6 +6069,242 @@ class TTabButtonGroup : public TWidget {
    *
    */
   bool GetScrollable() const;
+};
+
+/**
+ * 列表视图控件。
+ *
+ *列表视图控件是一个可以垂直滚动的列表控件。
+ *
+ *如果不需要滚动，可以用view控件配置适当的layout参数作为列表控件。
+ *
+ *列表视图中的列表项可以固定高度，也可以使用不同高度。请参考[变高列表项](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_vh.xml)
+ *
+ *列表视图控件的中可以有滚动条，也可以没有滚动条。
+ *可以使用移动设备风格的滚动条，也可以使用桌面风格的滚动条。
+ *
+ *list\_view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_view\_t控件。
+ *
+ *在xml中使用"list\_view"标签创建列表视图控件。如：
+ *
+ *```xml
+ *<list_view x="0"  y="30" w="100%" h="-80" item_height="60">
+ *<scroll_view name="view" x="0"  y="0" w="100%" h="100%">
+ *<list_item style="odd" children_layout="default(rows=1,cols=0)">
+ *<image draw_type="icon" w="30" image="earth"/>
+ *<label w="-30" text="1.Hello AWTK !">
+ *<switch x="r:10" y="m" w="60" h="20"/>
+ *</label>
+ *</list_item>
+ *...
+ *</scroll_view>
+ *</list_view>
+ *```
+ *
+ *> 注意：列表项不是作为列表视图控件的直接子控件，而是作为滚动视图的子控件。
+ *
+ *
+ *> 更多用法请参考：[list\_view\_m.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_m.xml)
+ *
+ *在c代码中使用函数list\_view\_create创建列表视图控件。如：
+ *
+ *
+ *用代码构造列表视图是比较繁琐的事情，最好用XML来构造。
+ *如果需要动态修改，可以使用widget\_clone来增加列表项，使用widget\_remove\_child来移出列表项。
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色和边框颜色等(一般情况不需要)。
+ *
+ */
+class TListView : public TWidget {
+ public:
+  TListView(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TListView(const list_view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TListView Cast(widget_t* nativeObj) {
+    return TListView(nativeObj);
+  }
+
+  static TListView Cast(const widget_t* nativeObj) {
+    return TListView((widget_t*)nativeObj);
+  }
+
+  static TListView Cast(TWidget& obj) {
+    return TListView(obj.nativeObj);
+  }
+
+  static TListView Cast(const TWidget& obj) {
+    return TListView(obj.nativeObj);
+  }
+
+  /**
+   * 创建list_view对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置列表项的高度。
+   * 
+   * @param item_height 列表项的高度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetItemHeight(int32_t item_height);
+
+  /**
+   * 设置列表项的缺省高度。
+   * 
+   * @param default_item_height 列表项的高度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDefaultItemHeight(int32_t default_item_height);
+
+  /**
+   * 设置是否自动隐藏滚动条。
+   * 
+   * @param auto_hide_scroll_bar 是否自动隐藏滚动条。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAutoHideScrollBar(bool auto_hide_scroll_bar);
+
+  /**
+   * list_view重新初始化。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Reinit();
+
+  /**
+   * 列表项的高度。如果 item_height 0，所有列表项使用固定高度，否则使用列表项自身的高度。
+   *
+   */
+  int32_t GetItemHeight() const;
+
+  /**
+   * 列表项的缺省高度。如果item_height <= 0 而且列表项自身的高度 <= 0，则使用缺省高度。
+   *
+   */
+  int32_t GetDefaultItemHeight() const;
+
+  /**
+   * 如果不需要滚动条时，自动隐藏滚动条。
+   *
+   */
+  bool GetAutoHideScrollBar() const;
+};
+
+/**
+ * 水平列表视图控件。
+ *
+ *list\_view\_h\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list\_view\_h\_t控件。
+ *
+ *在xml中使用"list\_view\_h"标签创建水平列表视图控件。如：
+ *
+ *```xml
+ *<list_view_h x="center"  y="10" w="90%" h="100" item_width="200" spacing="5">
+ *<scroll_view name="view" w="100%" h="100%">
+ *<image style="border" draw_type="auto" image="1" text="1"/>
+ *...
+ *</scroll_view>
+ *</list_view_h>
+ *```
+ *
+ *> 注意：列表项不是作为列表视图控件的直接子控件，而是作为滚动视图的子控件。
+ *
+ *
+ *> 更多用法请参考：[list\_view\_h.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/list_view_h.xml)
+ *
+ *在c代码中使用函数list\_view\_h\_create创建水平列表视图控件。如：
+ *
+ *
+ *用代码构造列表视图是比较繁琐的事情，最好用XML来构造。
+ *如果需要动态修改，可以使用widget\_clone来增加列表项，使用widget\_remove\_child来移出列表项。
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色和边框颜色等(一般情况不需要)。
+ *
+ */
+class TListViewH : public TWidget {
+ public:
+  TListViewH(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TListViewH(const list_view_h_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TListViewH Cast(widget_t* nativeObj) {
+    return TListViewH(nativeObj);
+  }
+
+  static TListViewH Cast(const widget_t* nativeObj) {
+    return TListViewH((widget_t*)nativeObj);
+  }
+
+  static TListViewH Cast(TWidget& obj) {
+    return TListViewH(obj.nativeObj);
+  }
+
+  static TListViewH Cast(const TWidget& obj) {
+    return TListViewH(obj.nativeObj);
+  }
+
+  /**
+   * 创建list_view_h对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置列表项的宽度。
+   * 
+   * @param item_width 列表项的宽度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetItemWidth(int32_t item_width);
+
+  /**
+   * 设置列表项的间距。
+   * 
+   * @param spacing 列表项的间距。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSpacing(int32_t spacing);
+
+  /**
+   * 列表项的宽度。
+   *
+   */
+  int32_t GetItemWidth() const;
+
+  /**
+   * 间距。
+   *
+   */
+  int32_t GetSpacing() const;
 };
 
 /**
@@ -6814,6 +6814,15 @@ class TProgressCircle : public TWidget {
   ret_t SetUnit(const char* unit);
 
   /**
+   * 设置线帽类型。
+   * 
+   * @param line_cap 线帽类型(round:圆头，square:方头)。。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetLineCap(const char* line_cap);
+
+  /**
    * 设置是否显示文本。
    * 
    * @param show_text 是否显示文本。
@@ -6860,6 +6869,12 @@ class TProgressCircle : public TWidget {
    *
    */
   char* GetUnit() const;
+
+  /**
+   * 线帽类型(round:圆头，square:方头)。
+   *
+   */
+  char* GetLineCap() const;
 
   /**
    * 是否为逆时针方向(缺省为FALSE)。
@@ -7055,184 +7070,6 @@ class TSlider : public TWidget {
    *
    */
   bool GetSlideWithBar() const;
-};
-
-/**
- * 多行编辑器控件。
- *
- *mledit\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于mledit\_t控件。
- *
- *在xml中使用"mledit"标签创建多行编辑器控件。如：
- *
- *```xml
- *<mledit x="c" y="m" w="300" h="300" />
- *```
- *
- *> 更多用法请参考：[mledit.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mledit.xml)
- *
- *在c代码中使用函数mledit\_create创建多行编辑器控件。如：
- *
- *
- *> 完整示例请参考：[mledit demo](
- *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/mledit.c)
- *
- *time\_clock一般不需要设置style。
- *
- */
-class TMledit : public TWidget {
- public:
-  TMledit(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TMledit(const mledit_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TMledit Cast(widget_t* nativeObj) {
-    return TMledit(nativeObj);
-  }
-
-  static TMledit Cast(const widget_t* nativeObj) {
-    return TMledit((widget_t*)nativeObj);
-  }
-
-  static TMledit Cast(TWidget& obj) {
-    return TMledit(obj.nativeObj);
-  }
-
-  static TMledit Cast(const TWidget& obj) {
-    return TMledit(obj.nativeObj);
-  }
-
-  /**
-   * 创建mledit对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置编辑器是否为只读。
-   * 
-   * @param readonly 只读。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetReadonly(bool readonly);
-
-  /**
-   * 设置为焦点。
-   * 
-   * @param focus 是否为焦点。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetFocus(bool focus);
-
-  /**
-   * 设置编辑器是否自动折行。
-   * 
-   * @param wrap_word 是否自动折行。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetWrapWord(bool wrap_word);
-
-  /**
-   * 设置编辑器的最大行数。
-   * 
-   * @param max_lines 最大行数。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetMaxLines(uint32_t max_lines);
-
-  /**
-   * 设置编辑器的输入提示。
-   * 
-   * @param tips 输入提示。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetInputTips(char* tips);
-
-  /**
-   * 设置编辑器光标位置。
-   * 
-   * @param cursor 光标位置。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetCursor(uint32_t cursor);
-
-  /**
-   * 设置编辑器滚动速度。
-   * 
-   * @param scroll_line 滚动行数。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetScrollLine(uint32_t scroll_line);
-
-  /**
-   * 编辑器是否为只读。
-   *
-   */
-  bool GetReadonly() const;
-
-  /**
-   * 上边距。
-   *
-   */
-  uint8_t GetTopMargin() const;
-
-  /**
-   * 下边距。
-   *
-   */
-  uint8_t GetBottomMargin() const;
-
-  /**
-   * 左边距。
-   *
-   */
-  uint8_t GetLeftMargin() const;
-
-  /**
-   * 右边距。
-   *
-   */
-  uint8_t GetRightMargin() const;
-
-  /**
-   * 输入提示。
-   *
-   */
-  char* GetTips() const;
-
-  /**
-   * 是否自动折行。
-   *
-   */
-  bool GetWrapWord() const;
-
-  /**
-   * 最大行数。
-   *
-   */
-  uint32_t GetMaxLines() const;
-
-  /**
-   * 鼠标一次滚动行数。
-   *
-   */
-  uint32_t GetScrollLine() const;
 };
 
 /**
@@ -7447,6 +7284,272 @@ class TProgressBar : public TWidget {
 };
 
 /**
+ * 页面管理控件。
+ *
+ *只有一个Page处于active状态，处于active状态的Page才能显示并接收事件。
+ *常用于实现标签控件中的页面管理。
+ *
+ *pages\_t是[widget\_t](widget_t.md)的子类控件，
+ *widget\_t的函数均适用于pages\_t控件。
+ *
+ *在xml中使用"pages"标签创建页面管理控件。如：
+ *
+ *```xml
+ *<tab_control x="0" y="0" w="100%" h="100%"
+ *<pages x="c" y="20" w="90%" h="-60" value="1">
+ *...
+ *</pages>
+ *<tab_button_group>
+ *...
+ *</tab_button_group>
+ *</tab_control>
+ *```
+ *
+ *> 更多用法请参考：
+ *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
+ *
+ */
+class TPages : public TWidget {
+ public:
+  TPages(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TPages(const pages_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TPages Cast(widget_t* nativeObj) {
+    return TPages(nativeObj);
+  }
+
+  static TPages Cast(const widget_t* nativeObj) {
+    return TPages((widget_t*)nativeObj);
+  }
+
+  static TPages Cast(TWidget& obj) {
+    return TPages(obj.nativeObj);
+  }
+
+  static TPages Cast(const TWidget& obj) {
+    return TPages(obj.nativeObj);
+  }
+
+  /**
+   * 创建pages对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置当前的Page。
+   * 
+   * @param index 当前Page的序号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetActive(uint32_t index);
+
+  /**
+   * 通过页面的名字设置当前的Page。
+   * 
+   * @param name 当前Page的名字。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetActiveByName(char* name);
+
+  /**
+   * 当前活跃的page。
+   *
+   */
+  uint32_t GetActive() const;
+};
+
+/**
+ * 多行编辑器控件。
+ *
+ *mledit\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于mledit\_t控件。
+ *
+ *在xml中使用"mledit"标签创建多行编辑器控件。如：
+ *
+ *```xml
+ *<mledit x="c" y="m" w="300" h="300" />
+ *```
+ *
+ *> 更多用法请参考：[mledit.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mledit.xml)
+ *
+ *在c代码中使用函数mledit\_create创建多行编辑器控件。如：
+ *
+ *
+ *> 完整示例请参考：[mledit demo](
+ *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/mledit.c)
+ *
+ *time\_clock一般不需要设置style。
+ *
+ */
+class TMledit : public TWidget {
+ public:
+  TMledit(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TMledit(const mledit_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TMledit Cast(widget_t* nativeObj) {
+    return TMledit(nativeObj);
+  }
+
+  static TMledit Cast(const widget_t* nativeObj) {
+    return TMledit((widget_t*)nativeObj);
+  }
+
+  static TMledit Cast(TWidget& obj) {
+    return TMledit(obj.nativeObj);
+  }
+
+  static TMledit Cast(const TWidget& obj) {
+    return TMledit(obj.nativeObj);
+  }
+
+  /**
+   * 创建mledit对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置编辑器是否为只读。
+   * 
+   * @param readonly 只读。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetReadonly(bool readonly);
+
+  /**
+   * 设置为焦点。
+   * 
+   * @param focus 是否为焦点。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFocus(bool focus);
+
+  /**
+   * 设置编辑器是否自动折行。
+   * 
+   * @param wrap_word 是否自动折行。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetWrapWord(bool wrap_word);
+
+  /**
+   * 设置编辑器的最大行数。
+   * 
+   * @param max_lines 最大行数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaxLines(uint32_t max_lines);
+
+  /**
+   * 设置编辑器的输入提示。
+   * 
+   * @param tips 输入提示。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetInputTips(char* tips);
+
+  /**
+   * 设置编辑器光标位置。
+   * 
+   * @param cursor 光标位置。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetCursor(uint32_t cursor);
+
+  /**
+   * 设置编辑器滚动速度。
+   * 
+   * @param scroll_line 滚动行数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetScrollLine(uint32_t scroll_line);
+
+  /**
+   * 编辑器是否为只读。
+   *
+   */
+  bool GetReadonly() const;
+
+  /**
+   * 上边距。
+   *
+   */
+  uint8_t GetTopMargin() const;
+
+  /**
+   * 下边距。
+   *
+   */
+  uint8_t GetBottomMargin() const;
+
+  /**
+   * 左边距。
+   *
+   */
+  uint8_t GetLeftMargin() const;
+
+  /**
+   * 右边距。
+   *
+   */
+  uint8_t GetRightMargin() const;
+
+  /**
+   * 输入提示。
+   *
+   */
+  char* GetTips() const;
+
+  /**
+   * 是否自动折行。
+   *
+   */
+  bool GetWrapWord() const;
+
+  /**
+   * 最大行数。
+   *
+   */
+  uint32_t GetMaxLines() const;
+
+  /**
+   * 鼠标一次滚动行数。
+   *
+   */
+  uint32_t GetScrollLine() const;
+};
+
+/**
  * 行号。多行编辑器的行号。
  *
  *line\_number\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于line\_number\_t控件。
@@ -7551,94 +7654,6 @@ class TLineNumber : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetYoffset(int32_t yoffset);
-};
-
-/**
- * 页面管理控件。
- *
- *只有一个Page处于active状态，处于active状态的Page才能显示并接收事件。
- *常用于实现标签控件中的页面管理。
- *
- *pages\_t是[widget\_t](widget_t.md)的子类控件，
- *widget\_t的函数均适用于pages\_t控件。
- *
- *在xml中使用"pages"标签创建页面管理控件。如：
- *
- *```xml
- *<tab_control x="0" y="0" w="100%" h="100%"
- *<pages x="c" y="20" w="90%" h="-60" value="1">
- *...
- *</pages>
- *<tab_button_group>
- *...
- *</tab_button_group>
- *</tab_control>
- *```
- *
- *> 更多用法请参考：
- *[tab control](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/)
- *
- */
-class TPages : public TWidget {
- public:
-  TPages(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TPages(const pages_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TPages Cast(widget_t* nativeObj) {
-    return TPages(nativeObj);
-  }
-
-  static TPages Cast(const widget_t* nativeObj) {
-    return TPages((widget_t*)nativeObj);
-  }
-
-  static TPages Cast(TWidget& obj) {
-    return TPages(obj.nativeObj);
-  }
-
-  static TPages Cast(const TWidget& obj) {
-    return TPages(obj.nativeObj);
-  }
-
-  /**
-   * 创建pages对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置当前的Page。
-   * 
-   * @param index 当前Page的序号。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetActive(uint32_t index);
-
-  /**
-   * 通过页面的名字设置当前的Page。
-   * 
-   * @param name 当前Page的名字。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetActiveByName(char* name);
-
-  /**
-   * 当前活跃的page。
-   *
-   */
-  uint32_t GetActive() const;
 };
 
 /**
@@ -11358,64 +11373,61 @@ class TDialogTitle : public TWidget {
 };
 
 /**
- * 对象接口的缺省实现。
+ * mutable图片控件。
  *
- *内部使用有序数组保存所有属性，可以快速查找指定名称的属性。
+ *像摄像头和视频的图像是变化的，每一帧都不同，我们把这类图片称为mutable image。
+ *
+ *本控件辅助实现摄像头和视频的显示功能。
+ *
+ *mutable\_image\_t是[image\_base\_t](image_base_t.md)的子类控件，image\_base\_t的函数均适用于mutable\_image\_t控件。
+ *
+ *在xml中使用"mutable\_image"标签创建mutable图片控件。如：
+ *
+ *```xml
+ *<mutable_image w="100%" h="100%"/>
+ *```
+ *
+ *>更多用法请参考：
+ *[mutable
+ *image](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mutable_image.xml)
+ *
+ *在c代码中使用函数mutable\_image\_create创建mutable图片控件。如：
+ *
+ *
+ *> 创建之后:
+ *>
+ *> 需要用mutable\_image\_set\_create\_image设置创建图片的回调函数。
+ *> 需要用mutable\_image\_set\_prepare\_image设置准备图片的回调函数。
+ *
+ *> 完整示例请参考：[mutable image demo](
+ *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/mutable_image.c)
+ *
+ *一般不需通过style来设置控件的显示风格，如果在特殊情况下需要，可以参考其它控件。
  *
  */
-class TObjectDefault : public TObject {
+class TMutableImage : public TImageBase {
  public:
-  TObjectDefault(emitter_t* nativeObj) : TObject(nativeObj) {
+  TMutableImage(widget_t* nativeObj) : TImageBase(nativeObj) {
   }
 
-  TObjectDefault(const object_default_t* nativeObj) : TObject((emitter_t*)nativeObj) {
+  TMutableImage(const mutable_image_t* nativeObj) : TImageBase((widget_t*)nativeObj) {
   }
 
-  static TObjectDefault Cast(emitter_t* nativeObj) {
-    return TObjectDefault(nativeObj);
+  static TMutableImage Cast(widget_t* nativeObj) {
+    return TMutableImage(nativeObj);
   }
 
-  static TObjectDefault Cast(const emitter_t* nativeObj) {
-    return TObjectDefault((emitter_t*)nativeObj);
+  static TMutableImage Cast(const widget_t* nativeObj) {
+    return TMutableImage((widget_t*)nativeObj);
   }
 
-  static TObjectDefault Cast(TEmitter& obj) {
-    return TObjectDefault(obj.nativeObj);
+  static TMutableImage Cast(TWidget& obj) {
+    return TMutableImage(obj.nativeObj);
   }
 
-  static TObjectDefault Cast(const TEmitter& obj) {
-    return TObjectDefault(obj.nativeObj);
+  static TMutableImage Cast(const TWidget& obj) {
+    return TMutableImage(obj.nativeObj);
   }
-
-  /**
-   * 创建对象。
-   * 
-   *
-   * @return 返回object对象。
-   */
-  static TObject Create();
-
-  /**
-   * for script gc
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Unref();
-
-  /**
-   * 清除全部属性。
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t ClearProps();
-
-  /**
-   * 属性个数。
-   *
-   */
-  uint32_t GetPropsSize() const;
 };
 
 /**
@@ -12430,6 +12442,67 @@ class TCalibrationWin : public TWindowBase {
 };
 
 /**
+ * 对象接口的缺省实现。
+ *
+ *内部使用有序数组保存所有属性，可以快速查找指定名称的属性。
+ *
+ */
+class TObjectDefault : public TObject {
+ public:
+  TObjectDefault(emitter_t* nativeObj) : TObject(nativeObj) {
+  }
+
+  TObjectDefault(const object_default_t* nativeObj) : TObject((emitter_t*)nativeObj) {
+  }
+
+  static TObjectDefault Cast(emitter_t* nativeObj) {
+    return TObjectDefault(nativeObj);
+  }
+
+  static TObjectDefault Cast(const emitter_t* nativeObj) {
+    return TObjectDefault((emitter_t*)nativeObj);
+  }
+
+  static TObjectDefault Cast(TEmitter& obj) {
+    return TObjectDefault(obj.nativeObj);
+  }
+
+  static TObjectDefault Cast(const TEmitter& obj) {
+    return TObjectDefault(obj.nativeObj);
+  }
+
+  /**
+   * 创建对象。
+   * 
+   *
+   * @return 返回object对象。
+   */
+  static TObject Create();
+
+  /**
+   * for script gc
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Unref();
+
+  /**
+   * 清除全部属性。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ClearProps();
+
+  /**
+   * 属性个数。
+   *
+   */
+  uint32_t GetPropsSize() const;
+};
+
+/**
  * 简单的动态数组，内部存放value对象。
  *
  *访问时属性名称为：
@@ -12491,64 +12564,6 @@ class TObjectArray : public TObject {
    *
    */
   uint32_t GetPropsSize() const;
-};
-
-/**
- * mutable图片控件。
- *
- *像摄像头和视频的图像是变化的，每一帧都不同，我们把这类图片称为mutable image。
- *
- *本控件辅助实现摄像头和视频的显示功能。
- *
- *mutable\_image\_t是[image\_base\_t](image_base_t.md)的子类控件，image\_base\_t的函数均适用于mutable\_image\_t控件。
- *
- *在xml中使用"mutable\_image"标签创建mutable图片控件。如：
- *
- *```xml
- *<mutable_image w="100%" h="100%"/>
- *```
- *
- *>更多用法请参考：
- *[mutable
- *image](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/mutable_image.xml)
- *
- *在c代码中使用函数mutable\_image\_create创建mutable图片控件。如：
- *
- *
- *> 创建之后:
- *>
- *> 需要用mutable\_image\_set\_create\_image设置创建图片的回调函数。
- *> 需要用mutable\_image\_set\_prepare\_image设置准备图片的回调函数。
- *
- *> 完整示例请参考：[mutable image demo](
- *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/mutable_image.c)
- *
- *一般不需通过style来设置控件的显示风格，如果在特殊情况下需要，可以参考其它控件。
- *
- */
-class TMutableImage : public TImageBase {
- public:
-  TMutableImage(widget_t* nativeObj) : TImageBase(nativeObj) {
-  }
-
-  TMutableImage(const mutable_image_t* nativeObj) : TImageBase((widget_t*)nativeObj) {
-  }
-
-  static TMutableImage Cast(widget_t* nativeObj) {
-    return TMutableImage(nativeObj);
-  }
-
-  static TMutableImage Cast(const widget_t* nativeObj) {
-    return TMutableImage((widget_t*)nativeObj);
-  }
-
-  static TMutableImage Cast(TWidget& obj) {
-    return TMutableImage(obj.nativeObj);
-  }
-
-  static TMutableImage Cast(const TWidget& obj) {
-    return TMutableImage(obj.nativeObj);
-  }
 };
 
 /**
