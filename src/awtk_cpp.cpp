@@ -398,6 +398,31 @@ char* TObject::GetName() const {
   return ((object_t*)(this->nativeObj))->name;
 }
 
+ret_t TGlobal::Init(wh_t w, wh_t h, app_type_t app_type, const char* app_name,
+                    const char* app_root) {
+  return tk_init(w, h, app_type, app_name, app_root);
+}
+
+ret_t TGlobal::Run() {
+  return tk_run();
+}
+
+ret_t TGlobal::Quit() {
+  return tk_quit();
+}
+
+int32_t TGlobal::GetPointerX() {
+  return tk_get_pointer_x();
+}
+
+int32_t TGlobal::GetPointerY() {
+  return tk_get_pointer_y();
+}
+
+bool TGlobal::IsPointerPressed() {
+  return tk_is_pointer_pressed();
+}
+
 ret_t TClipBoard::SetText(const char* text) {
   return clip_board_set_text(text);
 }
@@ -453,12 +478,36 @@ ret_t TAssetsManager::Unref(TAssetInfo& info) {
                               ((asset_info_t*)(info.nativeObj)));
 }
 
-ret_t TInputMethod::CommitText(char* text) {
+ret_t TInputMethod::CommitText(const char* text) {
   return input_method_commit_text(((input_method_t*)(this->nativeObj)), text);
+}
+
+ret_t TInputMethod::SetLang(const char* lang) {
+  return input_method_set_lang(((input_method_t*)(this->nativeObj)), lang);
+}
+
+const char* TInputMethod::GetLang() {
+  return input_method_get_lang(((input_method_t*)(this->nativeObj)));
 }
 
 ret_t TInputMethod::DispatchKey(uint32_t key) {
   return input_method_dispatch_key(((input_method_t*)(this->nativeObj)), key);
+}
+
+ret_t TInputMethod::DispatchKeys(const char* key) {
+  return input_method_dispatch_keys(((input_method_t*)(this->nativeObj)), key);
+}
+
+ret_t TInputMethod::DispatchPreedit() {
+  return input_method_dispatch_preedit(((input_method_t*)(this->nativeObj)));
+}
+
+ret_t TInputMethod::DispatchPreeditConfirm() {
+  return input_method_dispatch_preedit_confirm(((input_method_t*)(this->nativeObj)));
+}
+
+ret_t TInputMethod::DispatchPreeditAbort() {
+  return input_method_dispatch_preedit_abort(((input_method_t*)(this->nativeObj)));
 }
 
 TInputMethod TInputMethod::Instance() {
@@ -1154,31 +1203,6 @@ uint64_t TTimeNow::Ms() {
   return time_now_ms();
 }
 
-ret_t TGlobal::Init(wh_t w, wh_t h, app_type_t app_type, const char* app_name,
-                    const char* app_root) {
-  return tk_init(w, h, app_type, app_name, app_root);
-}
-
-ret_t TGlobal::Run() {
-  return tk_run();
-}
-
-ret_t TGlobal::Quit() {
-  return tk_quit();
-}
-
-int32_t TGlobal::GetPointerX() {
-  return tk_get_pointer_x();
-}
-
-int32_t TGlobal::GetPointerY() {
-  return tk_get_pointer_y();
-}
-
-bool TGlobal::IsPointerPressed() {
-  return tk_is_pointer_pressed();
-}
-
 wh_t TCanvas::GetWidth() {
   return canvas_get_width(((canvas_t*)(this->nativeObj)));
 }
@@ -1424,17 +1448,21 @@ char* TAssetInfo::GetName() const {
   return ((asset_info_t*)(this->nativeObj))->name;
 }
 
-TWidget TColorPicker::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TColorPicker(
-      (widget_t*)(color_picker_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+ret_t TStyleMutable::SetName(const char* name) {
+  return style_mutable_set_name(((style_t*)(this->nativeObj)), name);
 }
 
-ret_t TColorPicker::SetColor(const char* color) {
-  return color_picker_set_color(((widget_t*)(this->nativeObj)), color);
+ret_t TStyleMutable::SetInt(const char* state, const char* name, uint32_t val) {
+  return style_mutable_set_int(((style_t*)(this->nativeObj)), state, name, val);
 }
 
-const char* TColorPicker::GetValue() const {
-  return ((color_picker_t*)(this->nativeObj))->value;
+TStyle TStyleMutable::Create(TWidget& widget, TStyle& default_style) {
+  return TStyleMutable((style_t*)(style_mutable_create(((widget_t*)(widget.nativeObj)),
+                                                       ((style_t*)(default_style.nativeObj)))));
+}
+
+char* TStyleMutable::GetName() const {
+  return ((style_mutable_t*)(this->nativeObj))->name;
 }
 
 TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -1447,448 +1475,6 @@ ret_t TView::SetDefaultFocusedChild(const char* default_focused_child) {
 
 char* TView::GetDefaultFocusedChild() const {
   return ((view_t*)(this->nativeObj))->default_focused_child;
-}
-
-TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TTabControl((widget_t*)(tab_control_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TTabButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TTabButton((widget_t*)(tab_button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TTabButton::SetValue(uint32_t value) {
-  return tab_button_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-ret_t TTabButton::SetIcon(char* name) {
-  return tab_button_set_icon(((widget_t*)(this->nativeObj)), name);
-}
-
-ret_t TTabButton::SetActiveIcon(char* name) {
-  return tab_button_set_active_icon(((widget_t*)(this->nativeObj)), name);
-}
-
-ret_t TTabButton::SetLoadUi(char* name) {
-  return tab_button_set_load_ui(((widget_t*)(this->nativeObj)), name);
-}
-
-bool TTabButton::GetValue() const {
-  return ((tab_button_t*)(this->nativeObj))->value;
-}
-
-char* TTabButton::GetLoadUi() const {
-  return ((tab_button_t*)(this->nativeObj))->load_ui;
-}
-
-char* TTabButton::GetActiveIcon() const {
-  return ((tab_button_t*)(this->nativeObj))->active_icon;
-}
-
-char* TTabButton::GetIcon() const {
-  return ((tab_button_t*)(this->nativeObj))->icon;
-}
-
-TWidget TTabButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TTabButtonGroup(
-      (widget_t*)(tab_button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TTabButtonGroup::SetCompact(bool compact) {
-  return tab_button_group_set_compact(((widget_t*)(this->nativeObj)), compact);
-}
-
-ret_t TTabButtonGroup::SetScrollable(bool scrollable) {
-  return tab_button_group_set_scrollable(((widget_t*)(this->nativeObj)), scrollable);
-}
-
-bool TTabButtonGroup::GetCompact() const {
-  return ((tab_button_group_t*)(this->nativeObj))->compact;
-}
-
-bool TTabButtonGroup::GetScrollable() const {
-  return ((tab_button_group_t*)(this->nativeObj))->scrollable;
-}
-
-TWidget TSlider::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSlider((widget_t*)(slider_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TSlider::SetValue(double value) {
-  return slider_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-ret_t TSlider::SetMin(double min) {
-  return slider_set_min(((widget_t*)(this->nativeObj)), min);
-}
-
-ret_t TSlider::SetMax(double max) {
-  return slider_set_max(((widget_t*)(this->nativeObj)), max);
-}
-
-ret_t TSlider::SetStep(double step) {
-  return slider_set_step(((widget_t*)(this->nativeObj)), step);
-}
-
-ret_t TSlider::SetBarSize(uint32_t bar_size) {
-  return slider_set_bar_size(((widget_t*)(this->nativeObj)), bar_size);
-}
-
-ret_t TSlider::SetVertical(bool vertical) {
-  return slider_set_vertical(((widget_t*)(this->nativeObj)), vertical);
-}
-
-double TSlider::GetValue() const {
-  return ((slider_t*)(this->nativeObj))->value;
-}
-
-double TSlider::GetMin() const {
-  return ((slider_t*)(this->nativeObj))->min;
-}
-
-double TSlider::GetMax() const {
-  return ((slider_t*)(this->nativeObj))->max;
-}
-
-double TSlider::GetStep() const {
-  return ((slider_t*)(this->nativeObj))->step;
-}
-
-bool TSlider::GetVertical() const {
-  return ((slider_t*)(this->nativeObj))->vertical;
-}
-
-uint32_t TSlider::GetBarSize() const {
-  return ((slider_t*)(this->nativeObj))->bar_size;
-}
-
-uint32_t TSlider::GetDraggerSize() const {
-  return ((slider_t*)(this->nativeObj))->dragger_size;
-}
-
-bool TSlider::GetDraggerAdaptToIcon() const {
-  return ((slider_t*)(this->nativeObj))->dragger_adapt_to_icon;
-}
-
-bool TSlider::GetSlideWithBar() const {
-  return ((slider_t*)(this->nativeObj))->slide_with_bar;
-}
-
-TWidget TRow::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TRow((widget_t*)(row_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TProgressBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TProgressBar(
-      (widget_t*)(progress_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TProgressBar::SetValue(float_t value) {
-  return progress_bar_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-ret_t TProgressBar::SetMax(uint32_t max) {
-  return progress_bar_set_max(((widget_t*)(this->nativeObj)), max);
-}
-
-ret_t TProgressBar::SetVertical(bool vertical) {
-  return progress_bar_set_vertical(((widget_t*)(this->nativeObj)), vertical);
-}
-
-ret_t TProgressBar::SetShowText(bool show_text) {
-  return progress_bar_set_show_text(((widget_t*)(this->nativeObj)), show_text);
-}
-
-uint32_t TProgressBar::GetPercent() {
-  return progress_bar_get_percent(((widget_t*)(this->nativeObj)));
-}
-
-float_t TProgressBar::GetValue() const {
-  return ((progress_bar_t*)(this->nativeObj))->value;
-}
-
-float_t TProgressBar::GetMax() const {
-  return ((progress_bar_t*)(this->nativeObj))->max;
-}
-
-bool TProgressBar::GetVertical() const {
-  return ((progress_bar_t*)(this->nativeObj))->vertical;
-}
-
-bool TProgressBar::GetShowText() const {
-  return ((progress_bar_t*)(this->nativeObj))->show_text;
-}
-
-TWidget TPages::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TPages((widget_t*)(pages_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TPages::SetActive(uint32_t index) {
-  return pages_set_active(((widget_t*)(this->nativeObj)), index);
-}
-
-ret_t TPages::SetActiveByName(char* name) {
-  return pages_set_active_by_name(((widget_t*)(this->nativeObj)), name);
-}
-
-uint32_t TPages::GetActive() const {
-  return ((pages_t*)(this->nativeObj))->active;
-}
-
-TWidget TLabel::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TLabel((widget_t*)(label_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TLabel::SetLength(int32_t length) {
-  return label_set_length(((widget_t*)(this->nativeObj)), length);
-}
-
-ret_t TLabel::ResizeToContent(uint32_t min_w, uint32_t max_w, uint32_t min_h, uint32_t max_h) {
-  return label_resize_to_content(((widget_t*)(this->nativeObj)), min_w, max_w, min_h, max_h);
-}
-
-int32_t TLabel::GetLength() const {
-  return ((label_t*)(this->nativeObj))->length;
-}
-
-TWidget TGroupBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGroupBox((widget_t*)(group_box_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TGrid::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGrid((widget_t*)(grid_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TGridItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGridItem((widget_t*)(grid_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TEdit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TEdit((widget_t*)(edit_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-int32_t TEdit::GetInt() {
-  return edit_get_int(((widget_t*)(this->nativeObj)));
-}
-
-double TEdit::GetDouble() {
-  return edit_get_double(((widget_t*)(this->nativeObj)));
-}
-
-ret_t TEdit::SetInt(int32_t value) {
-  return edit_set_int(((widget_t*)(this->nativeObj)), value);
-}
-
-ret_t TEdit::SetDouble(double value) {
-  return edit_set_double(((widget_t*)(this->nativeObj)), value);
-}
-
-ret_t TEdit::SetTextLimit(uint32_t min, uint32_t max) {
-  return edit_set_text_limit(((widget_t*)(this->nativeObj)), min, max);
-}
-
-ret_t TEdit::SetIntLimit(int32_t min, int32_t max, uint32_t step) {
-  return edit_set_int_limit(((widget_t*)(this->nativeObj)), min, max, step);
-}
-
-ret_t TEdit::SetFloatLimit(double min, double max, double step) {
-  return edit_set_float_limit(((widget_t*)(this->nativeObj)), min, max, step);
-}
-
-ret_t TEdit::SetReadonly(bool readonly) {
-  return edit_set_readonly(((widget_t*)(this->nativeObj)), readonly);
-}
-
-ret_t TEdit::SetAutoFix(bool auto_fix) {
-  return edit_set_auto_fix(((widget_t*)(this->nativeObj)), auto_fix);
-}
-
-ret_t TEdit::SetSelectNoneWhenFocused(bool select_none_when_focused) {
-  return edit_set_select_none_when_focused(((widget_t*)(this->nativeObj)),
-                                           select_none_when_focused);
-}
-
-ret_t TEdit::SetOpenImWhenFocused(bool open_im_when_focused) {
-  return edit_set_open_im_when_focused(((widget_t*)(this->nativeObj)), open_im_when_focused);
-}
-
-ret_t TEdit::SetInputType(input_type_t type) {
-  return edit_set_input_type(((widget_t*)(this->nativeObj)), type);
-}
-
-ret_t TEdit::SetInputTips(char* tips) {
-  return edit_set_input_tips(((widget_t*)(this->nativeObj)), tips);
-}
-
-ret_t TEdit::SetKeyboard(char* keyboard) {
-  return edit_set_keyboard(((widget_t*)(this->nativeObj)), keyboard);
-}
-
-ret_t TEdit::SetPasswordVisible(bool password_visible) {
-  return edit_set_password_visible(((widget_t*)(this->nativeObj)), password_visible);
-}
-
-ret_t TEdit::SetFocus(bool focus) {
-  return edit_set_focus(((widget_t*)(this->nativeObj)), focus);
-}
-
-ret_t TEdit::SetCursor(uint32_t cursor) {
-  return edit_set_cursor(((widget_t*)(this->nativeObj)), cursor);
-}
-
-bool TEdit::GetReadonly() const {
-  return ((edit_t*)(this->nativeObj))->readonly;
-}
-
-bool TEdit::GetPasswordVisible() const {
-  return ((edit_t*)(this->nativeObj))->password_visible;
-}
-
-bool TEdit::GetAutoFix() const {
-  return ((edit_t*)(this->nativeObj))->auto_fix;
-}
-
-bool TEdit::GetSelectNoneWhenFocused() const {
-  return ((edit_t*)(this->nativeObj))->select_none_when_focused;
-}
-
-bool TEdit::GetOpenImWhenFocused() const {
-  return ((edit_t*)(this->nativeObj))->open_im_when_focused;
-}
-
-uint8_t TEdit::GetTopMargin() const {
-  return ((edit_t*)(this->nativeObj))->top_margin;
-}
-
-uint8_t TEdit::GetBottomMargin() const {
-  return ((edit_t*)(this->nativeObj))->bottom_margin;
-}
-
-uint8_t TEdit::GetLeftMargin() const {
-  return ((edit_t*)(this->nativeObj))->left_margin;
-}
-
-uint8_t TEdit::GetRightMargin() const {
-  return ((edit_t*)(this->nativeObj))->right_margin;
-}
-
-char* TEdit::GetTips() const {
-  return ((edit_t*)(this->nativeObj))->tips;
-}
-
-char* TEdit::GetKeyboard() const {
-  return ((edit_t*)(this->nativeObj))->keyboard;
-}
-
-input_type_t TEdit::GetInputType() const {
-  return ((edit_t*)(this->nativeObj))->input_type;
-}
-
-double TEdit::GetMin() const {
-  return ((edit_t*)(this->nativeObj))->min;
-}
-
-double TEdit::GetMax() const {
-  return ((edit_t*)(this->nativeObj))->max;
-}
-
-double TEdit::GetStep() const {
-  return ((edit_t*)(this->nativeObj))->step;
-}
-
-TWidget TDragger::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDragger((widget_t*)(dragger_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TDragger::SetRange(xy_t x_min, xy_t y_min, xy_t x_max, xy_t y_max) {
-  return dragger_set_range(((widget_t*)(this->nativeObj)), x_min, y_min, x_max, y_max);
-}
-
-xy_t TDragger::GetXMin() const {
-  return ((dragger_t*)(this->nativeObj))->x_min;
-}
-
-xy_t TDragger::GetYMin() const {
-  return ((dragger_t*)(this->nativeObj))->y_min;
-}
-
-xy_t TDragger::GetXMax() const {
-  return ((dragger_t*)(this->nativeObj))->x_max;
-}
-
-xy_t TDragger::GetYMax() const {
-  return ((dragger_t*)(this->nativeObj))->y_max;
-}
-
-TWidget TDigitClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDigitClock((widget_t*)(digit_clock_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TDigitClock::SetFormat(const char* format) {
-  return digit_clock_set_format(((widget_t*)(this->nativeObj)), format);
-}
-
-char* TDigitClock::GetFormat() const {
-  return ((digit_clock_t*)(this->nativeObj))->format;
-}
-
-TWidget TDialogTitle::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDialogTitle(
-      (widget_t*)(dialog_title_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TDialogClient::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDialogClient(
-      (widget_t*)(dialog_client_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TComboBoxItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TComboBoxItem(
-      (widget_t*)(combo_box_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TComboBoxItem::SetChecked(bool checked) {
-  return combo_box_item_set_checked(((widget_t*)(this->nativeObj)), checked);
-}
-
-ret_t TComboBoxItem::SetValue(int32_t value) {
-  return combo_box_item_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-int32_t TComboBoxItem::GetValue() const {
-  return ((combo_box_item_t*)(this->nativeObj))->value;
-}
-
-bool TComboBoxItem::GetChecked() const {
-  return ((combo_box_item_t*)(this->nativeObj))->checked;
-}
-
-TWidget TColumn::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TColumn((widget_t*)(column_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-const char* TPropChangeEvent::GetName() const {
-  return ((prop_change_event_t*)(this->nativeObj))->name;
-}
-
-TValue TPropChangeEvent::GetValue() const {
-  return TValue(((prop_change_event_t*)(this->nativeObj))->value);
-}
-
-uint32_t TProgressEvent::GetPercent() const {
-  return ((progress_event_t*)(this->nativeObj))->percent;
-}
-
-ret_t TDoneEvent::GetResult() const {
-  return ((done_event_t*)(this->nativeObj))->result;
-}
-
-int32_t TErrorEvent::GetCode() const {
-  return ((error_event_t*)(this->nativeObj))->code;
-}
-
-const char* TErrorEvent::GetMessage() const {
-  return ((error_event_t*)(this->nativeObj))->message;
 }
 
 TWidget TTimeClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -1995,6 +1581,30 @@ char* TTimeClock::GetSecondAnchorY() const {
   return ((time_clock_t*)(this->nativeObj))->second_anchor_y;
 }
 
+const char* TPropChangeEvent::GetName() const {
+  return ((prop_change_event_t*)(this->nativeObj))->name;
+}
+
+TValue TPropChangeEvent::GetValue() const {
+  return TValue(((prop_change_event_t*)(this->nativeObj))->value);
+}
+
+uint32_t TProgressEvent::GetPercent() const {
+  return ((progress_event_t*)(this->nativeObj))->percent;
+}
+
+ret_t TDoneEvent::GetResult() const {
+  return ((done_event_t*)(this->nativeObj))->result;
+}
+
+int32_t TErrorEvent::GetCode() const {
+  return ((error_event_t*)(this->nativeObj))->code;
+}
+
+const char* TErrorEvent::GetMessage() const {
+  return ((error_event_t*)(this->nativeObj))->message;
+}
+
 TWidget TTextSelector::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTextSelector(
       (widget_t*)(text_selector_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
@@ -2072,22 +1682,6 @@ float_t TSwitch::GetMaxXoffsetRatio() const {
   return ((switch_t*)(this->nativeObj))->max_xoffset_ratio;
 }
 
-TWidget TColorTile::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TColorTile((widget_t*)(color_tile_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TColorTile::SetBgColor(const char* color) {
-  return color_tile_set_bg_color(((widget_t*)(this->nativeObj)), color);
-}
-
-const char* TColorTile::GetBgColor() const {
-  return ((color_tile_t*)(this->nativeObj))->bg_color;
-}
-
-const char* TColorTile::GetBorderColor() const {
-  return ((color_tile_t*)(this->nativeObj))->border_color;
-}
-
 TWidget TSlideView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TSlideView((widget_t*)(slide_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -2126,10 +1720,6 @@ bool TSlideView::GetLoop() const {
 
 char* TSlideView::GetAnimHint() const {
   return ((slide_view_t*)(this->nativeObj))->anim_hint;
-}
-
-TWidget TClipView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TClipView((widget_t*)(clip_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TSlideIndicator::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2249,44 +1839,6 @@ align_v_t TSlideMenu::GetAlignV() const {
 
 float_t TSlideMenu::GetMinScale() const {
   return ((slide_menu_t*)(this->nativeObj))->min_scale;
-}
-
-TWidget TCheckButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TCheckButton(
-      (widget_t*)(check_button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TCheckButton::CreateRadio(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TCheckButton(
-      (widget_t*)(check_button_create_radio(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TCheckButton::SetValue(bool value) {
-  return check_button_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-bool TCheckButton::GetValue() const {
-  return ((check_button_t*)(this->nativeObj))->value;
-}
-
-TWidget TButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TButton((widget_t*)(button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TButton::SetRepeat(int32_t repeat) {
-  return button_set_repeat(((widget_t*)(this->nativeObj)), repeat);
-}
-
-ret_t TButton::SetEnableLongPress(bool enable_long_press) {
-  return button_set_enable_long_press(((widget_t*)(this->nativeObj)), enable_long_press);
-}
-
-int32_t TButton::GetRepeat() const {
-  return ((button_t*)(this->nativeObj))->repeat;
-}
-
-bool TButton::GetEnableLongPress() const {
-  return ((button_t*)(this->nativeObj))->enable_long_press;
 }
 
 TWidget TScrollView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2553,15 +2105,6 @@ int32_t THscrollLabel::GetTextW() const {
   return ((hscroll_label_t*)(this->nativeObj))->text_w;
 }
 
-TWidget TButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TButtonGroup(
-      (widget_t*)(button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
 TWidget TRichText::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TRichText((widget_t*)(rich_text_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -2578,20 +2121,9 @@ uint32_t TRichText::GetMargin() const {
   return ((rich_text_t*)(this->nativeObj))->margin;
 }
 
-int32_t TWheelEvent::GetDy() const {
-  return ((wheel_event_t*)(this->nativeObj))->dy;
-}
-
-bool TWheelEvent::GetAlt() const {
-  return ((wheel_event_t*)(this->nativeObj))->alt;
-}
-
-bool TWheelEvent::GetCtrl() const {
-  return ((wheel_event_t*)(this->nativeObj))->ctrl;
-}
-
-bool TWheelEvent::GetShift() const {
-  return ((wheel_event_t*)(this->nativeObj))->shift;
+TWidget TRichTextView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TRichTextView(
+      (widget_t*)(rich_text_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TProgressCircle::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2663,10 +2195,6 @@ bool TProgressCircle::GetShowText() const {
   return ((progress_circle_t*)(this->nativeObj))->show_text;
 }
 
-int32_t TOrientationEvent::GetOrientation() const {
-  return ((orientation_event_t*)(this->nativeObj))->orientation;
-}
-
 TWidget TMledit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TMledit((widget_t*)(mledit_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -2687,8 +2215,12 @@ ret_t TMledit::SetMaxLines(uint32_t max_lines) {
   return mledit_set_max_lines(((widget_t*)(this->nativeObj)), max_lines);
 }
 
-ret_t TMledit::SetInputTips(char* tips) {
-  return mledit_set_input_tips(((widget_t*)(this->nativeObj)), tips);
+ret_t TMledit::SetTips(char* tips) {
+  return mledit_set_tips(((widget_t*)(this->nativeObj)), tips);
+}
+
+ret_t TMledit::SetTrTips(const char* tr_tips) {
+  return mledit_set_tr_tips(((widget_t*)(this->nativeObj)), tr_tips);
 }
 
 ret_t TMledit::SetKeyboard(char* keyboard) {
@@ -2727,6 +2259,10 @@ char* TMledit::GetTips() const {
   return ((mledit_t*)(this->nativeObj))->tips;
 }
 
+char* TMledit::GetTrTips() const {
+  return ((mledit_t*)(this->nativeObj))->tr_tips;
+}
+
 char* TMledit::GetKeyboard() const {
   return ((mledit_t*)(this->nativeObj))->keyboard;
 }
@@ -2763,40 +2299,49 @@ ret_t TLineNumber::SetYoffset(int32_t yoffset) {
   return line_number_set_yoffset(((widget_t*)(this->nativeObj)), yoffset);
 }
 
-xy_t TPointerEvent::GetX() const {
-  return ((pointer_event_t*)(this->nativeObj))->x;
+TWidget TLangIndicator::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TLangIndicator(
+      (widget_t*)(lang_indicator_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-xy_t TPointerEvent::GetY() const {
-  return ((pointer_event_t*)(this->nativeObj))->y;
+ret_t TLangIndicator::SetImage(const char* image) {
+  return lang_indicator_set_image(((widget_t*)(this->nativeObj)), image);
 }
 
-uint8_t TPointerEvent::GetButton() const {
-  return ((pointer_event_t*)(this->nativeObj))->button;
+char* TLangIndicator::GetImage() const {
+  return ((lang_indicator_t*)(this->nativeObj))->image;
 }
 
-bool TPointerEvent::GetPressed() const {
-  return ((pointer_event_t*)(this->nativeObj))->pressed;
+ret_t TCandidates::SetPre(bool pre) {
+  return candidates_set_pre(((widget_t*)(this->nativeObj)), pre);
 }
 
-bool TPointerEvent::GetAlt() const {
-  return ((pointer_event_t*)(this->nativeObj))->alt;
+ret_t TCandidates::SetSelectByNum(bool select_by_num) {
+  return candidates_set_select_by_num(((widget_t*)(this->nativeObj)), select_by_num);
 }
 
-bool TPointerEvent::GetCtrl() const {
-  return ((pointer_event_t*)(this->nativeObj))->ctrl;
+ret_t TCandidates::SetAutoHide(bool auto_hide) {
+  return candidates_set_auto_hide(((widget_t*)(this->nativeObj)), auto_hide);
 }
 
-bool TPointerEvent::GetCmd() const {
-  return ((pointer_event_t*)(this->nativeObj))->cmd;
+ret_t TCandidates::SetButtonStyle(const char* button_style) {
+  return candidates_set_button_style(((widget_t*)(this->nativeObj)), button_style);
 }
 
-bool TPointerEvent::GetMenu() const {
-  return ((pointer_event_t*)(this->nativeObj))->menu;
+bool TCandidates::GetPre() const {
+  return ((candidates_t*)(this->nativeObj))->pre;
 }
 
-bool TPointerEvent::GetShift() const {
-  return ((pointer_event_t*)(this->nativeObj))->shift;
+bool TCandidates::GetSelectByNum() const {
+  return ((candidates_t*)(this->nativeObj))->select_by_num;
+}
+
+bool TCandidates::GetAutoHide() const {
+  return ((candidates_t*)(this->nativeObj))->auto_hide;
+}
+
+char* TCandidates::GetButtonStyle() const {
+  return ((candidates_t*)(this->nativeObj))->button_style;
 }
 
 TWidget TImageValue::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3155,6 +2700,19 @@ bool TDraggable::GetDragWindow() const {
   return ((draggable_t*)(this->nativeObj))->drag_window;
 }
 
+TWidget TColorPicker::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TColorPicker(
+      (widget_t*)(color_picker_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TColorPicker::SetColor(const char* color) {
+  return color_picker_set_color(((widget_t*)(this->nativeObj)), color);
+}
+
+const char* TColorPicker::GetValue() const {
+  return ((color_picker_t*)(this->nativeObj))->value;
+}
+
 TWidget TCanvasWidget::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TCanvasWidget(
       (widget_t*)(canvas_widget_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
@@ -3220,6 +2778,10 @@ char* TWindowBase::GetTheme() const {
   return ((window_base_t*)(this->nativeObj))->theme;
 }
 
+bool TWindowBase::GetDisableAnim() const {
+  return ((window_base_t*)(this->nativeObj))->disable_anim;
+}
+
 window_closable_t TWindowBase::GetClosable() const {
   return ((window_base_t*)(this->nativeObj))->closable;
 }
@@ -3254,79 +2816,6 @@ char* TWindowBase::GetMoveFocusLeftKey() const {
 
 char* TWindowBase::GetMoveFocusRightKey() const {
   return ((window_base_t*)(this->nativeObj))->move_focus_right_key;
-}
-
-uint32_t TKeyEvent::GetKey() const {
-  return ((key_event_t*)(this->nativeObj))->key;
-}
-
-bool TKeyEvent::GetAlt() const {
-  return ((key_event_t*)(this->nativeObj))->alt;
-}
-
-bool TKeyEvent::GetLalt() const {
-  return ((key_event_t*)(this->nativeObj))->lalt;
-}
-
-bool TKeyEvent::GetRalt() const {
-  return ((key_event_t*)(this->nativeObj))->ralt;
-}
-
-bool TKeyEvent::GetCtrl() const {
-  return ((key_event_t*)(this->nativeObj))->ctrl;
-}
-
-bool TKeyEvent::GetLctrl() const {
-  return ((key_event_t*)(this->nativeObj))->lctrl;
-}
-
-bool TKeyEvent::GetRctrl() const {
-  return ((key_event_t*)(this->nativeObj))->rctrl;
-}
-
-bool TKeyEvent::GetShift() const {
-  return ((key_event_t*)(this->nativeObj))->shift;
-}
-
-bool TKeyEvent::GetLshift() const {
-  return ((key_event_t*)(this->nativeObj))->lshift;
-}
-
-bool TKeyEvent::GetRshift() const {
-  return ((key_event_t*)(this->nativeObj))->rshift;
-}
-
-bool TKeyEvent::GetCmd() const {
-  return ((key_event_t*)(this->nativeObj))->cmd;
-}
-
-bool TKeyEvent::GetMenu() const {
-  return ((key_event_t*)(this->nativeObj))->menu;
-}
-
-bool TKeyEvent::GetCapslock() const {
-  return ((key_event_t*)(this->nativeObj))->capslock;
-}
-
-ret_t TStyleMutable::SetName(const char* name) {
-  return style_mutable_set_name(((style_t*)(this->nativeObj)), name);
-}
-
-ret_t TStyleMutable::SetInt(const char* state, const char* name, uint32_t val) {
-  return style_mutable_set_int(((style_t*)(this->nativeObj)), state, name, val);
-}
-
-TStyle TStyleMutable::Create(TWidget& widget, TStyle& default_style) {
-  return TStyleMutable((style_t*)(style_mutable_create(((widget_t*)(widget.nativeObj)),
-                                                       ((style_t*)(default_style.nativeObj)))));
-}
-
-char* TStyleMutable::GetName() const {
-  return ((style_mutable_t*)(this->nativeObj))->name;
-}
-
-TCanvas TPaintEvent::GetC() const {
-  return TCanvas(((paint_event_t*)(this->nativeObj))->c);
 }
 
 ret_t TImageBase::SetImage(char* name) {
@@ -3397,12 +2886,609 @@ TWidget TWindowEvent::GetWindow() const {
   return TWidget(((window_event_t*)(this->nativeObj))->window);
 }
 
-void* TIdleInfo::GetCtx() const {
-  return ((idle_info_t*)(this->nativeObj))->ctx;
+TCanvas TPaintEvent::GetC() const {
+  return TCanvas(((paint_event_t*)(this->nativeObj))->c);
 }
 
-uint32_t TIdleInfo::GetId() const {
-  return ((idle_info_t*)(this->nativeObj))->id;
+uint32_t TKeyEvent::GetKey() const {
+  return ((key_event_t*)(this->nativeObj))->key;
+}
+
+bool TKeyEvent::GetAlt() const {
+  return ((key_event_t*)(this->nativeObj))->alt;
+}
+
+bool TKeyEvent::GetLalt() const {
+  return ((key_event_t*)(this->nativeObj))->lalt;
+}
+
+bool TKeyEvent::GetRalt() const {
+  return ((key_event_t*)(this->nativeObj))->ralt;
+}
+
+bool TKeyEvent::GetCtrl() const {
+  return ((key_event_t*)(this->nativeObj))->ctrl;
+}
+
+bool TKeyEvent::GetLctrl() const {
+  return ((key_event_t*)(this->nativeObj))->lctrl;
+}
+
+bool TKeyEvent::GetRctrl() const {
+  return ((key_event_t*)(this->nativeObj))->rctrl;
+}
+
+bool TKeyEvent::GetShift() const {
+  return ((key_event_t*)(this->nativeObj))->shift;
+}
+
+bool TKeyEvent::GetLshift() const {
+  return ((key_event_t*)(this->nativeObj))->lshift;
+}
+
+bool TKeyEvent::GetRshift() const {
+  return ((key_event_t*)(this->nativeObj))->rshift;
+}
+
+bool TKeyEvent::GetCmd() const {
+  return ((key_event_t*)(this->nativeObj))->cmd;
+}
+
+bool TKeyEvent::GetMenu() const {
+  return ((key_event_t*)(this->nativeObj))->menu;
+}
+
+bool TKeyEvent::GetCapslock() const {
+  return ((key_event_t*)(this->nativeObj))->capslock;
+}
+
+xy_t TPointerEvent::GetX() const {
+  return ((pointer_event_t*)(this->nativeObj))->x;
+}
+
+xy_t TPointerEvent::GetY() const {
+  return ((pointer_event_t*)(this->nativeObj))->y;
+}
+
+uint8_t TPointerEvent::GetButton() const {
+  return ((pointer_event_t*)(this->nativeObj))->button;
+}
+
+bool TPointerEvent::GetPressed() const {
+  return ((pointer_event_t*)(this->nativeObj))->pressed;
+}
+
+bool TPointerEvent::GetAlt() const {
+  return ((pointer_event_t*)(this->nativeObj))->alt;
+}
+
+bool TPointerEvent::GetCtrl() const {
+  return ((pointer_event_t*)(this->nativeObj))->ctrl;
+}
+
+bool TPointerEvent::GetCmd() const {
+  return ((pointer_event_t*)(this->nativeObj))->cmd;
+}
+
+bool TPointerEvent::GetMenu() const {
+  return ((pointer_event_t*)(this->nativeObj))->menu;
+}
+
+bool TPointerEvent::GetShift() const {
+  return ((pointer_event_t*)(this->nativeObj))->shift;
+}
+
+int32_t TOrientationEvent::GetOrientation() const {
+  return ((orientation_event_t*)(this->nativeObj))->orientation;
+}
+
+int32_t TWheelEvent::GetDy() const {
+  return ((wheel_event_t*)(this->nativeObj))->dy;
+}
+
+bool TWheelEvent::GetAlt() const {
+  return ((wheel_event_t*)(this->nativeObj))->alt;
+}
+
+bool TWheelEvent::GetCtrl() const {
+  return ((wheel_event_t*)(this->nativeObj))->ctrl;
+}
+
+bool TWheelEvent::GetShift() const {
+  return ((wheel_event_t*)(this->nativeObj))->shift;
+}
+
+TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TButtonGroup(
+      (widget_t*)(button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TButton((widget_t*)(button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TButton::SetRepeat(int32_t repeat) {
+  return button_set_repeat(((widget_t*)(this->nativeObj)), repeat);
+}
+
+ret_t TButton::SetEnableLongPress(bool enable_long_press) {
+  return button_set_enable_long_press(((widget_t*)(this->nativeObj)), enable_long_press);
+}
+
+int32_t TButton::GetRepeat() const {
+  return ((button_t*)(this->nativeObj))->repeat;
+}
+
+bool TButton::GetEnableLongPress() const {
+  return ((button_t*)(this->nativeObj))->enable_long_press;
+}
+
+TWidget TCheckButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TCheckButton(
+      (widget_t*)(check_button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TCheckButton::CreateRadio(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TCheckButton(
+      (widget_t*)(check_button_create_radio(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TCheckButton::SetValue(bool value) {
+  return check_button_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+bool TCheckButton::GetValue() const {
+  return ((check_button_t*)(this->nativeObj))->value;
+}
+
+TWidget TClipView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TClipView((widget_t*)(clip_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TColorTile::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TColorTile((widget_t*)(color_tile_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TColorTile::SetBgColor(const char* color) {
+  return color_tile_set_bg_color(((widget_t*)(this->nativeObj)), color);
+}
+
+const char* TColorTile::GetBgColor() const {
+  return ((color_tile_t*)(this->nativeObj))->bg_color;
+}
+
+const char* TColorTile::GetBorderColor() const {
+  return ((color_tile_t*)(this->nativeObj))->border_color;
+}
+
+TWidget TColumn::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TColumn((widget_t*)(column_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TComboBoxItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TComboBoxItem(
+      (widget_t*)(combo_box_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TComboBoxItem::SetChecked(bool checked) {
+  return combo_box_item_set_checked(((widget_t*)(this->nativeObj)), checked);
+}
+
+ret_t TComboBoxItem::SetValue(int32_t value) {
+  return combo_box_item_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+int32_t TComboBoxItem::GetValue() const {
+  return ((combo_box_item_t*)(this->nativeObj))->value;
+}
+
+bool TComboBoxItem::GetChecked() const {
+  return ((combo_box_item_t*)(this->nativeObj))->checked;
+}
+
+TWidget TDialogClient::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDialogClient(
+      (widget_t*)(dialog_client_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TDialogTitle::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDialogTitle(
+      (widget_t*)(dialog_title_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TDigitClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDigitClock((widget_t*)(digit_clock_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TDigitClock::SetFormat(const char* format) {
+  return digit_clock_set_format(((widget_t*)(this->nativeObj)), format);
+}
+
+char* TDigitClock::GetFormat() const {
+  return ((digit_clock_t*)(this->nativeObj))->format;
+}
+
+TWidget TDragger::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDragger((widget_t*)(dragger_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TDragger::SetRange(xy_t x_min, xy_t y_min, xy_t x_max, xy_t y_max) {
+  return dragger_set_range(((widget_t*)(this->nativeObj)), x_min, y_min, x_max, y_max);
+}
+
+xy_t TDragger::GetXMin() const {
+  return ((dragger_t*)(this->nativeObj))->x_min;
+}
+
+xy_t TDragger::GetYMin() const {
+  return ((dragger_t*)(this->nativeObj))->y_min;
+}
+
+xy_t TDragger::GetXMax() const {
+  return ((dragger_t*)(this->nativeObj))->x_max;
+}
+
+xy_t TDragger::GetYMax() const {
+  return ((dragger_t*)(this->nativeObj))->y_max;
+}
+
+TWidget TEdit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TEdit((widget_t*)(edit_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+int32_t TEdit::GetInt() {
+  return edit_get_int(((widget_t*)(this->nativeObj)));
+}
+
+double TEdit::GetDouble() {
+  return edit_get_double(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TEdit::SetInt(int32_t value) {
+  return edit_set_int(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TEdit::SetDouble(double value) {
+  return edit_set_double(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TEdit::SetTextLimit(uint32_t min, uint32_t max) {
+  return edit_set_text_limit(((widget_t*)(this->nativeObj)), min, max);
+}
+
+ret_t TEdit::SetIntLimit(int32_t min, int32_t max, uint32_t step) {
+  return edit_set_int_limit(((widget_t*)(this->nativeObj)), min, max, step);
+}
+
+ret_t TEdit::SetFloatLimit(double min, double max, double step) {
+  return edit_set_float_limit(((widget_t*)(this->nativeObj)), min, max, step);
+}
+
+ret_t TEdit::SetReadonly(bool readonly) {
+  return edit_set_readonly(((widget_t*)(this->nativeObj)), readonly);
+}
+
+ret_t TEdit::SetAutoFix(bool auto_fix) {
+  return edit_set_auto_fix(((widget_t*)(this->nativeObj)), auto_fix);
+}
+
+ret_t TEdit::SetSelectNoneWhenFocused(bool select_none_when_focused) {
+  return edit_set_select_none_when_focused(((widget_t*)(this->nativeObj)),
+                                           select_none_when_focused);
+}
+
+ret_t TEdit::SetOpenImWhenFocused(bool open_im_when_focused) {
+  return edit_set_open_im_when_focused(((widget_t*)(this->nativeObj)), open_im_when_focused);
+}
+
+ret_t TEdit::SetInputType(input_type_t type) {
+  return edit_set_input_type(((widget_t*)(this->nativeObj)), type);
+}
+
+ret_t TEdit::SetTips(char* tips) {
+  return edit_set_tips(((widget_t*)(this->nativeObj)), tips);
+}
+
+ret_t TEdit::SetTrTips(const char* tr_tips) {
+  return edit_set_tr_tips(((widget_t*)(this->nativeObj)), tr_tips);
+}
+
+ret_t TEdit::SetKeyboard(char* keyboard) {
+  return edit_set_keyboard(((widget_t*)(this->nativeObj)), keyboard);
+}
+
+ret_t TEdit::SetPasswordVisible(bool password_visible) {
+  return edit_set_password_visible(((widget_t*)(this->nativeObj)), password_visible);
+}
+
+ret_t TEdit::SetFocus(bool focus) {
+  return edit_set_focus(((widget_t*)(this->nativeObj)), focus);
+}
+
+ret_t TEdit::SetCursor(uint32_t cursor) {
+  return edit_set_cursor(((widget_t*)(this->nativeObj)), cursor);
+}
+
+bool TEdit::GetReadonly() const {
+  return ((edit_t*)(this->nativeObj))->readonly;
+}
+
+bool TEdit::GetPasswordVisible() const {
+  return ((edit_t*)(this->nativeObj))->password_visible;
+}
+
+bool TEdit::GetAutoFix() const {
+  return ((edit_t*)(this->nativeObj))->auto_fix;
+}
+
+bool TEdit::GetSelectNoneWhenFocused() const {
+  return ((edit_t*)(this->nativeObj))->select_none_when_focused;
+}
+
+bool TEdit::GetOpenImWhenFocused() const {
+  return ((edit_t*)(this->nativeObj))->open_im_when_focused;
+}
+
+uint8_t TEdit::GetTopMargin() const {
+  return ((edit_t*)(this->nativeObj))->top_margin;
+}
+
+uint8_t TEdit::GetBottomMargin() const {
+  return ((edit_t*)(this->nativeObj))->bottom_margin;
+}
+
+uint8_t TEdit::GetLeftMargin() const {
+  return ((edit_t*)(this->nativeObj))->left_margin;
+}
+
+uint8_t TEdit::GetRightMargin() const {
+  return ((edit_t*)(this->nativeObj))->right_margin;
+}
+
+char* TEdit::GetTips() const {
+  return ((edit_t*)(this->nativeObj))->tips;
+}
+
+char* TEdit::GetTrTips() const {
+  return ((edit_t*)(this->nativeObj))->tr_tips;
+}
+
+char* TEdit::GetKeyboard() const {
+  return ((edit_t*)(this->nativeObj))->keyboard;
+}
+
+input_type_t TEdit::GetInputType() const {
+  return ((edit_t*)(this->nativeObj))->input_type;
+}
+
+double TEdit::GetMin() const {
+  return ((edit_t*)(this->nativeObj))->min;
+}
+
+double TEdit::GetMax() const {
+  return ((edit_t*)(this->nativeObj))->max;
+}
+
+double TEdit::GetStep() const {
+  return ((edit_t*)(this->nativeObj))->step;
+}
+
+TWidget TGridItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGridItem((widget_t*)(grid_item_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TGrid::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGrid((widget_t*)(grid_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TGroupBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGroupBox((widget_t*)(group_box_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TLabel::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TLabel((widget_t*)(label_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TLabel::SetLength(int32_t length) {
+  return label_set_length(((widget_t*)(this->nativeObj)), length);
+}
+
+ret_t TLabel::ResizeToContent(uint32_t min_w, uint32_t max_w, uint32_t min_h, uint32_t max_h) {
+  return label_resize_to_content(((widget_t*)(this->nativeObj)), min_w, max_w, min_h, max_h);
+}
+
+int32_t TLabel::GetLength() const {
+  return ((label_t*)(this->nativeObj))->length;
+}
+
+TWidget TPages::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TPages((widget_t*)(pages_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TPages::SetActive(uint32_t index) {
+  return pages_set_active(((widget_t*)(this->nativeObj)), index);
+}
+
+ret_t TPages::SetActiveByName(char* name) {
+  return pages_set_active_by_name(((widget_t*)(this->nativeObj)), name);
+}
+
+uint32_t TPages::GetActive() const {
+  return ((pages_t*)(this->nativeObj))->active;
+}
+
+TWidget TProgressBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TProgressBar(
+      (widget_t*)(progress_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TProgressBar::SetValue(float_t value) {
+  return progress_bar_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TProgressBar::SetMax(uint32_t max) {
+  return progress_bar_set_max(((widget_t*)(this->nativeObj)), max);
+}
+
+ret_t TProgressBar::SetVertical(bool vertical) {
+  return progress_bar_set_vertical(((widget_t*)(this->nativeObj)), vertical);
+}
+
+ret_t TProgressBar::SetShowText(bool show_text) {
+  return progress_bar_set_show_text(((widget_t*)(this->nativeObj)), show_text);
+}
+
+uint32_t TProgressBar::GetPercent() {
+  return progress_bar_get_percent(((widget_t*)(this->nativeObj)));
+}
+
+float_t TProgressBar::GetValue() const {
+  return ((progress_bar_t*)(this->nativeObj))->value;
+}
+
+float_t TProgressBar::GetMax() const {
+  return ((progress_bar_t*)(this->nativeObj))->max;
+}
+
+bool TProgressBar::GetVertical() const {
+  return ((progress_bar_t*)(this->nativeObj))->vertical;
+}
+
+bool TProgressBar::GetShowText() const {
+  return ((progress_bar_t*)(this->nativeObj))->show_text;
+}
+
+TWidget TRow::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TRow((widget_t*)(row_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TSlider::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSlider((widget_t*)(slider_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TSlider::SetValue(double value) {
+  return slider_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TSlider::SetMin(double min) {
+  return slider_set_min(((widget_t*)(this->nativeObj)), min);
+}
+
+ret_t TSlider::SetMax(double max) {
+  return slider_set_max(((widget_t*)(this->nativeObj)), max);
+}
+
+ret_t TSlider::SetStep(double step) {
+  return slider_set_step(((widget_t*)(this->nativeObj)), step);
+}
+
+ret_t TSlider::SetBarSize(uint32_t bar_size) {
+  return slider_set_bar_size(((widget_t*)(this->nativeObj)), bar_size);
+}
+
+ret_t TSlider::SetVertical(bool vertical) {
+  return slider_set_vertical(((widget_t*)(this->nativeObj)), vertical);
+}
+
+double TSlider::GetValue() const {
+  return ((slider_t*)(this->nativeObj))->value;
+}
+
+double TSlider::GetMin() const {
+  return ((slider_t*)(this->nativeObj))->min;
+}
+
+double TSlider::GetMax() const {
+  return ((slider_t*)(this->nativeObj))->max;
+}
+
+double TSlider::GetStep() const {
+  return ((slider_t*)(this->nativeObj))->step;
+}
+
+bool TSlider::GetVertical() const {
+  return ((slider_t*)(this->nativeObj))->vertical;
+}
+
+uint32_t TSlider::GetBarSize() const {
+  return ((slider_t*)(this->nativeObj))->bar_size;
+}
+
+uint32_t TSlider::GetDraggerSize() const {
+  return ((slider_t*)(this->nativeObj))->dragger_size;
+}
+
+bool TSlider::GetDraggerAdaptToIcon() const {
+  return ((slider_t*)(this->nativeObj))->dragger_adapt_to_icon;
+}
+
+bool TSlider::GetSlideWithBar() const {
+  return ((slider_t*)(this->nativeObj))->slide_with_bar;
+}
+
+TWidget TTabButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TTabButtonGroup(
+      (widget_t*)(tab_button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TTabButtonGroup::SetCompact(bool compact) {
+  return tab_button_group_set_compact(((widget_t*)(this->nativeObj)), compact);
+}
+
+ret_t TTabButtonGroup::SetScrollable(bool scrollable) {
+  return tab_button_group_set_scrollable(((widget_t*)(this->nativeObj)), scrollable);
+}
+
+bool TTabButtonGroup::GetCompact() const {
+  return ((tab_button_group_t*)(this->nativeObj))->compact;
+}
+
+bool TTabButtonGroup::GetScrollable() const {
+  return ((tab_button_group_t*)(this->nativeObj))->scrollable;
+}
+
+TWidget TTabButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TTabButton((widget_t*)(tab_button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TTabButton::SetValue(uint32_t value) {
+  return tab_button_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TTabButton::SetIcon(char* name) {
+  return tab_button_set_icon(((widget_t*)(this->nativeObj)), name);
+}
+
+ret_t TTabButton::SetActiveIcon(char* name) {
+  return tab_button_set_active_icon(((widget_t*)(this->nativeObj)), name);
+}
+
+ret_t TTabButton::SetLoadUi(char* name) {
+  return tab_button_set_load_ui(((widget_t*)(this->nativeObj)), name);
+}
+
+bool TTabButton::GetValue() const {
+  return ((tab_button_t*)(this->nativeObj))->value;
+}
+
+char* TTabButton::GetLoadUi() const {
+  return ((tab_button_t*)(this->nativeObj))->load_ui;
+}
+
+char* TTabButton::GetActiveIcon() const {
+  return ((tab_button_t*)(this->nativeObj))->active_icon;
+}
+
+char* TTabButton::GetIcon() const {
+  return ((tab_button_t*)(this->nativeObj))->icon;
+}
+
+TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TTabControl((widget_t*)(tab_control_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 ret_t TNativeWindow::Move(xy_t x, xy_t y, bool force) {
@@ -3437,6 +3523,18 @@ ret_t TNativeWindow::SetFullscreen(bool fullscreen) {
   return native_window_set_fullscreen(((native_window_t*)(this->nativeObj)), fullscreen);
 }
 
+void* TIdleInfo::GetCtx() const {
+  return ((idle_info_t*)(this->nativeObj))->ctx;
+}
+
+uint32_t TIdleInfo::GetId() const {
+  return ((idle_info_t*)(this->nativeObj))->id;
+}
+
+TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TKeyboard((widget_t*)(keyboard_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
 void* TTimerInfo::GetCtx() const {
   return ((timer_info_t*)(this->nativeObj))->ctx;
 }
@@ -3449,28 +3547,49 @@ uint64_t TTimerInfo::GetNow() const {
   return ((timer_info_t*)(this->nativeObj))->now;
 }
 
-TWidget TGifImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGifImage((widget_t*)(gif_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TWidget TImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TImage((widget_t*)(image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TKeyboard((widget_t*)(keyboard_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+ret_t TImage::SetDrawType(image_draw_type_t draw_type) {
+  return image_set_draw_type(((widget_t*)(this->nativeObj)), draw_type);
 }
 
-TObject TObjectDefault::Create() {
-  return TObjectDefault((emitter_t*)(object_default_create()));
+image_draw_type_t TImage::GetDrawType() const {
+  return ((image_t*)(this->nativeObj))->draw_type;
 }
 
-ret_t TObjectDefault::Unref() {
-  return object_default_unref(((object_t*)(this->nativeObj)));
+TWidget TSvgImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSvgImage((widget_t*)(svg_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TObjectDefault::ClearProps() {
-  return object_default_clear_props(((object_t*)(this->nativeObj)));
+ret_t TSvgImage::SetImage(char* name) {
+  return svg_image_set_image(((widget_t*)(this->nativeObj)), name);
 }
 
-uint32_t TObjectDefault::GetPropsSize() const {
-  return ((object_default_t*)(this->nativeObj))->props_size;
+TWidget TOverlay::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TOverlay((widget_t*)(overlay_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TPopup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TPopup((widget_t*)(popup_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TPopup::SetCloseWhenClick(bool close_when_click) {
+  return popup_set_close_when_click(((widget_t*)(this->nativeObj)), close_when_click);
+}
+
+ret_t TPopup::SetCloseWhenClickOutside(bool close_when_click_outside) {
+  return popup_set_close_when_click_outside(((widget_t*)(this->nativeObj)),
+                                            close_when_click_outside);
+}
+
+bool TPopup::GetCloseWhenClick() const {
+  return ((popup_t*)(this->nativeObj))->close_when_click;
+}
+
+bool TPopup::GetCloseWhenClickOutside() const {
+  return ((popup_t*)(this->nativeObj))->close_when_click_outside;
 }
 
 TObject TObjectArray::Create() {
@@ -3521,12 +3640,28 @@ bool TWindow::GetFullscreen() const {
   return ((window_t*)(this->nativeObj))->fullscreen;
 }
 
-TWidget TSvgImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSvgImage((widget_t*)(svg_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TObject TObjectDefault::Create() {
+  return TObjectDefault((emitter_t*)(object_default_create()));
 }
 
-ret_t TSvgImage::SetImage(char* name) {
-  return svg_image_set_image(((widget_t*)(this->nativeObj)), name);
+ret_t TObjectDefault::Unref() {
+  return object_default_unref(((object_t*)(this->nativeObj)));
+}
+
+ret_t TObjectDefault::ClearProps() {
+  return object_default_clear_props(((object_t*)(this->nativeObj)));
+}
+
+uint32_t TObjectDefault::GetPropsSize() const {
+  return ((object_default_t*)(this->nativeObj))->props_size;
+}
+
+TWidget TSpinBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSpinBox((widget_t*)(spin_box_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TSystemBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSystemBar((widget_t*)(system_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TComboBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3601,49 +3736,8 @@ int32_t TComboBox::GetItemHeight() const {
   return ((combo_box_t*)(this->nativeObj))->item_height;
 }
 
-TWidget TImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TImage((widget_t*)(image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TImage::SetDrawType(image_draw_type_t draw_type) {
-  return image_set_draw_type(((widget_t*)(this->nativeObj)), draw_type);
-}
-
-image_draw_type_t TImage::GetDrawType() const {
-  return ((image_t*)(this->nativeObj))->draw_type;
-}
-
-TWidget TOverlay::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TOverlay((widget_t*)(overlay_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TPopup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TPopup((widget_t*)(popup_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TPopup::SetCloseWhenClick(bool close_when_click) {
-  return popup_set_close_when_click(((widget_t*)(this->nativeObj)), close_when_click);
-}
-
-ret_t TPopup::SetCloseWhenClickOutside(bool close_when_click_outside) {
-  return popup_set_close_when_click_outside(((widget_t*)(this->nativeObj)),
-                                            close_when_click_outside);
-}
-
-bool TPopup::GetCloseWhenClick() const {
-  return ((popup_t*)(this->nativeObj))->close_when_click;
-}
-
-bool TPopup::GetCloseWhenClickOutside() const {
-  return ((popup_t*)(this->nativeObj))->close_when_click_outside;
-}
-
-TWidget TSpinBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSpinBox((widget_t*)(spin_box_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TSystemBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSystemBar((widget_t*)(system_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TWidget TGifImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGifImage((widget_t*)(gif_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
 TWidget TDialog::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
