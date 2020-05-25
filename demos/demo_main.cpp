@@ -34,6 +34,8 @@ static ret_t application_exit(void) {
   return RET_OK;
 }
 
+#define APP_DEFAULT_FONT "default_full"
+
 #include "awtk_main.inc"
 
 

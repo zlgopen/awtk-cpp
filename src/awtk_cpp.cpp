@@ -11,7 +11,7 @@ int32_t TEvent::GetType() const {
   return ((event_t*)(this->nativeObj))->type;
 }
 
-int32_t TEvent::GetTime() const {
+uint64_t TEvent::GetTime() const {
   return ((event_t*)(this->nativeObj))->time;
 }
 
@@ -1147,6 +1147,10 @@ char* TWidget::GetName() const {
   return ((widget_t*)(this->nativeObj))->name;
 }
 
+char* TWidget::GetPointerCursor() const {
+  return ((widget_t*)(this->nativeObj))->pointer_cursor;
+}
+
 char* TWidget::GetTrText() const {
   return ((widget_t*)(this->nativeObj))->tr_text;
 }
@@ -1465,16 +1469,44 @@ char* TStyleMutable::GetName() const {
   return ((style_mutable_t*)(this->nativeObj))->name;
 }
 
-TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TView((widget_t*)(view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+int32_t TWheelEvent::GetDy() const {
+  return ((wheel_event_t*)(this->nativeObj))->dy;
 }
 
-ret_t TView::SetDefaultFocusedChild(const char* default_focused_child) {
-  return view_set_default_focused_child(((widget_t*)(this->nativeObj)), default_focused_child);
+bool TWheelEvent::GetAlt() const {
+  return ((wheel_event_t*)(this->nativeObj))->alt;
 }
 
-char* TView::GetDefaultFocusedChild() const {
-  return ((view_t*)(this->nativeObj))->default_focused_child;
+bool TWheelEvent::GetCtrl() const {
+  return ((wheel_event_t*)(this->nativeObj))->ctrl;
+}
+
+bool TWheelEvent::GetShift() const {
+  return ((wheel_event_t*)(this->nativeObj))->shift;
+}
+
+const char* TPropChangeEvent::GetName() const {
+  return ((prop_change_event_t*)(this->nativeObj))->name;
+}
+
+TValue TPropChangeEvent::GetValue() const {
+  return TValue(((prop_change_event_t*)(this->nativeObj))->value);
+}
+
+uint32_t TProgressEvent::GetPercent() const {
+  return ((progress_event_t*)(this->nativeObj))->percent;
+}
+
+ret_t TDoneEvent::GetResult() const {
+  return ((done_event_t*)(this->nativeObj))->result;
+}
+
+int32_t TErrorEvent::GetCode() const {
+  return ((error_event_t*)(this->nativeObj))->code;
+}
+
+const char* TErrorEvent::GetMessage() const {
+  return ((error_event_t*)(this->nativeObj))->message;
 }
 
 TWidget TTimeClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -1579,30 +1611,6 @@ char* TTimeClock::GetSecondAnchorX() const {
 
 char* TTimeClock::GetSecondAnchorY() const {
   return ((time_clock_t*)(this->nativeObj))->second_anchor_y;
-}
-
-const char* TPropChangeEvent::GetName() const {
-  return ((prop_change_event_t*)(this->nativeObj))->name;
-}
-
-TValue TPropChangeEvent::GetValue() const {
-  return TValue(((prop_change_event_t*)(this->nativeObj))->value);
-}
-
-uint32_t TProgressEvent::GetPercent() const {
-  return ((progress_event_t*)(this->nativeObj))->percent;
-}
-
-ret_t TDoneEvent::GetResult() const {
-  return ((done_event_t*)(this->nativeObj))->result;
-}
-
-int32_t TErrorEvent::GetCode() const {
-  return ((error_event_t*)(this->nativeObj))->code;
-}
-
-const char* TErrorEvent::GetMessage() const {
-  return ((error_event_t*)(this->nativeObj))->message;
 }
 
 TWidget TTextSelector::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2982,22 +2990,6 @@ int32_t TOrientationEvent::GetOrientation() const {
   return ((orientation_event_t*)(this->nativeObj))->orientation;
 }
 
-int32_t TWheelEvent::GetDy() const {
-  return ((wheel_event_t*)(this->nativeObj))->dy;
-}
-
-bool TWheelEvent::GetAlt() const {
-  return ((wheel_event_t*)(this->nativeObj))->alt;
-}
-
-bool TWheelEvent::GetCtrl() const {
-  return ((wheel_event_t*)(this->nativeObj))->ctrl;
-}
-
-bool TWheelEvent::GetShift() const {
-  return ((wheel_event_t*)(this->nativeObj))->shift;
-}
-
 TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -3189,6 +3181,10 @@ ret_t TEdit::SetInputType(input_type_t type) {
   return edit_set_input_type(((widget_t*)(this->nativeObj)), type);
 }
 
+ret_t TEdit::SetActionText(char* action_text) {
+  return edit_set_action_text(((widget_t*)(this->nativeObj)), action_text);
+}
+
 ret_t TEdit::SetTips(char* tips) {
   return edit_set_tips(((widget_t*)(this->nativeObj)), tips);
 }
@@ -3255,6 +3251,10 @@ char* TEdit::GetTips() const {
 
 char* TEdit::GetTrTips() const {
   return ((edit_t*)(this->nativeObj))->tr_tips;
+}
+
+char* TEdit::GetActionText() const {
+  return ((edit_t*)(this->nativeObj))->action_text;
 }
 
 char* TEdit::GetKeyboard() const {
@@ -3491,6 +3491,26 @@ TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTabControl((widget_t*)(tab_control_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
+TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TView((widget_t*)(view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TView::SetDefaultFocusedChild(const char* default_focused_child) {
+  return view_set_default_focused_child(((widget_t*)(this->nativeObj)), default_focused_child);
+}
+
+char* TView::GetDefaultFocusedChild() const {
+  return ((view_t*)(this->nativeObj))->default_focused_child;
+}
+
+void* TIdleInfo::GetCtx() const {
+  return ((idle_info_t*)(this->nativeObj))->ctx;
+}
+
+uint32_t TIdleInfo::GetId() const {
+  return ((idle_info_t*)(this->nativeObj))->id;
+}
+
 ret_t TNativeWindow::Move(xy_t x, xy_t y, bool force) {
   return native_window_move(((native_window_t*)(this->nativeObj)), x, y, force);
 }
@@ -3523,16 +3543,69 @@ ret_t TNativeWindow::SetFullscreen(bool fullscreen) {
   return native_window_set_fullscreen(((native_window_t*)(this->nativeObj)), fullscreen);
 }
 
-void* TIdleInfo::GetCtx() const {
-  return ((idle_info_t*)(this->nativeObj))->ctx;
+ret_t TNativeWindow::SetCursor(const char* name, TBitmap& img) {
+  return native_window_set_cursor(((native_window_t*)(this->nativeObj)), name,
+                                  ((bitmap_t*)(img.nativeObj)));
 }
 
-uint32_t TIdleInfo::GetId() const {
-  return ((idle_info_t*)(this->nativeObj))->id;
+TWidget TDialog::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDialog((widget_t*)(dialog_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TKeyboard((widget_t*)(keyboard_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TWidget TDialog::CreateSimple(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TDialog((widget_t*)(dialog_create_simple(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+TWidget TDialog::GetTitle() {
+  return TWidget((widget_t*)(dialog_get_title(((widget_t*)(this->nativeObj)))));
+}
+
+TWidget TDialog::GetClient() {
+  return TWidget((widget_t*)(dialog_get_client(((widget_t*)(this->nativeObj)))));
+}
+
+TWidget TDialog::Open(const char* name) {
+  return TDialog((widget_t*)(dialog_open(name)));
+}
+
+ret_t TDialog::SetTitle(char* title) {
+  return dialog_set_title(((widget_t*)(this->nativeObj)), title);
+}
+
+dialog_quit_code_t TDialog::Modal() {
+  return dialog_modal(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TDialog::Quit(uint32_t code) {
+  return dialog_quit(((widget_t*)(this->nativeObj)), code);
+}
+
+bool TDialog::IsQuited() {
+  return dialog_is_quited(((widget_t*)(this->nativeObj)));
+}
+
+bool TDialog::IsModal() {
+  return dialog_is_modal(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TDialog::Toast(const char* text, uint32_t duration) {
+  return dialog_toast(text, duration);
+}
+
+ret_t TDialog::Info(const char* title, const char* text) {
+  return dialog_info(title, text);
+}
+
+ret_t TDialog::Warn(const char* title, const char* text) {
+  return dialog_warn(title, text);
+}
+
+ret_t TDialog::Confirm(const char* title, const char* text) {
+  return dialog_confirm(title, text);
+}
+
+const char* TDialog::GetHighlight() const {
+  return ((dialog_t*)(this->nativeObj))->highlight;
 }
 
 void* TTimerInfo::GetCtx() const {
@@ -3547,6 +3620,10 @@ uint64_t TTimerInfo::GetNow() const {
   return ((timer_info_t*)(this->nativeObj))->now;
 }
 
+TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TKeyboard((widget_t*)(keyboard_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
 TWidget TImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TImage((widget_t*)(image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -3559,12 +3636,20 @@ image_draw_type_t TImage::GetDrawType() const {
   return ((image_t*)(this->nativeObj))->draw_type;
 }
 
-TWidget TSvgImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSvgImage((widget_t*)(svg_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TObject TObjectArray::Create() {
+  return TObjectArray((emitter_t*)(object_array_create()));
 }
 
-ret_t TSvgImage::SetImage(char* name) {
-  return svg_image_set_image(((widget_t*)(this->nativeObj)), name);
+ret_t TObjectArray::Unref() {
+  return object_array_unref(((object_t*)(this->nativeObj)));
+}
+
+ret_t TObjectArray::ClearProps() {
+  return object_array_clear_props(((object_t*)(this->nativeObj)));
+}
+
+uint32_t TObjectArray::GetPropsSize() const {
+  return ((object_array_t*)(this->nativeObj))->props_size;
 }
 
 TWidget TOverlay::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3592,20 +3677,20 @@ bool TPopup::GetCloseWhenClickOutside() const {
   return ((popup_t*)(this->nativeObj))->close_when_click_outside;
 }
 
-TObject TObjectArray::Create() {
-  return TObjectArray((emitter_t*)(object_array_create()));
+TObject TObjectDefault::Create() {
+  return TObjectDefault((emitter_t*)(object_default_create()));
 }
 
-ret_t TObjectArray::Unref() {
-  return object_array_unref(((object_t*)(this->nativeObj)));
+ret_t TObjectDefault::Unref() {
+  return object_default_unref(((object_t*)(this->nativeObj)));
 }
 
-ret_t TObjectArray::ClearProps() {
-  return object_array_clear_props(((object_t*)(this->nativeObj)));
+ret_t TObjectDefault::ClearProps() {
+  return object_default_clear_props(((object_t*)(this->nativeObj)));
 }
 
-uint32_t TObjectArray::GetPropsSize() const {
-  return ((object_array_t*)(this->nativeObj))->props_size;
+uint32_t TObjectDefault::GetPropsSize() const {
+  return ((object_default_t*)(this->nativeObj))->props_size;
 }
 
 TWidget TWindow::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3640,20 +3725,12 @@ bool TWindow::GetFullscreen() const {
   return ((window_t*)(this->nativeObj))->fullscreen;
 }
 
-TObject TObjectDefault::Create() {
-  return TObjectDefault((emitter_t*)(object_default_create()));
+TWidget TSvgImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSvgImage((widget_t*)(svg_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TObjectDefault::Unref() {
-  return object_default_unref(((object_t*)(this->nativeObj)));
-}
-
-ret_t TObjectDefault::ClearProps() {
-  return object_default_clear_props(((object_t*)(this->nativeObj)));
-}
-
-uint32_t TObjectDefault::GetPropsSize() const {
-  return ((object_default_t*)(this->nativeObj))->props_size;
+ret_t TSvgImage::SetImage(char* name) {
+  return svg_image_set_image(((widget_t*)(this->nativeObj)), name);
 }
 
 TWidget TSpinBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3738,66 +3815,6 @@ int32_t TComboBox::GetItemHeight() const {
 
 TWidget TGifImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TGifImage((widget_t*)(gif_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TDialog::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDialog((widget_t*)(dialog_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TDialog::CreateSimple(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TDialog((widget_t*)(dialog_create_simple(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-TWidget TDialog::GetTitle() {
-  return TWidget((widget_t*)(dialog_get_title(((widget_t*)(this->nativeObj)))));
-}
-
-TWidget TDialog::GetClient() {
-  return TWidget((widget_t*)(dialog_get_client(((widget_t*)(this->nativeObj)))));
-}
-
-TWidget TDialog::Open(const char* name) {
-  return TDialog((widget_t*)(dialog_open(name)));
-}
-
-ret_t TDialog::SetTitle(char* title) {
-  return dialog_set_title(((widget_t*)(this->nativeObj)), title);
-}
-
-dialog_quit_code_t TDialog::Modal() {
-  return dialog_modal(((widget_t*)(this->nativeObj)));
-}
-
-ret_t TDialog::Quit(uint32_t code) {
-  return dialog_quit(((widget_t*)(this->nativeObj)), code);
-}
-
-bool TDialog::IsQuited() {
-  return dialog_is_quited(((widget_t*)(this->nativeObj)));
-}
-
-bool TDialog::IsModal() {
-  return dialog_is_modal(((widget_t*)(this->nativeObj)));
-}
-
-ret_t TDialog::Toast(const char* text, uint32_t duration) {
-  return dialog_toast(text, duration);
-}
-
-ret_t TDialog::Info(const char* title, const char* text) {
-  return dialog_info(title, text);
-}
-
-ret_t TDialog::Warn(const char* title, const char* text) {
-  return dialog_warn(title, text);
-}
-
-ret_t TDialog::Confirm(const char* title, const char* text) {
-  return dialog_confirm(title, text);
-}
-
-const char* TDialog::GetHighlight() const {
-  return ((dialog_t*)(this->nativeObj))->highlight;
 }
 
 TWidget TComboBoxEx::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
