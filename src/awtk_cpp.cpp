@@ -2739,6 +2739,10 @@ TWidget TButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
       (widget_t*)(button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
+TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
 TWidget TRichText::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TRichText((widget_t*)(rich_text_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -2755,8 +2759,8 @@ uint32_t TRichText::GetMargin() const {
   return ((rich_text_t*)(this->nativeObj))->margin;
 }
 
-TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+int32_t TOrientationEvent::GetOrientation() const {
+  return ((orientation_event_t*)(this->nativeObj))->orientation;
 }
 
 TWidget TRichTextView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2833,8 +2837,40 @@ bool TProgressCircle::GetShowText() const {
   return ((progress_circle_t*)(this->nativeObj))->show_text;
 }
 
-int32_t TOrientationEvent::GetOrientation() const {
-  return ((orientation_event_t*)(this->nativeObj))->orientation;
+xy_t TPointerEvent::GetX() const {
+  return ((pointer_event_t*)(this->nativeObj))->x;
+}
+
+xy_t TPointerEvent::GetY() const {
+  return ((pointer_event_t*)(this->nativeObj))->y;
+}
+
+uint8_t TPointerEvent::GetButton() const {
+  return ((pointer_event_t*)(this->nativeObj))->button;
+}
+
+bool TPointerEvent::GetPressed() const {
+  return ((pointer_event_t*)(this->nativeObj))->pressed;
+}
+
+bool TPointerEvent::GetAlt() const {
+  return ((pointer_event_t*)(this->nativeObj))->alt;
+}
+
+bool TPointerEvent::GetCtrl() const {
+  return ((pointer_event_t*)(this->nativeObj))->ctrl;
+}
+
+bool TPointerEvent::GetCmd() const {
+  return ((pointer_event_t*)(this->nativeObj))->cmd;
+}
+
+bool TPointerEvent::GetMenu() const {
+  return ((pointer_event_t*)(this->nativeObj))->menu;
+}
+
+bool TPointerEvent::GetShift() const {
+  return ((pointer_event_t*)(this->nativeObj))->shift;
 }
 
 TWidget TMledit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2954,40 +2990,56 @@ char* TLangIndicator::GetImage() const {
   return ((lang_indicator_t*)(this->nativeObj))->image;
 }
 
-xy_t TPointerEvent::GetX() const {
-  return ((pointer_event_t*)(this->nativeObj))->x;
+uint32_t TKeyEvent::GetKey() const {
+  return ((key_event_t*)(this->nativeObj))->key;
 }
 
-xy_t TPointerEvent::GetY() const {
-  return ((pointer_event_t*)(this->nativeObj))->y;
+bool TKeyEvent::GetAlt() const {
+  return ((key_event_t*)(this->nativeObj))->alt;
 }
 
-uint8_t TPointerEvent::GetButton() const {
-  return ((pointer_event_t*)(this->nativeObj))->button;
+bool TKeyEvent::GetLalt() const {
+  return ((key_event_t*)(this->nativeObj))->lalt;
 }
 
-bool TPointerEvent::GetPressed() const {
-  return ((pointer_event_t*)(this->nativeObj))->pressed;
+bool TKeyEvent::GetRalt() const {
+  return ((key_event_t*)(this->nativeObj))->ralt;
 }
 
-bool TPointerEvent::GetAlt() const {
-  return ((pointer_event_t*)(this->nativeObj))->alt;
+bool TKeyEvent::GetCtrl() const {
+  return ((key_event_t*)(this->nativeObj))->ctrl;
 }
 
-bool TPointerEvent::GetCtrl() const {
-  return ((pointer_event_t*)(this->nativeObj))->ctrl;
+bool TKeyEvent::GetLctrl() const {
+  return ((key_event_t*)(this->nativeObj))->lctrl;
 }
 
-bool TPointerEvent::GetCmd() const {
-  return ((pointer_event_t*)(this->nativeObj))->cmd;
+bool TKeyEvent::GetRctrl() const {
+  return ((key_event_t*)(this->nativeObj))->rctrl;
 }
 
-bool TPointerEvent::GetMenu() const {
-  return ((pointer_event_t*)(this->nativeObj))->menu;
+bool TKeyEvent::GetShift() const {
+  return ((key_event_t*)(this->nativeObj))->shift;
 }
 
-bool TPointerEvent::GetShift() const {
-  return ((pointer_event_t*)(this->nativeObj))->shift;
+bool TKeyEvent::GetLshift() const {
+  return ((key_event_t*)(this->nativeObj))->lshift;
+}
+
+bool TKeyEvent::GetRshift() const {
+  return ((key_event_t*)(this->nativeObj))->rshift;
+}
+
+bool TKeyEvent::GetCmd() const {
+  return ((key_event_t*)(this->nativeObj))->cmd;
+}
+
+bool TKeyEvent::GetMenu() const {
+  return ((key_event_t*)(this->nativeObj))->menu;
+}
+
+bool TKeyEvent::GetCapslock() const {
+  return ((key_event_t*)(this->nativeObj))->capslock;
 }
 
 ret_t TCandidates::SetPre(bool pre) {
@@ -3222,58 +3274,6 @@ char* TGuagePointer::GetAnchorX() const {
 
 char* TGuagePointer::GetAnchorY() const {
   return ((guage_pointer_t*)(this->nativeObj))->anchor_y;
-}
-
-uint32_t TKeyEvent::GetKey() const {
-  return ((key_event_t*)(this->nativeObj))->key;
-}
-
-bool TKeyEvent::GetAlt() const {
-  return ((key_event_t*)(this->nativeObj))->alt;
-}
-
-bool TKeyEvent::GetLalt() const {
-  return ((key_event_t*)(this->nativeObj))->lalt;
-}
-
-bool TKeyEvent::GetRalt() const {
-  return ((key_event_t*)(this->nativeObj))->ralt;
-}
-
-bool TKeyEvent::GetCtrl() const {
-  return ((key_event_t*)(this->nativeObj))->ctrl;
-}
-
-bool TKeyEvent::GetLctrl() const {
-  return ((key_event_t*)(this->nativeObj))->lctrl;
-}
-
-bool TKeyEvent::GetRctrl() const {
-  return ((key_event_t*)(this->nativeObj))->rctrl;
-}
-
-bool TKeyEvent::GetShift() const {
-  return ((key_event_t*)(this->nativeObj))->shift;
-}
-
-bool TKeyEvent::GetLshift() const {
-  return ((key_event_t*)(this->nativeObj))->lshift;
-}
-
-bool TKeyEvent::GetRshift() const {
-  return ((key_event_t*)(this->nativeObj))->rshift;
-}
-
-bool TKeyEvent::GetCmd() const {
-  return ((key_event_t*)(this->nativeObj))->cmd;
-}
-
-bool TKeyEvent::GetMenu() const {
-  return ((key_event_t*)(this->nativeObj))->menu;
-}
-
-bool TKeyEvent::GetCapslock() const {
-  return ((key_event_t*)(this->nativeObj))->capslock;
 }
 
 TFileChooser TFileChooser::Create() {

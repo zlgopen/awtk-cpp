@@ -9045,6 +9045,75 @@ class TButtonGroup : public TWidget {
 };
 
 /**
+ * app_bar控件。
+ *
+ *一个简单的容器控件，一般在窗口的顶部，用于显示本窗口的状态和信息。
+ *
+ *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
+ *子控件的布局可用layout\_children属性指定。
+ *请参考[布局参数](https://github.com/zlgopen/awtk/blob/master/docs/layout.md)。
+ *
+ *app\_bar\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于app\_bar\_t控件。
+ *
+ *在xml中使用"app\_bar"标签创建app\_bar。如：
+ *
+ *```xml
+ *<app_bar x="0" y="0" w="100%" h="30"
+ *<label x="0" y="0" w="100%" h="100%" text="Basic Controls" />
+ *</app_bar>
+ *```
+ *
+ *在c代码中使用函数app\_bar\_create创建app\_bar。如：
+ *
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色等。如：
+ *
+ *```xml
+ *<style name="default" border_color="#a0a0a0">
+ *<normal     bg_color="#f0f0f0" />
+ *</style>
+ *```
+ *
+ */
+class TAppBar : public TWidget {
+ public:
+  TAppBar(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TAppBar(const app_bar_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TAppBar Cast(widget_t* nativeObj) {
+    return TAppBar(nativeObj);
+  }
+
+  static TAppBar Cast(const widget_t* nativeObj) {
+    return TAppBar((widget_t*)nativeObj);
+  }
+
+  static TAppBar Cast(TWidget& obj) {
+    return TAppBar(obj.nativeObj);
+  }
+
+  static TAppBar Cast(const TWidget& obj) {
+    return TAppBar(obj.nativeObj);
+  }
+
+  /**
+   * 创建app_bar对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+};
+
+/**
  * 图文混排控件，实现简单的图文混排。
  *
  *rich\_text\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于rich\_text\_t控件。
@@ -9144,72 +9213,38 @@ class TRichText : public TWidget {
 };
 
 /**
- * app_bar控件。
- *
- *一个简单的容器控件，一般在窗口的顶部，用于显示本窗口的状态和信息。
- *
- *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
- *子控件的布局可用layout\_children属性指定。
- *请参考[布局参数](https://github.com/zlgopen/awtk/blob/master/docs/layout.md)。
- *
- *app\_bar\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于app\_bar\_t控件。
- *
- *在xml中使用"app\_bar"标签创建app\_bar。如：
- *
- *```xml
- *<app_bar x="0" y="0" w="100%" h="30"
- *<label x="0" y="0" w="100%" h="100%" text="Basic Controls" />
- *</app_bar>
- *```
- *
- *在c代码中使用函数app\_bar\_create创建app\_bar。如：
- *
- *
- *可用通过style来设置控件的显示风格，如背景颜色等。如：
- *
- *```xml
- *<style name="default" border_color="#a0a0a0">
- *<normal     bg_color="#f0f0f0" />
- *</style>
- *```
+ * 滚轮事件。
  *
  */
-class TAppBar : public TWidget {
+class TOrientationEvent : public TEvent {
  public:
-  TAppBar(widget_t* nativeObj) : TWidget(nativeObj) {
+  TOrientationEvent(event_t* nativeObj) : TEvent(nativeObj) {
   }
 
-  TAppBar(const app_bar_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  TOrientationEvent(const orientation_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
   }
 
-  static TAppBar Cast(widget_t* nativeObj) {
-    return TAppBar(nativeObj);
+  static TOrientationEvent Cast(event_t* nativeObj) {
+    return TOrientationEvent(nativeObj);
   }
 
-  static TAppBar Cast(const widget_t* nativeObj) {
-    return TAppBar((widget_t*)nativeObj);
+  static TOrientationEvent Cast(const event_t* nativeObj) {
+    return TOrientationEvent((event_t*)nativeObj);
   }
 
-  static TAppBar Cast(TWidget& obj) {
-    return TAppBar(obj.nativeObj);
+  static TOrientationEvent Cast(TEvent& obj) {
+    return TOrientationEvent(obj.nativeObj);
   }
 
-  static TAppBar Cast(const TWidget& obj) {
-    return TAppBar(obj.nativeObj);
+  static TOrientationEvent Cast(const TEvent& obj) {
+    return TOrientationEvent(obj.nativeObj);
   }
 
   /**
-   * 创建app_bar对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
+   * 屏幕方向。
    *
-   * @return 对象。
    */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+  int32_t GetOrientation() const;
 };
 
 /**
@@ -9468,38 +9503,86 @@ class TProgressCircle : public TWidget {
 };
 
 /**
- * 滚轮事件。
+ * 指针事件。
  *
  */
-class TOrientationEvent : public TEvent {
+class TPointerEvent : public TEvent {
  public:
-  TOrientationEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  TPointerEvent(event_t* nativeObj) : TEvent(nativeObj) {
   }
 
-  TOrientationEvent(const orientation_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  TPointerEvent(const pointer_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
   }
 
-  static TOrientationEvent Cast(event_t* nativeObj) {
-    return TOrientationEvent(nativeObj);
+  static TPointerEvent Cast(event_t* nativeObj) {
+    return TPointerEvent(nativeObj);
   }
 
-  static TOrientationEvent Cast(const event_t* nativeObj) {
-    return TOrientationEvent((event_t*)nativeObj);
+  static TPointerEvent Cast(const event_t* nativeObj) {
+    return TPointerEvent((event_t*)nativeObj);
   }
 
-  static TOrientationEvent Cast(TEvent& obj) {
-    return TOrientationEvent(obj.nativeObj);
+  static TPointerEvent Cast(TEvent& obj) {
+    return TPointerEvent(obj.nativeObj);
   }
 
-  static TOrientationEvent Cast(const TEvent& obj) {
-    return TOrientationEvent(obj.nativeObj);
+  static TPointerEvent Cast(const TEvent& obj) {
+    return TPointerEvent(obj.nativeObj);
   }
 
   /**
-   * 屏幕方向。
+   * x坐标。
    *
    */
-  int32_t GetOrientation() const;
+  xy_t GetX() const;
+
+  /**
+   * y坐标。
+   *
+   */
+  xy_t GetY() const;
+
+  /**
+   * button。
+   *
+   */
+  uint8_t GetButton() const;
+
+  /**
+   * 指针是否按下。
+   *
+   */
+  bool GetPressed() const;
+
+  /**
+   * alt键是否按下。
+   *
+   */
+  bool GetAlt() const;
+
+  /**
+   * ctrl键是否按下。
+   *
+   */
+  bool GetCtrl() const;
+
+  /**
+   * cmd键是否按下。
+   *
+   */
+  bool GetCmd() const;
+
+  /**
+   * menu键是否按下。
+   *
+   */
+  bool GetMenu() const;
+
+  /**
+   * shift键是否按下。
+   *
+   */
+  bool GetShift() const;
 };
 
 /**
@@ -9894,56 +9977,38 @@ class TLangIndicator : public TWidget {
 };
 
 /**
- * 指针事件。
+ * 按键事件。
  *
  */
-class TPointerEvent : public TEvent {
+class TKeyEvent : public TEvent {
  public:
-  TPointerEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  TKeyEvent(event_t* nativeObj) : TEvent(nativeObj) {
   }
 
-  TPointerEvent(const pointer_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  TKeyEvent(const key_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
   }
 
-  static TPointerEvent Cast(event_t* nativeObj) {
-    return TPointerEvent(nativeObj);
+  static TKeyEvent Cast(event_t* nativeObj) {
+    return TKeyEvent(nativeObj);
   }
 
-  static TPointerEvent Cast(const event_t* nativeObj) {
-    return TPointerEvent((event_t*)nativeObj);
+  static TKeyEvent Cast(const event_t* nativeObj) {
+    return TKeyEvent((event_t*)nativeObj);
   }
 
-  static TPointerEvent Cast(TEvent& obj) {
-    return TPointerEvent(obj.nativeObj);
+  static TKeyEvent Cast(TEvent& obj) {
+    return TKeyEvent(obj.nativeObj);
   }
 
-  static TPointerEvent Cast(const TEvent& obj) {
-    return TPointerEvent(obj.nativeObj);
+  static TKeyEvent Cast(const TEvent& obj) {
+    return TKeyEvent(obj.nativeObj);
   }
 
   /**
-   * x坐标。
+   * 键值。
    *
    */
-  xy_t GetX() const;
-
-  /**
-   * y坐标。
-   *
-   */
-  xy_t GetY() const;
-
-  /**
-   * button。
-   *
-   */
-  uint8_t GetButton() const;
-
-  /**
-   * 指针是否按下。
-   *
-   */
-  bool GetPressed() const;
+  uint32_t GetKey() const;
 
   /**
    * alt键是否按下。
@@ -9952,13 +10017,57 @@ class TPointerEvent : public TEvent {
   bool GetAlt() const;
 
   /**
-   * ctrl键是否按下。
+   * left alt键是否按下。
+   *
+   */
+  bool GetLalt() const;
+
+  /**
+   * right alt键是否按下。
+   *
+   */
+  bool GetRalt() const;
+
+  /**
+   * right alt键是否按下。
+   *ctrl键是否按下。
    *
    */
   bool GetCtrl() const;
 
   /**
-   * cmd键是否按下。
+   * left ctrl键是否按下。
+   *
+   */
+  bool GetLctrl() const;
+
+  /**
+   * right ctrl键是否按下。
+   *
+   */
+  bool GetRctrl() const;
+
+  /**
+   * shift键是否按下。
+   *
+   */
+  bool GetShift() const;
+
+  /**
+   * left shift键是否按下。
+   *
+   */
+  bool GetLshift() const;
+
+  /**
+   * right shift键是否按下。
+   *
+   */
+  bool GetRshift() const;
+
+  /**
+   * left shift键是否按下。
+   *cmd/win键是否按下。
    *
    */
   bool GetCmd() const;
@@ -9970,10 +10079,10 @@ class TPointerEvent : public TEvent {
   bool GetMenu() const;
 
   /**
-   * shift键是否按下。
+   * capslock键是否按下。
    *
    */
-  bool GetShift() const;
+  bool GetCapslock() const;
 };
 
 /**
@@ -10722,115 +10831,6 @@ class TGuagePointer : public TWidget {
    *
    */
   char* GetAnchorY() const;
-};
-
-/**
- * 按键事件。
- *
- */
-class TKeyEvent : public TEvent {
- public:
-  TKeyEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TKeyEvent(const key_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TKeyEvent Cast(event_t* nativeObj) {
-    return TKeyEvent(nativeObj);
-  }
-
-  static TKeyEvent Cast(const event_t* nativeObj) {
-    return TKeyEvent((event_t*)nativeObj);
-  }
-
-  static TKeyEvent Cast(TEvent& obj) {
-    return TKeyEvent(obj.nativeObj);
-  }
-
-  static TKeyEvent Cast(const TEvent& obj) {
-    return TKeyEvent(obj.nativeObj);
-  }
-
-  /**
-   * 键值。
-   *
-   */
-  uint32_t GetKey() const;
-
-  /**
-   * alt键是否按下。
-   *
-   */
-  bool GetAlt() const;
-
-  /**
-   * left alt键是否按下。
-   *
-   */
-  bool GetLalt() const;
-
-  /**
-   * right alt键是否按下。
-   *
-   */
-  bool GetRalt() const;
-
-  /**
-   * right alt键是否按下。
-   *ctrl键是否按下。
-   *
-   */
-  bool GetCtrl() const;
-
-  /**
-   * left ctrl键是否按下。
-   *
-   */
-  bool GetLctrl() const;
-
-  /**
-   * right ctrl键是否按下。
-   *
-   */
-  bool GetRctrl() const;
-
-  /**
-   * shift键是否按下。
-   *
-   */
-  bool GetShift() const;
-
-  /**
-   * left shift键是否按下。
-   *
-   */
-  bool GetLshift() const;
-
-  /**
-   * right shift键是否按下。
-   *
-   */
-  bool GetRshift() const;
-
-  /**
-   * left shift键是否按下。
-   *cmd/win键是否按下。
-   *
-   */
-  bool GetCmd() const;
-
-  /**
-   * menu键是否按下。
-   *
-   */
-  bool GetMenu() const;
-
-  /**
-   * capslock键是否按下。
-   *
-   */
-  bool GetCapslock() const;
 };
 
 /**
@@ -11884,6 +11884,53 @@ class TStyleMutable : public TStyle {
 };
 
 /**
+ * 电阻屏校准窗口。
+ *
+ *calibration\_win\_t是[window\_base\_t](window_base_t.md)的子类控件，
+ *window\_base\_t的函数均适用于calibration\_win\_t控件。
+ *
+ *在xml中使用"calibration\_win"标签创建电阻屏校准窗口。如：
+ *
+ *```xml
+ *<calibration_win name="cali" w="100%" h="100%" text="Please click the center of cross">
+ *</calibration_win>
+ *```
+ *
+ *> 更多用法请参考：
+ *[window.xml](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/calibration_win.xml)
+ *
+ *在c代码中使用函数calibration\_win\_create创建窗口。如：
+ *
+ *
+ *通过calibration\_win\_set\_on\_done注册回调函数，用于保存校准数据。
+ *
+ */
+class TCalibrationWin : public TWindowBase {
+ public:
+  TCalibrationWin(widget_t* nativeObj) : TWindowBase(nativeObj) {
+  }
+
+  TCalibrationWin(const calibration_win_t* nativeObj) : TWindowBase((widget_t*)nativeObj) {
+  }
+
+  static TCalibrationWin Cast(widget_t* nativeObj) {
+    return TCalibrationWin(nativeObj);
+  }
+
+  static TCalibrationWin Cast(const widget_t* nativeObj) {
+    return TCalibrationWin((widget_t*)nativeObj);
+  }
+
+  static TCalibrationWin Cast(TWidget& obj) {
+    return TCalibrationWin(obj.nativeObj);
+  }
+
+  static TCalibrationWin Cast(const TWidget& obj) {
+    return TCalibrationWin(obj.nativeObj);
+  }
+};
+
+/**
  * 原生窗口。
  *
  */
@@ -12432,53 +12479,6 @@ class TObjectArray : public TObject {
    *
    */
   uint32_t GetPropsSize() const;
-};
-
-/**
- * 电阻屏校准窗口。
- *
- *calibration\_win\_t是[window\_base\_t](window_base_t.md)的子类控件，
- *window\_base\_t的函数均适用于calibration\_win\_t控件。
- *
- *在xml中使用"calibration\_win"标签创建电阻屏校准窗口。如：
- *
- *```xml
- *<calibration_win name="cali" w="100%" h="100%" text="Please click the center of cross">
- *</calibration_win>
- *```
- *
- *> 更多用法请参考：
- *[window.xml](https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/calibration_win.xml)
- *
- *在c代码中使用函数calibration\_win\_create创建窗口。如：
- *
- *
- *通过calibration\_win\_set\_on\_done注册回调函数，用于保存校准数据。
- *
- */
-class TCalibrationWin : public TWindowBase {
- public:
-  TCalibrationWin(widget_t* nativeObj) : TWindowBase(nativeObj) {
-  }
-
-  TCalibrationWin(const calibration_win_t* nativeObj) : TWindowBase((widget_t*)nativeObj) {
-  }
-
-  static TCalibrationWin Cast(widget_t* nativeObj) {
-    return TCalibrationWin(nativeObj);
-  }
-
-  static TCalibrationWin Cast(const widget_t* nativeObj) {
-    return TCalibrationWin((widget_t*)nativeObj);
-  }
-
-  static TCalibrationWin Cast(TWidget& obj) {
-    return TCalibrationWin(obj.nativeObj);
-  }
-
-  static TCalibrationWin Cast(const TWidget& obj) {
-    return TCalibrationWin(obj.nativeObj);
-  }
 };
 
 /**
