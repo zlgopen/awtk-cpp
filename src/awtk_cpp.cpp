@@ -1203,14 +1203,6 @@ ret_t TAppConf::Save() {
   return app_conf_save();
 }
 
-uint32_t TAppConf::OnChanged(event_func_t on_event, void* ctx) {
-  return app_conf_on_changed(on_event, ctx);
-}
-
-ret_t TAppConf::OffChanged(uint32_t id) {
-  return app_conf_off_changed(id);
-}
-
 ret_t TAppConf::Deinit() {
   return app_conf_deinit();
 }

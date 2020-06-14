@@ -3306,25 +3306,6 @@ class TAppConf {
   static ret_t Save();
 
   /**
-   * 注册配置变化事件。
-   * 
-   * @param on_event 事件处理函数。
-   * @param ctx 事件处理函数上下文。
-   *
-   * @return 返回id，用于app_conf_off_changed。
-   */
-  static uint32_t OnChanged(event_func_t on_event, void* ctx);
-
-  /**
-   * 注销配置变化事件。
-   * 
-   * @param id app_conf_on_changed返回的ID。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  static ret_t OffChanged(uint32_t id);
-
-  /**
    * 释放conf对象。
    * 
    *
