@@ -4497,6 +4497,53 @@ class TErrorEvent : public TEvent {
 };
 
 /**
+ * 对象执行命令的事件。
+ *
+ */
+class TCmdExecEvent : public TEvent {
+ public:
+  TCmdExecEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TCmdExecEvent(const cmd_exec_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TCmdExecEvent Cast(event_t* nativeObj) {
+    return TCmdExecEvent(nativeObj);
+  }
+
+  static TCmdExecEvent Cast(const event_t* nativeObj) {
+    return TCmdExecEvent((event_t*)nativeObj);
+  }
+
+  static TCmdExecEvent Cast(TEvent& obj) {
+    return TCmdExecEvent(obj.nativeObj);
+  }
+
+  static TCmdExecEvent Cast(const TEvent& obj) {
+    return TCmdExecEvent(obj.nativeObj);
+  }
+
+  /**
+   * 命令的名称。
+   *
+   */
+  const char* GetName() const;
+
+  /**
+   * 命令的参数。
+   *
+   */
+  const char* GetArgs() const;
+
+  /**
+   * 执行结果(适用于EXECED)。
+   *
+   */
+  ret_t GetResult() const;
+};
+
+/**
  * 模拟时钟控件。
  *
  *time\_clock\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于time\_clock\_t控件。
@@ -4938,6 +4985,59 @@ class TTextSelector : public TWidget {
 };
 
 /**
+ * 滚轮事件。
+ *
+ */
+class TWheelEvent : public TEvent {
+ public:
+  TWheelEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TWheelEvent(const wheel_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TWheelEvent Cast(event_t* nativeObj) {
+    return TWheelEvent(nativeObj);
+  }
+
+  static TWheelEvent Cast(const event_t* nativeObj) {
+    return TWheelEvent((event_t*)nativeObj);
+  }
+
+  static TWheelEvent Cast(TEvent& obj) {
+    return TWheelEvent(obj.nativeObj);
+  }
+
+  static TWheelEvent Cast(const TEvent& obj) {
+    return TWheelEvent(obj.nativeObj);
+  }
+
+  /**
+   * 滚轮的y值。
+   *
+   */
+  int32_t GetDy() const;
+
+  /**
+   * alt键是否按下。
+   *
+   */
+  bool GetAlt() const;
+
+  /**
+   * ctrl键是否按下。
+   *
+   */
+  bool GetCtrl() const;
+
+  /**
+   * shift键是否按下。
+   *
+   */
+  bool GetShift() const;
+};
+
+/**
  * 开关控件。
  *
  *switch\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于switch\_t控件。
@@ -5029,59 +5129,6 @@ class TSwitch : public TWidget {
 };
 
 /**
- * 滚轮事件。
- *
- */
-class TWheelEvent : public TEvent {
- public:
-  TWheelEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TWheelEvent(const wheel_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TWheelEvent Cast(event_t* nativeObj) {
-    return TWheelEvent(nativeObj);
-  }
-
-  static TWheelEvent Cast(const event_t* nativeObj) {
-    return TWheelEvent((event_t*)nativeObj);
-  }
-
-  static TWheelEvent Cast(TEvent& obj) {
-    return TWheelEvent(obj.nativeObj);
-  }
-
-  static TWheelEvent Cast(const TEvent& obj) {
-    return TWheelEvent(obj.nativeObj);
-  }
-
-  /**
-   * 滚轮的y值。
-   *
-   */
-  int32_t GetDy() const;
-
-  /**
-   * alt键是否按下。
-   *
-   */
-  bool GetAlt() const;
-
-  /**
-   * ctrl键是否按下。
-   *
-   */
-  bool GetCtrl() const;
-
-  /**
-   * shift键是否按下。
-   *
-   */
-  bool GetShift() const;
-};
-
-/**
  * 一个通用的容器控件。
  *
  *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
@@ -5161,171 +5208,6 @@ class TView : public TWidget {
    *
    */
   char* GetDefaultFocusedChild() const;
-};
-
-/**
- * 滑动视图。
- *
- *滑动视图可以管理多个页面，并通过滑动来切换当前页面。也可以管理多张图片，让它们自动切换。
- *
- *slide\_view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于slide\_view\_t控件。
- *
- *在xml中使用"slide\_view"标签创建滑动视图控件。如：
- *
- *```xml
- *<slide_view x="0" y="0" w="100%" h="100%" style="dot">
- *<view x="0" y="0" w="100%" h="100%" children_layout="default(w=60,h=60,m=5,s=10)">
- *...
- *</view>
- *<view x="0" y="0" w="100%" h="100%" children_layout="default(w=60,h=60,m=5,s=10)">
- *...
- *</view>
- *</slide_view>
- *```
- *
- *> 更多用法请参考：[slide_view.xml](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/slide_view.xml)
- *
- *在c代码中使用函数slide\_view\_create创建滑动视图控件。如：
- *
- *
- *> 完整示例请参考：
- *[slide_view demo](
- *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/slide_view.c)
- *
- *可用通过style来设置控件的显示风格，如背景颜色和指示器的图标等等。如：
- *
- *```xml
- *<style name="dot">
- *<normal  icon="dot" active_icon="active_dot"/>
- *</style>
- *```
- *
- *> 如果希望背景图片跟随滚动，请将背景图片设置到页面上，否则设置到slide\_view上。
- *
- *> 更多用法请参考：[theme default](
- *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L458)
- *
- */
-class TSlideView : public TWidget {
- public:
-  TSlideView(widget_t* nativeObj) : TWidget(nativeObj) {
-  }
-
-  TSlideView(const slide_view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
-  }
-
-  static TSlideView Cast(widget_t* nativeObj) {
-    return TSlideView(nativeObj);
-  }
-
-  static TSlideView Cast(const widget_t* nativeObj) {
-    return TSlideView((widget_t*)nativeObj);
-  }
-
-  static TSlideView Cast(TWidget& obj) {
-    return TSlideView(obj.nativeObj);
-  }
-
-  static TSlideView Cast(const TWidget& obj) {
-    return TSlideView(obj.nativeObj);
-  }
-
-  /**
-   * 创建slide_view对象
-   * 
-   * @param parent 父控件
-   * @param x x坐标
-   * @param y y坐标
-   * @param w 宽度
-   * @param h 高度
-   *
-   * @return 对象。
-   */
-  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
-
-  /**
-   * 设置为自动播放模式。
-   * 
-   * @param auto_play 0表示禁止自动播放，非0表示自动播放时每一页播放的时间。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetAutoPlay(uint16_t auto_play);
-
-  /**
-   * 设置当前页的序号。
-   * 
-   * @param index 当前页的序号。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetActive(uint32_t index);
-
-  /**
-   * 设置为上下滑动(缺省为左右滑动)。
-   * 
-   * @param vertical TRUE表示上下滑动，FALSE表示左右滑动。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetVertical(bool vertical);
-
-  /**
-   * 设置页面切换动画。
-   *
-   *anim_hint取值如下：
-   *
-   ** "translate"：平移。
-   ** "overlap"：覆盖。
-   ** "overlap\_with\_alpha"：覆盖并改变透明度。
-   *
-   *> 使用"overlap"或"overlap\_with\_alpha"动画时，背景图片最好指定到page上。
-   *>
-   *> 使用"overlap\_with\_alpha"动画时，slideview的背景设置为黑色，
-   *> 或slideview的背景设置为透明，窗口的背景设置为黑色，以获得更好的视觉效果和性能。
-   * 
-   * @param anim_hint 页面切换动画。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetAnimHint(const char* anim_hint);
-
-  /**
-   * 设置循环切换模式。
-   * 
-   * @param loop 是否启用循环切换模式。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetLoop(bool loop);
-
-  /**
-   * 是否为上下滑动模式。
-   *
-   */
-  bool GetVertical() const;
-
-  /**
-   * 自动播放。0表示禁止自动播放，非0表示自动播放时每一页播放的时间。
-   *
-   */
-  uint16_t GetAutoPlay() const;
-
-  /**
-   * 循环切换模式。
-   *
-   *向后切换：切换到最后一页时，再往后切换就到第一页。
-   *向前切换：切换到第一页时，再往前切换就到最后一页。
-   *
-   */
-  bool GetLoop() const;
-
-  /**
-   * 页面切换效果。
-   *
-   */
-  char* GetAnimHint() const;
 };
 
 /**
@@ -5552,6 +5434,171 @@ class TTabButton : public TWidget {
    *
    */
   char* GetIcon() const;
+};
+
+/**
+ * 滑动视图。
+ *
+ *滑动视图可以管理多个页面，并通过滑动来切换当前页面。也可以管理多张图片，让它们自动切换。
+ *
+ *slide\_view\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于slide\_view\_t控件。
+ *
+ *在xml中使用"slide\_view"标签创建滑动视图控件。如：
+ *
+ *```xml
+ *<slide_view x="0" y="0" w="100%" h="100%" style="dot">
+ *<view x="0" y="0" w="100%" h="100%" children_layout="default(w=60,h=60,m=5,s=10)">
+ *...
+ *</view>
+ *<view x="0" y="0" w="100%" h="100%" children_layout="default(w=60,h=60,m=5,s=10)">
+ *...
+ *</view>
+ *</slide_view>
+ *```
+ *
+ *> 更多用法请参考：[slide_view.xml](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/ui/slide_view.xml)
+ *
+ *在c代码中使用函数slide\_view\_create创建滑动视图控件。如：
+ *
+ *
+ *> 完整示例请参考：
+ *[slide_view demo](
+ *https://github.com/zlgopen/awtk-c-demos/blob/master/demos/slide_view.c)
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色和指示器的图标等等。如：
+ *
+ *```xml
+ *<style name="dot">
+ *<normal  icon="dot" active_icon="active_dot"/>
+ *</style>
+ *```
+ *
+ *> 如果希望背景图片跟随滚动，请将背景图片设置到页面上，否则设置到slide\_view上。
+ *
+ *> 更多用法请参考：[theme default](
+ *https://github.com/zlgopen/awtk/blob/master/demos/assets/default/raw/styles/default.xml#L458)
+ *
+ */
+class TSlideView : public TWidget {
+ public:
+  TSlideView(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TSlideView(const slide_view_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TSlideView Cast(widget_t* nativeObj) {
+    return TSlideView(nativeObj);
+  }
+
+  static TSlideView Cast(const widget_t* nativeObj) {
+    return TSlideView((widget_t*)nativeObj);
+  }
+
+  static TSlideView Cast(TWidget& obj) {
+    return TSlideView(obj.nativeObj);
+  }
+
+  static TSlideView Cast(const TWidget& obj) {
+    return TSlideView(obj.nativeObj);
+  }
+
+  /**
+   * 创建slide_view对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置为自动播放模式。
+   * 
+   * @param auto_play 0表示禁止自动播放，非0表示自动播放时每一页播放的时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAutoPlay(uint16_t auto_play);
+
+  /**
+   * 设置当前页的序号。
+   * 
+   * @param index 当前页的序号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetActive(uint32_t index);
+
+  /**
+   * 设置为上下滑动(缺省为左右滑动)。
+   * 
+   * @param vertical TRUE表示上下滑动，FALSE表示左右滑动。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetVertical(bool vertical);
+
+  /**
+   * 设置页面切换动画。
+   *
+   *anim_hint取值如下：
+   *
+   ** "translate"：平移。
+   ** "overlap"：覆盖。
+   ** "overlap\_with\_alpha"：覆盖并改变透明度。
+   *
+   *> 使用"overlap"或"overlap\_with\_alpha"动画时，背景图片最好指定到page上。
+   *>
+   *> 使用"overlap\_with\_alpha"动画时，slideview的背景设置为黑色，
+   *> 或slideview的背景设置为透明，窗口的背景设置为黑色，以获得更好的视觉效果和性能。
+   * 
+   * @param anim_hint 页面切换动画。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAnimHint(const char* anim_hint);
+
+  /**
+   * 设置循环切换模式。
+   * 
+   * @param loop 是否启用循环切换模式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetLoop(bool loop);
+
+  /**
+   * 是否为上下滑动模式。
+   *
+   */
+  bool GetVertical() const;
+
+  /**
+   * 自动播放。0表示禁止自动播放，非0表示自动播放时每一页播放的时间。
+   *
+   */
+  uint16_t GetAutoPlay() const;
+
+  /**
+   * 循环切换模式。
+   *
+   *向后切换：切换到最后一页时，再往后切换就到第一页。
+   *向前切换：切换到第一页时，再往前切换就到最后一页。
+   *
+   */
+  bool GetLoop() const;
+
+  /**
+   * 页面切换效果。
+   *
+   */
+  char* GetAnimHint() const;
 };
 
 /**

@@ -1561,6 +1561,18 @@ const char* TErrorEvent::GetMessage() const {
   return ((error_event_t*)(this->nativeObj))->message;
 }
 
+const char* TCmdExecEvent::GetName() const {
+  return ((cmd_exec_event_t*)(this->nativeObj))->name;
+}
+
+const char* TCmdExecEvent::GetArgs() const {
+  return ((cmd_exec_event_t*)(this->nativeObj))->args;
+}
+
+ret_t TCmdExecEvent::GetResult() const {
+  return ((cmd_exec_event_t*)(this->nativeObj))->result;
+}
+
 TWidget TTimeClock::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTimeClock((widget_t*)(time_clock_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -1726,22 +1738,6 @@ char* TTextSelector::GetOptions() const {
   return ((text_selector_t*)(this->nativeObj))->options;
 }
 
-TWidget TSwitch::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSwitch((widget_t*)(switch_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TSwitch::SetValue(bool value) {
-  return switch_set_value(((widget_t*)(this->nativeObj)), value);
-}
-
-bool TSwitch::GetValue() const {
-  return ((switch_t*)(this->nativeObj))->value;
-}
-
-float_t TSwitch::GetMaxXoffsetRatio() const {
-  return ((switch_t*)(this->nativeObj))->max_xoffset_ratio;
-}
-
 int32_t TWheelEvent::GetDy() const {
   return ((wheel_event_t*)(this->nativeObj))->dy;
 }
@@ -1758,6 +1754,22 @@ bool TWheelEvent::GetShift() const {
   return ((wheel_event_t*)(this->nativeObj))->shift;
 }
 
+TWidget TSwitch::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSwitch((widget_t*)(switch_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TSwitch::SetValue(bool value) {
+  return switch_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+bool TSwitch::GetValue() const {
+  return ((switch_t*)(this->nativeObj))->value;
+}
+
+float_t TSwitch::GetMaxXoffsetRatio() const {
+  return ((switch_t*)(this->nativeObj))->max_xoffset_ratio;
+}
+
 TWidget TView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TView((widget_t*)(view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -1768,46 +1780,6 @@ ret_t TView::SetDefaultFocusedChild(const char* default_focused_child) {
 
 char* TView::GetDefaultFocusedChild() const {
   return ((view_t*)(this->nativeObj))->default_focused_child;
-}
-
-TWidget TSlideView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TSlideView((widget_t*)(slide_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
-}
-
-ret_t TSlideView::SetAutoPlay(uint16_t auto_play) {
-  return slide_view_set_auto_play(((widget_t*)(this->nativeObj)), auto_play);
-}
-
-ret_t TSlideView::SetActive(uint32_t index) {
-  return slide_view_set_active(((widget_t*)(this->nativeObj)), index);
-}
-
-ret_t TSlideView::SetVertical(bool vertical) {
-  return slide_view_set_vertical(((widget_t*)(this->nativeObj)), vertical);
-}
-
-ret_t TSlideView::SetAnimHint(const char* anim_hint) {
-  return slide_view_set_anim_hint(((widget_t*)(this->nativeObj)), anim_hint);
-}
-
-ret_t TSlideView::SetLoop(bool loop) {
-  return slide_view_set_loop(((widget_t*)(this->nativeObj)), loop);
-}
-
-bool TSlideView::GetVertical() const {
-  return ((slide_view_t*)(this->nativeObj))->vertical;
-}
-
-uint16_t TSlideView::GetAutoPlay() const {
-  return ((slide_view_t*)(this->nativeObj))->auto_play;
-}
-
-bool TSlideView::GetLoop() const {
-  return ((slide_view_t*)(this->nativeObj))->loop;
-}
-
-char* TSlideView::GetAnimHint() const {
-  return ((slide_view_t*)(this->nativeObj))->anim_hint;
 }
 
 TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -1848,6 +1820,46 @@ char* TTabButton::GetActiveIcon() const {
 
 char* TTabButton::GetIcon() const {
   return ((tab_button_t*)(this->nativeObj))->icon;
+}
+
+TWidget TSlideView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TSlideView((widget_t*)(slide_view_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TSlideView::SetAutoPlay(uint16_t auto_play) {
+  return slide_view_set_auto_play(((widget_t*)(this->nativeObj)), auto_play);
+}
+
+ret_t TSlideView::SetActive(uint32_t index) {
+  return slide_view_set_active(((widget_t*)(this->nativeObj)), index);
+}
+
+ret_t TSlideView::SetVertical(bool vertical) {
+  return slide_view_set_vertical(((widget_t*)(this->nativeObj)), vertical);
+}
+
+ret_t TSlideView::SetAnimHint(const char* anim_hint) {
+  return slide_view_set_anim_hint(((widget_t*)(this->nativeObj)), anim_hint);
+}
+
+ret_t TSlideView::SetLoop(bool loop) {
+  return slide_view_set_loop(((widget_t*)(this->nativeObj)), loop);
+}
+
+bool TSlideView::GetVertical() const {
+  return ((slide_view_t*)(this->nativeObj))->vertical;
+}
+
+uint16_t TSlideView::GetAutoPlay() const {
+  return ((slide_view_t*)(this->nativeObj))->auto_play;
+}
+
+bool TSlideView::GetLoop() const {
+  return ((slide_view_t*)(this->nativeObj))->loop;
+}
+
+char* TSlideView::GetAnimHint() const {
+  return ((slide_view_t*)(this->nativeObj))->anim_hint;
 }
 
 TWidget TSlideIndicator::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
