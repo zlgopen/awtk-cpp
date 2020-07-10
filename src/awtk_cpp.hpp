@@ -1227,6 +1227,15 @@ class TFontManager {
   ret_t UnloadFont(char* name, font_size_t size);
 
   /**
+   * 清除最久没有被使用的缓冲字模。
+   * 
+   * @param cache_size 每种字体保留缓存字模的个数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ShrinkCache(uint32_t cache_size);
+
+  /**
    * 卸载全部字体。
    * 
    *
@@ -3492,6 +3501,132 @@ class TTimeNow {
 };
 
 /**
+ * 命名的值。
+ *
+ */
+class TNamedValue {
+ public:
+  //nativeObj is public for internal use only.
+  named_value_t* nativeObj;
+
+  TNamedValue(named_value_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TNamedValue(const named_value_t* nativeObj) {
+    this->nativeObj = (named_value_t*)nativeObj;
+  }
+
+  static TNamedValue Cast(named_value_t* nativeObj) {
+    return TNamedValue(nativeObj);
+  }
+
+  static TNamedValue Cast(const named_value_t* nativeObj) {
+    return TNamedValue((named_value_t*)nativeObj);
+  }
+
+  /**
+   * 创建named_value对象。
+   * 
+   *
+   * @return 返回named_value对象。
+   */
+  static TNamedValue Create();
+
+  /**
+   * 设置名称。
+   * 
+   * @param name 名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetName(const char* name);
+
+  /**
+   * 设置值。
+   * 
+   * @param value 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetValue(TValue& value);
+
+  /**
+   * 获取值对象(主要给脚本语言使用)。
+   * 
+   *
+   * @return 返回值对象。
+   */
+  TValue GetValue();
+
+  /**
+   * 销毁named_value对象。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Destroy();
+
+  /**
+   * 名称。
+   *
+   */
+  char* GetName() const;
+};
+
+/**
+ * idle_manager_t管理器。
+ *
+ */
+class TIdleManager {
+ public:
+  //nativeObj is public for internal use only.
+  idle_manager_t* nativeObj;
+
+  TIdleManager(idle_manager_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TIdleManager(const idle_manager_t* nativeObj) {
+    this->nativeObj = (idle_manager_t*)nativeObj;
+  }
+
+  static TIdleManager Cast(idle_manager_t* nativeObj) {
+    return TIdleManager(nativeObj);
+  }
+
+  static TIdleManager Cast(const idle_manager_t* nativeObj) {
+    return TIdleManager((idle_manager_t*)nativeObj);
+  }
+};
+
+/**
+ * 离线画布 canvas。
+ *
+ */
+class TCanvasOffline {
+ public:
+  //nativeObj is public for internal use only.
+  canvas_offline_t* nativeObj;
+
+  TCanvasOffline(canvas_offline_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TCanvasOffline(const canvas_offline_t* nativeObj) {
+    this->nativeObj = (canvas_offline_t*)nativeObj;
+  }
+
+  static TCanvasOffline Cast(canvas_offline_t* nativeObj) {
+    return TCanvasOffline(nativeObj);
+  }
+
+  static TCanvasOffline Cast(const canvas_offline_t* nativeObj) {
+    return TCanvasOffline((canvas_offline_t*)nativeObj);
+  }
+};
+
+/**
  * 提供基本的绘图功能和状态管理。
  *
  */
@@ -3795,106 +3930,6 @@ class TCanvas {
 };
 
 /**
- * 命名的值。
- *
- */
-class TNamedValue {
- public:
-  //nativeObj is public for internal use only.
-  named_value_t* nativeObj;
-
-  TNamedValue(named_value_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TNamedValue(const named_value_t* nativeObj) {
-    this->nativeObj = (named_value_t*)nativeObj;
-  }
-
-  static TNamedValue Cast(named_value_t* nativeObj) {
-    return TNamedValue(nativeObj);
-  }
-
-  static TNamedValue Cast(const named_value_t* nativeObj) {
-    return TNamedValue((named_value_t*)nativeObj);
-  }
-
-  /**
-   * 创建named_value对象。
-   * 
-   *
-   * @return 返回named_value对象。
-   */
-  static TNamedValue Create();
-
-  /**
-   * 设置名称。
-   * 
-   * @param name 名称。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetName(const char* name);
-
-  /**
-   * 设置值。
-   * 
-   * @param value 值。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetValue(TValue& value);
-
-  /**
-   * 获取值对象(主要给脚本语言使用)。
-   * 
-   *
-   * @return 返回值对象。
-   */
-  TValue GetValue();
-
-  /**
-   * 销毁named_value对象。
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Destroy();
-
-  /**
-   * 名称。
-   *
-   */
-  char* GetName() const;
-};
-
-/**
- * idle_manager_t管理器。
- *
- */
-class TIdleManager {
- public:
-  //nativeObj is public for internal use only.
-  idle_manager_t* nativeObj;
-
-  TIdleManager(idle_manager_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TIdleManager(const idle_manager_t* nativeObj) {
-    this->nativeObj = (idle_manager_t*)nativeObj;
-  }
-
-  static TIdleManager Cast(idle_manager_t* nativeObj) {
-    return TIdleManager(nativeObj);
-  }
-
-  static TIdleManager Cast(const idle_manager_t* nativeObj) {
-    return TIdleManager((idle_manager_t*)nativeObj);
-  }
-};
-
-/**
  * 日期时间。
  *
  *> 在嵌入式平台中，在系统初始时，需要调用date\_time\_global\_init设置实际获取/设置系统时间的函数。
@@ -3945,6 +3980,36 @@ class TDateTime {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t FromTime(uint64_t time);
+
+  /**
+   * 是否是闰年。
+   * 
+   * @param year 年份。
+   *
+   * @return 返回TRUE表示是，否则表示否。
+   */
+  static bool IsLeap(uint32_t year);
+
+  /**
+   * 获取指定年份月份的天数。
+   * 
+   * @param year 年份。
+   * @param montn 月份(1-12)。
+   *
+   * @return 返回大于0表示天数，否则表示失败。
+   */
+  static int32_t GetDays(uint32_t year, uint32_t montn);
+
+  /**
+   * 获取指定日期是周几(0-6)。
+   * 
+   * @param year 年份。
+   * @param montn 月份(1-12)。
+   * @param day 日(1-31)。
+   *
+   * @return 返回大于等于0表示周几(0-6)，否则表示失败。
+   */
+  static int32_t GetWday(uint32_t year, uint32_t montn, uint32_t day);
 
   /**
    * 销毁date_time对象(一般供脚本语言中使用)。
@@ -10113,7 +10178,7 @@ class TEdit : public TWidget {
   char* GetActionText() const;
 
   /**
-   * 自定义软键盘名称。
+   * 自定义软键盘名称。AWTK优先查找keyboard属性设置的键盘文件名（该键盘的XML文件需要在default\raw\ui目录下存在），如果keyboard为空就找input_type设置的键盘类型
    *
    */
   char* GetKeyboard() const;
