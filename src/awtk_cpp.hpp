@@ -4,6 +4,7 @@
 #include "tkc/rlog.h"
 #include "conf_io/app_conf.h"
 class TValue;
+class TTheme;
 class TRect;
 class TObject;
 class TEmitter;
@@ -143,13 +144,13 @@ class TEmitter {
   /**
    * 注册指定事件的处理函数。
    * 
-   * @param type 事件类型。
-   * @param on_event 事件处理函数。
+   * @param etype 事件类型。
+   * @param handler 事件处理函数。
    * @param ctx 事件处理函数上下文。
    *
    * @return 返回id，用于emitter_off。
    */
-  uint32_t On(event_type_t type, event_func_t on_event, void* ctx);
+  uint32_t On(event_type_t etype, event_func_t handler, void* ctx);
 
   /**
    * 注销指定事件的处理函数。
@@ -177,14 +178,6 @@ class TEmitter {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Disable();
-
-  /**
-   * 获取注册的回调函数个数，主要用于辅助测试。
-   * 
-   *
-   * @return 回调函数个数。
-   */
-  uint32_t Size();
 
   /**
    * 销毁。
@@ -605,6 +598,16 @@ class TObject : public TEmitter {
   float_t GetPropFloat(const char* name, float_t defval);
 
   /**
+   * 获取指定属性的浮点数类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的浮点数类型的值。
+   */
+  double GetPropDouble(const char* name, double defval);
+
+  /**
    * 删除指定属性。
    * 
    * @param name 属性的名称。
@@ -672,6 +675,16 @@ class TObject : public TEmitter {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetPropFloat(const char* name, float_t value);
+
+  /**
+   * 设置指定属性的浮点数类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropDouble(const char* name, double value);
 
   /**
    * 拷贝指定的属性。
@@ -877,6 +890,166 @@ class TObject : public TEmitter {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t ExecuteByPath(const char* path, const char* args);
+
+  /**
+   * 获取指定属性的int8类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的int8类型的值。
+   */
+  int8_t GetPropInt8(const char* name, int8_t defval);
+
+  /**
+   * 设置指定属性的int8类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropInt8(const char* name, int8_t value);
+
+  /**
+   * 获取指定属性的uint8类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的uint8类型的值。
+   */
+  uint8_t GetPropUint8(const char* name, uint8_t defval);
+
+  /**
+   * 设置指定属性的uint8类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropUint8(const char* name, uint8_t value);
+
+  /**
+   * 获取指定属性的int16类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的int16类型的值。
+   */
+  int16_t GetPropInt16(const char* name, int16_t defval);
+
+  /**
+   * 设置指定属性的int16类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropInt16(const char* name, int16_t value);
+
+  /**
+   * 获取指定属性的uint16类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的uint16类型的值。
+   */
+  uint16_t GetPropUint16(const char* name, uint16_t defval);
+
+  /**
+   * 设置指定属性的uint16类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropUint16(const char* name, uint16_t value);
+
+  /**
+   * 获取指定属性的int32类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的int32类型的值。
+   */
+  int32_t GetPropInt32(const char* name, int32_t defval);
+
+  /**
+   * 设置指定属性的int32类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropInt32(const char* name, int32_t value);
+
+  /**
+   * 获取指定属性的uint32类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的uint32类型的值。
+   */
+  uint32_t GetPropUint32(const char* name, uint32_t defval);
+
+  /**
+   * 设置指定属性的uint32类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropUint32(const char* name, uint32_t value);
+
+  /**
+   * 获取指定属性的int64类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的int64类型的值。
+   */
+  int64_t GetPropInt64(const char* name, int64_t defval);
+
+  /**
+   * 设置指定属性的int64类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropInt64(const char* name, int64_t value);
+
+  /**
+   * 获取指定属性的uint64类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回指定属性的uint64类型的值。
+   */
+  uint64_t GetPropUint64(const char* name, uint64_t defval);
+
+  /**
+   * 设置指定属性的uint64类型的值。
+   * 
+   * @param name 属性的名称。
+   * @param value 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropUint64(const char* name, uint64_t value);
 
   /**
    * 引用计数。
@@ -1262,96 +1435,6 @@ class TGlobal {
    * @return 返回全局指针是否按下。
    */
   static bool IsPointerPressed();
-};
-
-/**
- * 资源管理器。
- *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、主题、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
- *
- ** 让上层不需要了解存储的方式。
- *在没有文件系统时或者内存紧缺时，把资源转成常量数组直接编译到代码中。在有文件系统而且内存充足时，资源放在文件系统中。在有网络时，资源也可以存放在服务器上(暂未实现)。资源管理器为上层提供统一的接口，让上层而不用关心底层的存储方式。
- *
- ** 让上层不需要了解资源的具体格式。
- *比如一个名为earth的图片，没有文件系统或内存紧缺，图片直接用位图数据格式存在ROM中，而有文件系统时，则用PNG格式存放在文件系统中。资源管理器让上层不需要关心图片的格式，访问时指定图片的名称即可(不用指定扩展名)。
- *
- ** 让上层不需要了解屏幕的密度。
- *不同的屏幕密度下需要加载不同的图片，比如MacPro的Retina屏就需要用双倍解析度的图片，否则就出现界面模糊。AWTK以后会支持PC软件和手机软件的开发，所以资源管理器需要为此提供支持，让上层不需关心屏幕的密度。
- *
- ** 对资源进行内存缓存。
- *不同类型的资源使用方式是不一样的，比如字体和主题加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
- *
- *当从文件系统加载资源时，目录结构要求如下：
- *
- *```
- *assets/{theme}/raw/
- *fonts   字体
- *images  图片
- *x1   普通密度屏幕的图片。
- *x2   2倍密度屏幕的图片。
- *x3   3倍密度屏幕的图片。
- *xx   密度无关的图片。
- *strings 需要翻译的字符串。
- *styles  主题数据。
- *ui      UI描述数据。
- *```
- *
- */
-class TAssetsManager {
- public:
-  //nativeObj is public for internal use only.
-  assets_manager_t* nativeObj;
-
-  TAssetsManager(assets_manager_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TAssetsManager(const assets_manager_t* nativeObj) {
-    this->nativeObj = (assets_manager_t*)nativeObj;
-  }
-
-  static TAssetsManager Cast(assets_manager_t* nativeObj) {
-    return TAssetsManager(nativeObj);
-  }
-
-  static TAssetsManager Cast(const assets_manager_t* nativeObj) {
-    return TAssetsManager((assets_manager_t*)nativeObj);
-  }
-
-  /**
-   * 获取缺省资源管理器。
-   * 
-   *
-   * @return 返回asset manager对象。
-   */
-  static TAssetsManager Instance();
-
-  /**
-   * 设置当前的主题。
-   * 
-   * @param theme 主题名称。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetTheme(const char* theme);
-
-  /**
-   * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
-   * 
-   * @param type 资源的类型。
-   * @param name 资源的名称。
-   *
-   * @return 返回资源。
-   */
-  TAssetInfo Ref(asset_type_t type, char* name);
-
-  /**
-   * 释放指定的资源。
-   * 
-   * @param info 资源。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Unref(TAssetInfo& info);
 };
 
 /**
@@ -2132,6 +2215,16 @@ class TStyle {
   int32_t GetInt(const char* name, int32_t defval);
 
   /**
+   * 获取指定name的无符号整数格式的值。
+   * 
+   * @param name 属性名。
+   * @param defval 缺省值。
+   *
+   * @return 返回无符号整数格式的值。
+   */
+  uint32_t GetUint(const char* name, uint32_t defval);
+
+  /**
    * 获取指定name的字符串格式的值。
    * 
    * @param name 属性名。
@@ -2153,12 +2246,52 @@ class TStyle {
   ret_t Set(const char* state, const char* name, TValue& value);
 
   /**
+   * 把风格对象数据设置到风格对象中
+   * 
+   * @param data 风格对象数据
+   * @param state 风格状态
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetStyleData(const uint8_t* data, const char* state);
+
+  /**
+   * 更新风格对象的状态以及对应的数据
+   *备注：根据 widget_type 和 style_name 以及 widget_state 在 theme 对象中查找对应的数据并且更新到 style 对象中
+   * 
+   * @param theme theme对象。
+   * @param widget_type 控件的类型名。
+   * @param style_name style的名称。
+   * @param widget_state 控件的状态。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t UpdateState(TTheme& theme, const char* widget_type, const char* style_name,
+                    const char* widget_state);
+
+  /**
+   * 获取风格对象的风格状态
+   * 
+   *
+   * @return 返回风格状态。
+   */
+  const char* GetStyleState();
+
+  /**
    * 检查style是否是mutable的。
    * 
    *
    * @return 返回TRUE表示是，否则表示不是。
    */
   bool IsMutable();
+
+  /**
+   * 获取 style 的风格类型。
+   * 
+   *
+   * @return 返回风格类型。
+   */
+  const char* GetStyleType();
 };
 
 /**
@@ -3001,6 +3134,16 @@ class TWidget {
   ret_t AddValue(int32_t delta);
 
   /**
+   * 查询指定的style是否存在。
+   * 
+   * @param style_name style的名称（如果为 NULL，则默认为 default）。
+   * @param state_name state的名称（如果为 NULL，则默认为 normal）。
+   *
+   * @return 存在返回 TRUE，不存在返回 FALSE。
+   */
+  bool IsStyleExist(const char* style_name, const char* state_name);
+
+  /**
    * 启用指定的style。
    * 
    * @param style style的名称。
@@ -3578,6 +3721,14 @@ class TWidget {
   bool IsOverlay();
 
   /**
+   * 检查控件弹出对话框控件是否已经打开了（而非挂起状态）。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsOpenedDialog();
+
+  /**
    * 检查控件弹出窗口控件是否已经打开了（而非挂起状态）。
    * 
    *
@@ -3739,6 +3890,14 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t DispatchToKeyTarget(TEvent& e);
+
+  /**
+   * 获取 widget 对应风格类型
+   * 
+   *
+   * @return 返回 widget 的对应风格类型。
+   */
+  const char* GetStyleType();
 
   /**
    * 让控件根据自己当前状态更新style。
@@ -3955,7 +4114,7 @@ class TWidget {
 
   /**
    * 是否支持焦点状态。
-   *> 如果希望style支持焦点状态，但有不希望焦点停留，可用本属性。
+   *> 如果希望style支持焦点状态，但又不希望焦点停留，可用本属性。
    *
    */
   bool GetWithFocusState() const;
@@ -3991,11 +4150,8 @@ class TWidget {
 };
 
 /**
- * 应用程序的配置信息。
- *
- *底层实现可以是任何格式，比如INI，XML，JSON和UBJSON。
- *
- *对于树状的文档，key可以是多级的，用.分隔。如network.ip。
+ * #include "conf_io/app_conf.h"
+ *```
  *
  */
 class TAppConf {
@@ -4348,6 +4504,60 @@ class TDateTime {
   static TDateTime Create();
 
   /**
+   * 设置年。
+   * 
+   * @param year 年。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetYear(uint32_t year);
+
+  /**
+   * 设置月。
+   * 
+   * @param month 月。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMonth(uint32_t month);
+
+  /**
+   * 设置日。
+   * 
+   * @param day 日。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDay(uint32_t day);
+
+  /**
+   * 设置小时。
+   * 
+   * @param hour 小时。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetHour(uint32_t hour);
+
+  /**
+   * 设置分钟。
+   * 
+   * @param minute 分钟。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMinute(uint32_t minute);
+
+  /**
+   * 设置秒。
+   * 
+   * @param second 秒。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSecond(uint32_t second);
+
+  /**
    * 设置当前时间。
    * 
    *
@@ -4363,6 +4573,14 @@ class TDateTime {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t FromTime(uint64_t time);
+
+  /**
+   * 转换成time。
+   * 
+   *
+   * @return 返回time。
+   */
+  uint64_t ToTime();
 
   /**
    * 加上一个偏移量(s)。
@@ -4683,6 +4901,110 @@ class TTimerManager {
   static TTimerManager Cast(const timer_manager_t* nativeObj) {
     return TTimerManager((timer_manager_t*)nativeObj);
   }
+};
+
+/**
+ * 资源管理器。
+ *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、主题、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
+ *
+ ** 让上层不需要了解存储的方式。
+ *在没有文件系统时或者内存紧缺时，把资源转成常量数组直接编译到代码中。在有文件系统而且内存充足时，资源放在文件系统中。在有网络时，资源也可以存放在服务器上(暂未实现)。资源管理器为上层提供统一的接口，让上层而不用关心底层的存储方式。
+ *
+ ** 让上层不需要了解资源的具体格式。
+ *比如一个名为earth的图片，没有文件系统或内存紧缺，图片直接用位图数据格式存在ROM中，而有文件系统时，则用PNG格式存放在文件系统中。资源管理器让上层不需要关心图片的格式，访问时指定图片的名称即可(不用指定扩展名)。
+ *
+ ** 让上层不需要了解屏幕的密度。
+ *不同的屏幕密度下需要加载不同的图片，比如MacPro的Retina屏就需要用双倍解析度的图片，否则就出现界面模糊。AWTK以后会支持PC软件和手机软件的开发，所以资源管理器需要为此提供支持，让上层不需关心屏幕的密度。
+ *
+ ** 对资源进行内存缓存。
+ *不同类型的资源使用方式是不一样的，比如字体和主题加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
+ *
+ *当从文件系统加载资源时，目录结构要求如下：
+ *
+ *```
+ *assets/{theme}/raw/
+ *fonts   字体
+ *images  图片
+ *x1   普通密度屏幕的图片。
+ *x2   2倍密度屏幕的图片。
+ *x3   3倍密度屏幕的图片。
+ *xx   密度无关的图片。
+ *strings 需要翻译的字符串。
+ *styles  主题数据。
+ *ui      UI描述数据。
+ *```
+ *
+ */
+class TAssetsManager : public TEmitter {
+ public:
+  TAssetsManager(emitter_t* nativeObj) : TEmitter(nativeObj) {
+  }
+
+  TAssetsManager(const assets_manager_t* nativeObj) : TEmitter((emitter_t*)nativeObj) {
+  }
+
+  static TAssetsManager Cast(emitter_t* nativeObj) {
+    return TAssetsManager(nativeObj);
+  }
+
+  static TAssetsManager Cast(const emitter_t* nativeObj) {
+    return TAssetsManager((emitter_t*)nativeObj);
+  }
+
+  static TAssetsManager Cast(TEmitter& obj) {
+    return TAssetsManager(obj.nativeObj);
+  }
+
+  static TAssetsManager Cast(const TEmitter& obj) {
+    return TAssetsManager(obj.nativeObj);
+  }
+
+  /**
+   * 获取缺省资源管理器。
+   * 
+   *
+   * @return 返回asset manager对象。
+   */
+  static TAssetsManager Instance();
+
+  /**
+   * 设置当前的主题。
+   * 
+   * @param theme 主题名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTheme(const char* theme);
+
+  /**
+   * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
+   * 
+   * @param type 资源的类型。
+   * @param name 资源的名称。
+   *
+   * @return 返回资源。
+   */
+  TAssetInfo Ref(asset_type_t type, char* name);
+
+  /**
+   * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
+   * 
+   * @param type 资源的类型。
+   * @param subtype 资源的子类型。
+   * @param name 资源的名称。
+   *
+   * @return 返回资源。
+   */
+  TAssetInfo RefEx(asset_type_t type, uint16_t subtype, char* name);
+
+  /**
+   * 释放指定的资源。
+   * 
+   * @param info 资源。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Unref(TAssetInfo& info);
 };
 
 /**
@@ -5093,12 +5415,6 @@ class TMultiGestureEvent : public TEvent {
   }
 
   /**
-   * touch device id。
-   *
-   */
-  int64_t GetTouchId() const;
-
-  /**
    * 中心点x坐标。
    *
    */
@@ -5111,7 +5427,7 @@ class TMultiGestureEvent : public TEvent {
   xy_t GetY() const;
 
   /**
-   * 旋转角度(幅度)增量。
+   * 旋转角度(幅度)增量。（单位弧度）
    *
    */
   float GetRotation() const;
@@ -5121,12 +5437,47 @@ class TMultiGestureEvent : public TEvent {
    *
    */
   float GetDistance() const;
+};
+
+/**
+ * 资源事件，由资源管理器触发。
+ *
+ */
+class TAssetsEvent : public TEvent {
+ public:
+  TAssetsEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TAssetsEvent(const assets_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TAssetsEvent Cast(event_t* nativeObj) {
+    return TAssetsEvent(nativeObj);
+  }
+
+  static TAssetsEvent Cast(const event_t* nativeObj) {
+    return TAssetsEvent((event_t*)nativeObj);
+  }
+
+  static TAssetsEvent Cast(TEvent& obj) {
+    return TAssetsEvent(obj.nativeObj);
+  }
+
+  static TAssetsEvent Cast(const TEvent& obj) {
+    return TAssetsEvent(obj.nativeObj);
+  }
 
   /**
-   * 本事件用到手指数。
+   * 触发事件的资源类型
    *
    */
-  uint32_t GetFingers() const;
+  asset_type_t GetType() const;
+
+  /**
+   * 触发事件的资源对象
+   *
+   */
+  TAssetInfo GetAssetInfo() const;
 };
 
 /**
@@ -5348,12 +5699,11 @@ class TStyleMutable : public TStyle {
    *
    *> 除了测试程序外不需要直接调用，widget会通过style\_factory\_create创建。
    * 
-   * @param widget 控件
    * @param default_style 缺省的style。
    *
    * @return style对象。
    */
-  static TStyle Create(TWidget& widget, TStyle& default_style);
+  static TStyle Create(TStyle& default_style);
 
   /**
    * 名称。
@@ -5404,6 +5754,42 @@ class TWindowBase : public TWidget {
    *
    */
   char* GetTheme() const;
+
+  /**
+   * 设计时宽度。
+   *
+   */
+  uint16_t GetDesignW() const;
+
+  /**
+   * 设计时高度。
+   *
+   */
+  uint16_t GetDesignH() const;
+
+  /**
+   * 窗口大小与设计时大小不同时，是否自动调整子控件的x坐标。
+   *
+   */
+  bool GetAutoScaleChildrenX() const;
+
+  /**
+   * 窗口大小与设计时大小不同时，是否自动调整子控件的y坐标。
+   *
+   */
+  bool GetAutoScaleChildrenY() const;
+
+  /**
+   * 窗口大小与设计时大小不同时，是否自动调整子控件的宽度。
+   *
+   */
+  bool GetAutoScaleChildrenW() const;
+
+  /**
+   * 窗口大小与设计时大小不同时，是否自动调整子控件的高度。
+   *
+   */
+  bool GetAutoScaleChildrenH() const;
 
   /**
    * 禁用窗口动画。
@@ -6901,7 +7287,7 @@ class TImageValue : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetClickAddDelta(float_t delta);
+  ret_t SetClickAddDelta(double delta);
 
   /**
    * 设置值。
@@ -6910,7 +7296,7 @@ class TImageValue : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetValue(float_t value);
+  ret_t SetValue(double value);
 
   /**
    * 设置最小值。
@@ -6919,7 +7305,7 @@ class TImageValue : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetMin(float_t min);
+  ret_t SetMin(double min);
 
   /**
    * 设置最大值。
@@ -6928,7 +7314,7 @@ class TImageValue : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetMax(float_t max);
+  ret_t SetMax(double max);
 
   /**
    * 图片名称的前缀。
@@ -6946,25 +7332,25 @@ class TImageValue : public TWidget {
    * 点击时加上一个增量。
    *
    */
-  float_t GetClickAddDelta() const;
+  double GetClickAddDelta() const;
 
   /**
    * 值。
    *
    */
-  float_t GetValue() const;
+  double GetValue() const;
 
   /**
    * 最小值(如果设置了click\_add\_delta，到达最小值后回到最大值)。
    *
    */
-  float_t GetMin() const;
+  double GetMin() const;
 
   /**
    * 最大值(如果设置了click\_add\_delta，到达最大值后回到最小值)。
    *
    */
-  float_t GetMax() const;
+  double GetMax() const;
 };
 
 /**
@@ -7437,36 +7823,6 @@ class TMledit : public TWidget {
   ret_t SetCloseImWhenBlured(bool close_im_when_blured);
 
   /**
-   * 编辑器是否为只读。
-   *
-   */
-  bool GetReadonly() const;
-
-  /**
-   * 上边距。
-   *
-   */
-  uint8_t GetTopMargin() const;
-
-  /**
-   * 下边距。
-   *
-   */
-  uint8_t GetBottomMargin() const;
-
-  /**
-   * 左边距。
-   *
-   */
-  uint8_t GetLeftMargin() const;
-
-  /**
-   * 右边距。
-   *
-   */
-  uint8_t GetRightMargin() const;
-
-  /**
    * 输入提示。
    *
    */
@@ -7485,22 +7841,28 @@ class TMledit : public TWidget {
   char* GetKeyboard() const;
 
   /**
-   * 是否自动折行。
-   *
-   */
-  bool GetWrapWord() const;
-
-  /**
    * 最大行数。
    *
    */
   uint32_t GetMaxLines() const;
 
   /**
+   * 是否自动折行。
+   *
+   */
+  bool GetWrapWord() const;
+
+  /**
    * 鼠标一次滚动行数。
    *
    */
   uint32_t GetScrollLine() const;
+
+  /**
+   * 编辑器是否为只读。
+   *
+   */
+  bool GetReadonly() const;
 
   /**
    * 是否支持撤销编辑。如果为TRUE，在失去焦点之前可以撤销所有修改(恢复获得焦点之前的内容)。
@@ -7881,12 +8243,6 @@ class TRichText : public TWidget {
    *
    */
   uint32_t GetLineGap() const;
-
-  /**
-   * 边距。
-   *
-   */
-  uint32_t GetMargin() const;
 
   /**
    * 标识控件是否允许上下拖动。
@@ -8330,6 +8686,14 @@ class TListViewH : public TWidget {
  *
  *可用通过style来设置控件的显示风格，如背景颜色和边框颜色等(一般情况不需要)。
  *
+ *备注：list_view 下的 scroll_view 控件不支持遍历所有子控件的效果。
+ *
+ *下面是针对 scroll_bar_d （桌面版）有效果，scroll_bar_m（移动版）没有效果。
+ *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 TRUE，scroll_view 宽默认为 list_view 的 100% 宽，鼠标在 list_view 上滚动条才显示，不在的就自动隐藏，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽不会变。
+ *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 FALSE ，scroll_view 宽默认为 list_view 的 100% 宽，滚动条不隐藏，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽不会变。
+ *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 FALSE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可用，scroll_view 宽不会变。
+ *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 TRUE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽会合并原来滚动条的宽。
+ *
  */
 class TListView : public TWidget {
  public:
@@ -8396,6 +8760,15 @@ class TListView : public TWidget {
   ret_t SetAutoHideScrollBar(bool auto_hide_scroll_bar);
 
   /**
+   * 设置滚动条是否悬浮在 scroll_view 上面。
+   * 
+   * @param floating_scroll_bar 滚动条是否悬浮在 scroll_view 上面。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFloatingScrollBar(bool floating_scroll_bar);
+
+  /**
    * list_view重新初始化。
    * 
    *
@@ -8420,6 +8793,12 @@ class TListView : public TWidget {
    *
    */
   bool GetAutoHideScrollBar() const;
+
+  /**
+   * 滚动条是否悬浮在 scroll_view 上面
+   *
+   */
+  bool GetFloatingScrollBar() const;
 };
 
 /**
@@ -8718,6 +9097,43 @@ class TScrollView : public TWidget {
   ret_t SetYslidable(bool yslidable);
 
   /**
+   * 设置滚动时offset是否按页面对齐。
+   * 
+   * @param snap_to_page 是否按页面对齐。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSnapToPage(bool snap_to_page);
+
+  /**
+   * 设置滚动时是否每次翻一页
+   *备注：当 snap_to_page 为ture 的时候才有效果，主要用于区分一次翻一页还是一次翻多页。
+   * 
+   * @param move_to_page 是否每次翻一页。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMoveToPage(bool move_to_page);
+
+  /**
+   * 设置是否递归查找全部子控件。
+   * 
+   * @param recursive 是否递归查找全部子控件。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetRecursive(bool recursive);
+
+  /**
+   * 设置是否递归查找全部子控件。(不触发repaint和relayout)。
+   * 
+   * @param recursive 是否递归查找全部子控件。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetRecursiveOnly(bool recursive);
+
+  /**
    * 设置偏移量。
    * 
    * @param xoffset x偏移量。
@@ -8730,8 +9146,8 @@ class TScrollView : public TWidget {
   /**
    * 设置偏移速度比例。
    * 
-   * @param xspeed_scale x偏移速度比例。。
-   * @param yspeed_scale y偏移速度比例。。
+   * @param xspeed_scale x偏移速度比例。
+   * @param yspeed_scale y偏移速度比例。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -8806,6 +9222,24 @@ class TScrollView : public TWidget {
    *
    */
   bool GetYslidable() const;
+
+  /**
+   * 滚动时offset是否按页面对齐。
+   *
+   */
+  bool GetSnapToPage() const;
+
+  /**
+   * 是否每次翻一页（当 move_to_page 为ture 的时候才有效果，主要用于区分一次翻一页还是一次翻多页）。
+   *
+   */
+  bool GetMoveToPage() const;
+
+  /**
+   * 是否递归查找全部子控件。
+   *
+   */
+  bool GetRecursive() const;
 };
 
 /**
@@ -9266,13 +9700,23 @@ class TSlideView : public TWidget {
   ret_t SetAutoPlay(uint16_t auto_play);
 
   /**
-   * 设置当前页的序号。
+   * 设置当前页的序号(默认启用动画)。
    * 
    * @param index 当前页的序号。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetActive(uint32_t index);
+
+  /**
+   * 设置当前页的序号。
+   * 
+   * @param index 当前页的序号。
+   * @param animate 是否启用动画。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetActiveEx(uint32_t index, bool animate);
 
   /**
    * 设置为上下滑动(缺省为左右滑动)。
@@ -9543,6 +9987,18 @@ class TTextSelector : public TWidget {
    * @param start 起始值。
    * @param nr 个数。
    * @param step 步长。
+   * @param format 选项的格式化。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetRangeOptionsEx(int32_t start, uint32_t nr, int32_t step, const char* format);
+
+  /**
+   * 设置一系列的整数选项。
+   * 
+   * @param start 起始值。
+   * @param nr 个数。
+   * @param step 步长。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -9628,7 +10084,7 @@ class TTextSelector : public TWidget {
   ret_t SetYspeedScale(float_t yspeed_scale);
 
   /**
-   * 可见的选项数量(只能是3或者5，缺省为5)。
+   * 可见的选项数量(只能是1或者3或者5，缺省为5)。
    *
    */
   uint32_t GetVisibleNr() const;
@@ -9648,16 +10104,16 @@ class TTextSelector : public TWidget {
   char* GetOptions() const;
 
   /**
-   * 是否本地化(翻译)选项(缺省为FALSE)。
-   *
-   */
-  bool GetLocalizeOptions() const;
-
-  /**
    * y偏移速度比例。
    *
    */
   float_t GetYspeedScale() const;
+
+  /**
+   * 是否本地化(翻译)选项(缺省为FALSE)。
+   *
+   */
+  bool GetLocalizeOptions() const;
 
   /**
    * 是否循环选项(缺省为FALSE)。
@@ -10116,7 +10572,7 @@ class TCmdExecEvent : public TEvent {
   ret_t GetResult() const;
 
   /**
-   * 执行结果(适用于CAN_EXEC)。
+   * 标识命令是否可以执行(适用于CAN_EXEC)。
    *
    */
   bool GetCanExec() const;
@@ -11389,6 +11845,60 @@ class TEdit : public TWidget {
   ret_t SetCursor(uint32_t cursor);
 
   /**
+   * 输入提示。
+   *
+   */
+  char* GetTips() const;
+
+  /**
+   * 保存用于翻译的提示信息。
+   *
+   */
+  char* GetTrTips() const;
+
+  /**
+   * 软键盘上action按钮的文本。内置取值有：
+   *
+   ** next 将焦点切换到下一个控件。
+   ** done 完成，关闭软键盘。
+   *
+   *也可以使用其它文本，比如send表示发送。这个需要自己实现相应的功能，处理EVT\_IM\_ACTION事件即可。
+   *
+   */
+  char* GetActionText() const;
+
+  /**
+   * 自定义软键盘名称。AWTK优先查找keyboard属性设置的键盘文件名（该键盘的XML文件需要在default\raw\ui目录下存在），如果keyboard为空就找input_type设置的键盘类型
+   *
+   */
+  char* GetKeyboard() const;
+
+  /**
+   * 最小值或最小长度。
+   *
+   */
+  double GetMin() const;
+
+  /**
+   * 最大值或最大长度。
+   *
+   */
+  double GetMax() const;
+
+  /**
+   * 步长。
+   *作为数值型编辑器时，一次增加和减少时的数值。
+   *
+   */
+  double GetStep() const;
+
+  /**
+   * 输入类型。
+   *
+   */
+  input_type_t GetInputType() const;
+
+  /**
    * 编辑器是否为只读。
    *
    */
@@ -11427,84 +11937,6 @@ class TEdit : public TWidget {
    *
    */
   bool GetCloseImWhenBlured() const;
-
-  /**
-   * 上边距。
-   *
-   */
-  uint8_t GetTopMargin() const;
-
-  /**
-   * 下边距。
-   *
-   */
-  uint8_t GetBottomMargin() const;
-
-  /**
-   * 左边距。
-   *
-   */
-  uint8_t GetLeftMargin() const;
-
-  /**
-   * 右边距。
-   *
-   */
-  uint8_t GetRightMargin() const;
-
-  /**
-   * 输入提示。
-   *
-   */
-  char* GetTips() const;
-
-  /**
-   * 保存用于翻译的提示信息。
-   *
-   */
-  char* GetTrTips() const;
-
-  /**
-   * 软键盘上action按钮的文本。内置取值有：
-   *
-   ** next 将焦点切换到下一个控件。
-   ** done 完成，关闭软键盘。
-   *
-   *也可以使用其它文本，比如send表示发送。这个需要自己实现相应的功能，处理EVT\_IM\_ACTION事件即可。
-   *
-   */
-  char* GetActionText() const;
-
-  /**
-   * 自定义软键盘名称。AWTK优先查找keyboard属性设置的键盘文件名（该键盘的XML文件需要在default\raw\ui目录下存在），如果keyboard为空就找input_type设置的键盘类型
-   *
-   */
-  char* GetKeyboard() const;
-
-  /**
-   * 输入类型。
-   *
-   */
-  input_type_t GetInputType() const;
-
-  /**
-   * 最小值或最小长度。
-   *
-   */
-  double GetMin() const;
-
-  /**
-   * 最大值或最大长度。
-   *
-   */
-  double GetMax() const;
-
-  /**
-   * 步长。
-   *作为数值型编辑器时，一次增加和减少时的数值。
-   *
-   */
-  double GetStep() const;
 
   /**
    * 是否支持撤销编辑。如果为TRUE，在失去焦点之前可以撤销所有修改(恢复获得焦点之前的内容)。
@@ -11822,9 +12254,9 @@ class TLabel : public TWidget {
   ret_t SetLineWrap(bool line_wrap);
 
   /**
-   * 设置是否允许单词中换行。(需要开启自动换行才有效果)
+   * 设置是否允许整个单词换行。(需要开启自动换行才有效果)
    * 
-   * @param word_wrap 是否允许单词中换行。
+   * @param word_wrap 是否允许整个单词换行。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -11856,7 +12288,7 @@ class TLabel : public TWidget {
   bool GetLineWrap() const;
 
   /**
-   * 是否允许单词中换行。(需要开启自动换行才有效果)
+   * 是否允许整个单词换行。(需要开启自动换行才有效果)
    *
    */
   bool GetWordWrap() const;
@@ -12060,6 +12492,15 @@ class TProgressBar : public TWidget {
   ret_t SetShowText(bool show_text);
 
   /**
+   * 设置进度条是否反向。
+   * 
+   * @param reverse 是否反向。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetReverse(bool reverse);
+
+  /**
    * 获取进度百分比。
    *
    *> 当max为100时，percent和value取整后一致。
@@ -12092,6 +12533,12 @@ class TProgressBar : public TWidget {
    *
    */
   bool GetShowText() const;
+
+  /**
+   * 是否反向显示。如果为TRUE，水平方向从右向左表示增加，垂直方向从上到下表示增加。
+   *
+   */
+  bool GetReverse() const;
 };
 
 /**
@@ -13202,13 +13649,25 @@ class TWindow : public TWindowBase {
   /**
    * 设置为全屏窗口。
    *
-   *>这里全屏是指与LCD相同大小，而非让SDL窗口全屏。
+   *>如果app_type是SIMULATOR，全屏是指与LCD相同大小，而非让SDL窗口全屏。
    * 
    * @param fullscreen 是否全屏。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetFullscreen(bool fullscreen);
+
+  /**
+   * 当设计分辨率和实际分辨率不一致时，自动调整子控件的位置和大小。
+   *
+   *> 当子控件有self_layout参数或者子控件的父控件有children_layout参数时，不会自动调整。
+   * 
+   * @param design_w 设计时宽度。
+   * @param design_h 设计时高度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAutoScaleChildren(uint32_t design_w, uint32_t design_h);
 
   /**
    * 从资源文件中加载并创建window_base对象。本函数在ui_loader/ui_builder_default里实现。
@@ -13710,10 +14169,38 @@ class TObjectArray : public TObject {
   ret_t ClearProps();
 
   /**
+   * 在指定位置插入一个元素。
+   * 
+   * @param index 位置。
+   * @param v 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Insert(uint32_t index, TValue& v);
+
+  /**
+   * 追加一个元素。
+   * 
+   * @param v 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Push(TValue& v);
+
+  /**
+   * 在指定位置删除一个元素。
+   * 
+   * @param index 位置。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Remove(uint32_t index);
+
+  /**
    * 属性个数。
    *
    */
-  uint32_t GetPropsSize() const;
+  uint32_t GetSize() const;
 };
 
 /**
@@ -14343,12 +14830,29 @@ class TOverlay : public TWindowBase {
   ret_t SetClickThrough(bool click_through);
 
   /**
+   * 设置是否总是在最上面。
+   * 
+   * @param always_on_top 是否总是在最上面。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAlwaysOnTop(bool always_on_top);
+
+  /**
    * 点击穿透。点击没有子控件的位置，是否穿透到底层窗口。
    *
    *缺省不启用。
    *
    */
   bool GetClickThrough() const;
+
+  /**
+   * 是否总在最上面。
+   *
+   *缺省不启用。
+   *
+   */
+  bool GetAlwaysOnTop() const;
 };
 
 /**
