@@ -1920,6 +1920,15 @@ class TIdle {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Remove(uint32_t idle_id);
+
+  /**
+   * 根据上下文删除所有对应的idle。
+   * 
+   * @param ctx idle回调函数的上下文
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t RemoveAllByCtx(void* ctx);
 };
 
 /**
@@ -2361,6 +2370,15 @@ class TTimer {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Remove(uint32_t timer_id);
+
+  /**
+   * 根据上下文删除所有对应的timer。
+   * 
+   * @param ctx timer回调函数的上下文。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t RemoveAllByCtx(void* ctx);
 
   /**
    * 重置指定的timer，重置之后定时器重新开始计时。
