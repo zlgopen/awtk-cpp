@@ -42,6 +42,14 @@ class TEvent {
   }
 
   /**
+   * 获取event类型。
+   * 
+   *
+   * @return 返回event类型。
+   */
+  int GetType();
+
+  /**
    * 创建event对象。
    *
    *主要给脚本语言使用。
@@ -139,7 +147,7 @@ class TEmitter {
    *
    * @return 
    */
-  ret_t DispatchSimpleEvent(event_type_t type);
+  ret_t DispatchSimpleEvent(uint32_t type);
 
   /**
    * 注册指定事件的处理函数。
@@ -2255,16 +2263,6 @@ class TStyle {
   ret_t Set(const char* state, const char* name, TValue& value);
 
   /**
-   * 把风格对象数据设置到风格对象中
-   * 
-   * @param data 风格对象数据
-   * @param state 风格状态
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetStyleData(const uint8_t* data, const char* state);
-
-  /**
    * 更新风格对象的状态以及对应的数据
    *备注：根据 widget_type 和 style_name 以及 widget_state 在 theme 对象中查找对应的数据并且更新到 style 对象中
    * 
@@ -3231,6 +3229,70 @@ class TWidget {
    * @return 返回值。
    */
   int32_t GetValue();
+
+  /**
+   * 获取控件enable属性值。
+   * 
+   *
+   * @return 返回enable。
+   */
+  bool GetEnable();
+
+  /**
+   * 获取控件floating属性值。
+   * 
+   *
+   * @return 返回floating。
+   */
+  bool GetFloating();
+
+  /**
+   * 获取控件auto_adjust_size属性值。
+   * 
+   *
+   * @return 返回auto_adjust_size。
+   */
+  bool GetAutoAdjustSize();
+
+  /**
+   * 获取控件with_focus_state属性值。
+   * 
+   *
+   * @return 返回with_focus_state。
+   */
+  bool GetWithFocusState();
+
+  /**
+   * 获取控件focusable属性值。
+   * 
+   *
+   * @return 返回focusable。
+   */
+  bool GetFocusable();
+
+  /**
+   * 获取控件sensitive属性值。
+   * 
+   *
+   * @return 返回sensitive。
+   */
+  bool GetSensitive();
+
+  /**
+   * 获取控件visible属性值。
+   * 
+   *
+   * @return 返回visible。
+   */
+  bool GetVisible();
+
+  /**
+   * 获取控件feedback属性值。
+   * 
+   *
+   * @return 返回feedback。
+   */
+  bool GetFeedback();
 
   /**
    * str_t str;
@@ -4343,6 +4405,22 @@ class TAssetInfo {
   }
 
   /**
+   * 获取类型。
+   * 
+   *
+   * @return 返回类型。
+   */
+  uint16_t GetType();
+
+  /**
+   * 获取名称。
+   * 
+   *
+   * @return 返回名称。
+   */
+  const char* GetName();
+
+  /**
    * 类型。
    *
    */
@@ -4469,6 +4547,16 @@ class TColor {
    * @return 返回alpha通道的值。
    */
   uint8_t A();
+
+  /**
+   * 获取颜色值。
+   *
+   *> 主要供脚本语言使用。
+   * 
+   *
+   * @return 返回颜色值。
+   */
+  uint32_t GetColor();
 
   /**
    * 销毁color对象。
@@ -5455,47 +5543,6 @@ class TMultiGestureEvent : public TEvent {
    *
    */
   float GetDistance() const;
-};
-
-/**
- * 资源事件，由资源管理器触发。
- *
- */
-class TAssetsEvent : public TEvent {
- public:
-  TAssetsEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TAssetsEvent(const assets_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TAssetsEvent Cast(event_t* nativeObj) {
-    return TAssetsEvent(nativeObj);
-  }
-
-  static TAssetsEvent Cast(const event_t* nativeObj) {
-    return TAssetsEvent((event_t*)nativeObj);
-  }
-
-  static TAssetsEvent Cast(TEvent& obj) {
-    return TAssetsEvent(obj.nativeObj);
-  }
-
-  static TAssetsEvent Cast(const TEvent& obj) {
-    return TAssetsEvent(obj.nativeObj);
-  }
-
-  /**
-   * 触发事件的资源类型
-   *
-   */
-  asset_type_t GetType() const;
-
-  /**
-   * 触发事件的资源对象
-   *
-   */
-  TAssetInfo GetAssetInfo() const;
 };
 
 /**
@@ -7996,6 +8043,15 @@ class TProgressCircle : public TWidget {
   ret_t SetMax(uint32_t max);
 
   /**
+   * 设置格式。
+   * 
+   * @param format 格式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFormat(const char* format);
+
+  /**
    * 设置环线的厚度。
    * 
    * @param line_width 环线的厚度。
@@ -8012,15 +8068,6 @@ class TProgressCircle : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetStartAngle(int32_t start_angle);
-
-  /**
-   * 设置单位。
-   * 
-   * @param unit 单位。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetUnit(const char* unit);
 
   /**
    * 设置线帽类型。
@@ -8059,7 +8106,13 @@ class TProgressCircle : public TWidget {
    * 最大值(缺省为100)。
    *
    */
-  uint32_t GetMax() const;
+  float_t GetMax() const;
+
+  /**
+   * 数值到字符串转换时的格式，缺省为"%d"。
+   *
+   */
+  char* GetFormat() const;
 
   /**
    * 起始角度(单位为度，缺省-90)。
@@ -8072,12 +8125,6 @@ class TProgressCircle : public TWidget {
    *
    */
   uint32_t GetLineWidth() const;
-
-  /**
-   * 单元(缺省无)。
-   *
-   */
-  char* GetUnit() const;
 
   /**
    * 线帽类型(round:圆头，square:方头)。
@@ -8644,7 +8691,7 @@ class TListViewH : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetSpacing(int32_t spacing);
+  ret_t SetSpacing(bool spacing);
 
   /**
    * 列表项的宽度。
@@ -11111,6 +11158,22 @@ class TColorTile : public TWidget {
   ret_t SetBgColor(const char* color);
 
   /**
+   * 获取背景颜色。
+   * 
+   *
+   * @return 返回背景颜色。
+   */
+  const char* GetBgColor();
+
+  /**
+   * 获取边框颜色。
+   * 
+   *
+   * @return 返回边框颜色。
+   */
+  const char* GetBorderColor();
+
+  /**
    * 背景颜色。
    *
    */
@@ -12480,7 +12543,7 @@ class TProgressBar : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetValue(float_t value);
+  ret_t SetValue(double value);
 
   /**
    * 设置最大值。
@@ -12489,7 +12552,16 @@ class TProgressBar : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetMax(uint32_t max);
+  ret_t SetMax(double max);
+
+  /**
+   * 设置格式。
+   * 
+   * @param format 格式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFormat(const char* format);
 
   /**
    * 设置进度条的方向。
@@ -12532,13 +12604,19 @@ class TProgressBar : public TWidget {
    * 进度条的值[0-max]。
    *
    */
-  float_t GetValue() const;
+  double GetValue() const;
 
   /**
    * 最大值(缺省为100)。
    *
    */
-  float_t GetMax() const;
+  double GetMax() const;
+
+  /**
+   * 数值到字符串转换时的格式，缺省为"%d"。
+   *
+   */
+  char* GetFormat() const;
 
   /**
    * 进度条的是否为垂直方向。
@@ -13016,7 +13094,7 @@ class TTabButton : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetValue(uint32_t value);
+  ret_t SetValue(bool value);
 
   /**
    * 设置控件的图标。
@@ -14121,6 +14199,12 @@ class TIdleInfo : public TObject {
   void* GetCtx() const;
 
   /**
+   * idle回调函数上下文。
+   *
+   */
+  void* GetExtraCtx() const;
+
+  /**
    * idle的ID
    *
    *> 为TK\_INVALID\_ID时表示无效idle。
@@ -14315,6 +14399,12 @@ class TTimerInfo : public TObject {
    *
    */
   void* GetCtx() const;
+
+  /**
+   * 定时器回调函数的上下文
+   *
+   */
+  void* GetExtraCtx() const;
 
   /**
    * 定时器的ID

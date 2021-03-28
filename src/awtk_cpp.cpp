@@ -1,4 +1,8 @@
 ﻿#include "awtk_cpp.hpp"
+int TEvent::GetType() {
+  return event_get_type(((event_t*)(this->nativeObj)));
+}
+
 TEvent TEvent::Create(uint32_t type) {
   return TEvent((event_t*)(event_create(type)));
 }
@@ -31,7 +35,7 @@ ret_t TEmitter::Dispatch(TEvent& e) {
   return emitter_dispatch(((emitter_t*)(this->nativeObj)), ((event_t*)(e.nativeObj)));
 }
 
-ret_t TEmitter::DispatchSimpleEvent(event_type_t type) {
+ret_t TEmitter::DispatchSimpleEvent(uint32_t type) {
   return emitter_dispatch_simple_event(((emitter_t*)(this->nativeObj)), type);
 }
 
@@ -793,10 +797,6 @@ ret_t TStyle::Set(const char* state, const char* name, TValue& value) {
   return style_set(((style_t*)(this->nativeObj)), state, name, ((const value_t*)(value.nativeObj)));
 }
 
-ret_t TStyle::SetStyleData(const uint8_t* data, const char* state) {
-  return style_set_style_data(((style_t*)(this->nativeObj)), data, state);
-}
-
 ret_t TStyle::UpdateState(TTheme& theme, const char* widget_type, const char* style_name,
                           const char* widget_state) {
   return style_update_state(((style_t*)(this->nativeObj)), ((theme_t*)(theme.nativeObj)),
@@ -1151,6 +1151,38 @@ ret_t TWidget::SetTrText(const char* text) {
 
 int32_t TWidget::GetValue() {
   return widget_get_value(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetEnable() {
+  return widget_get_enable(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetFloating() {
+  return widget_get_floating(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetAutoAdjustSize() {
+  return widget_get_auto_adjust_size(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetWithFocusState() {
+  return widget_get_with_focus_state(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetFocusable() {
+  return widget_get_focusable(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetSensitive() {
+  return widget_get_sensitive(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetVisible() {
+  return widget_get_visible(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::GetFeedback() {
+  return widget_get_feedback(((widget_t*)(this->nativeObj)));
 }
 
 const wchar_t* TWidget::GetText() {
@@ -1630,6 +1662,14 @@ ret_t TAppConf::Remove(const char* key) {
   return app_conf_remove(key);
 }
 
+uint16_t TAssetInfo::GetType() {
+  return asset_info_get_type(((asset_info_t*)(this->nativeObj)));
+}
+
+const char* TAssetInfo::GetName() {
+  return asset_info_get_name(((asset_info_t*)(this->nativeObj)));
+}
+
 uint16_t TAssetInfo::GetType() const {
   return ((asset_info_t*)(this->nativeObj))->type;
 }
@@ -1676,6 +1716,10 @@ uint8_t TColor::B() {
 
 uint8_t TColor::A() {
   return color_a(((color_t*)(this->nativeObj)));
+}
+
+uint32_t TColor::GetColor() {
+  return color_get_color(((color_t*)(this->nativeObj)));
 }
 
 ret_t TColor::Destroy() {
@@ -1980,14 +2024,6 @@ float TMultiGestureEvent::GetRotation() const {
 
 float TMultiGestureEvent::GetDistance() const {
   return ((multi_gesture_event_t*)(this->nativeObj))->distance;
-}
-
-asset_type_t TAssetsEvent::GetType() const {
-  return ((assets_event_t*)(this->nativeObj))->type;
-}
-
-TAssetInfo TAssetsEvent::GetAssetInfo() const {
-  return TAssetInfo(((assets_event_t*)(this->nativeObj))->asset_info);
 }
 
 ret_t TImageBase::SetImage(char* name) {
@@ -2762,16 +2798,16 @@ ret_t TProgressCircle::SetMax(uint32_t max) {
   return progress_circle_set_max(((widget_t*)(this->nativeObj)), max);
 }
 
+ret_t TProgressCircle::SetFormat(const char* format) {
+  return progress_circle_set_format(((widget_t*)(this->nativeObj)), format);
+}
+
 ret_t TProgressCircle::SetLineWidth(uint32_t line_width) {
   return progress_circle_set_line_width(((widget_t*)(this->nativeObj)), line_width);
 }
 
 ret_t TProgressCircle::SetStartAngle(int32_t start_angle) {
   return progress_circle_set_start_angle(((widget_t*)(this->nativeObj)), start_angle);
-}
-
-ret_t TProgressCircle::SetUnit(const char* unit) {
-  return progress_circle_set_unit(((widget_t*)(this->nativeObj)), unit);
 }
 
 ret_t TProgressCircle::SetLineCap(const char* line_cap) {
@@ -2790,8 +2826,12 @@ float_t TProgressCircle::GetValue() const {
   return ((progress_circle_t*)(this->nativeObj))->value;
 }
 
-uint32_t TProgressCircle::GetMax() const {
+float_t TProgressCircle::GetMax() const {
   return ((progress_circle_t*)(this->nativeObj))->max;
+}
+
+char* TProgressCircle::GetFormat() const {
+  return ((progress_circle_t*)(this->nativeObj))->format;
 }
 
 int32_t TProgressCircle::GetStartAngle() const {
@@ -2800,10 +2840,6 @@ int32_t TProgressCircle::GetStartAngle() const {
 
 uint32_t TProgressCircle::GetLineWidth() const {
   return ((progress_circle_t*)(this->nativeObj))->line_width;
-}
-
-char* TProgressCircle::GetUnit() const {
-  return ((progress_circle_t*)(this->nativeObj))->unit;
 }
 
 char* TProgressCircle::GetLineCap() const {
@@ -2936,7 +2972,7 @@ ret_t TListViewH::SetItemWidth(int32_t item_width) {
   return list_view_h_set_item_width(((widget_t*)(this->nativeObj)), item_width);
 }
 
-ret_t TListViewH::SetSpacing(int32_t spacing) {
+ret_t TListViewH::SetSpacing(bool spacing) {
   return list_view_h_set_spacing(((widget_t*)(this->nativeObj)), spacing);
 }
 
@@ -3624,6 +3660,14 @@ ret_t TColorTile::SetBgColor(const char* color) {
   return color_tile_set_bg_color(((widget_t*)(this->nativeObj)), color);
 }
 
+const char* TColorTile::GetBgColor() {
+  return color_tile_get_bg_color(((widget_t*)(this->nativeObj)));
+}
+
+const char* TColorTile::GetBorderColor() {
+  return color_tile_get_border_color(((widget_t*)(this->nativeObj)));
+}
+
 const char* TColorTile::GetBgColor() const {
   return ((color_tile_t*)(this->nativeObj))->bg_color;
 }
@@ -3917,12 +3961,16 @@ TWidget TProgressBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
       (widget_t*)(progress_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TProgressBar::SetValue(float_t value) {
+ret_t TProgressBar::SetValue(double value) {
   return progress_bar_set_value(((widget_t*)(this->nativeObj)), value);
 }
 
-ret_t TProgressBar::SetMax(uint32_t max) {
+ret_t TProgressBar::SetMax(double max) {
   return progress_bar_set_max(((widget_t*)(this->nativeObj)), max);
+}
+
+ret_t TProgressBar::SetFormat(const char* format) {
+  return progress_bar_set_format(((widget_t*)(this->nativeObj)), format);
 }
 
 ret_t TProgressBar::SetVertical(bool vertical) {
@@ -3941,12 +3989,16 @@ uint32_t TProgressBar::GetPercent() {
   return progress_bar_get_percent(((widget_t*)(this->nativeObj)));
 }
 
-float_t TProgressBar::GetValue() const {
+double TProgressBar::GetValue() const {
   return ((progress_bar_t*)(this->nativeObj))->value;
 }
 
-float_t TProgressBar::GetMax() const {
+double TProgressBar::GetMax() const {
   return ((progress_bar_t*)(this->nativeObj))->max;
+}
+
+char* TProgressBar::GetFormat() const {
+  return ((progress_bar_t*)(this->nativeObj))->format;
 }
 
 bool TProgressBar::GetVertical() const {
@@ -4054,7 +4106,7 @@ TWidget TTabButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTabButton((widget_t*)(tab_button_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TTabButton::SetValue(uint32_t value) {
+ret_t TTabButton::SetValue(bool value) {
   return tab_button_set_value(((widget_t*)(this->nativeObj)), value);
 }
 
@@ -4255,6 +4307,10 @@ void* TIdleInfo::GetCtx() const {
   return ((idle_info_t*)(this->nativeObj))->ctx;
 }
 
+void* TIdleInfo::GetExtraCtx() const {
+  return ((idle_info_t*)(this->nativeObj))->extra_ctx;
+}
+
 uint32_t TIdleInfo::GetId() const {
   return ((idle_info_t*)(this->nativeObj))->id;
 }
@@ -4306,6 +4362,10 @@ uint32_t TObjectDefault::GetPropsSize() const {
 
 void* TTimerInfo::GetCtx() const {
   return ((timer_info_t*)(this->nativeObj))->ctx;
+}
+
+void* TTimerInfo::GetExtraCtx() const {
+  return ((timer_info_t*)(this->nativeObj))->extra_ctx;
 }
 
 uint32_t TTimerInfo::GetId() const {
