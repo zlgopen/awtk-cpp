@@ -6784,49 +6784,49 @@ class TFileChooser : public TEmitter {
  *
  *在嵌入式平台上，对于旋转的图片，SVG图片的效率比位图高数倍，所以推荐使用SVG图片。
  *
- *guage\_pointer\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于guage\_pointer\_t控件。
+ *gauge\_pointer\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于gauge\_pointer\_t控件。
  *
- *在xml中使用"guage\_pointer"标签创建仪表指针控件。如：
+ *在xml中使用"gauge\_pointer"标签创建仪表指针控件。如：
  *
  *```xml
- *<guage_pointer x="c" y="50" w="24" h="140" value="-128" image="guage_pointer" />
+ *<gauge_pointer x="c" y="50" w="24" h="140" value="-128" image="gauge_pointer" />
  *```
  *
  *> 更多用法请参考：
- *[guage.xml](https://github.com/zlgopen/awtk/blob/master/design/default/ui/guage.xml)
+ *[gauge.xml](https://github.com/zlgopen/awtk/blob/master/design/default/ui/gauge.xml)
  *
- *在c代码中使用函数guage\_pointer\_create创建仪表指针控件。如：
+ *在c代码中使用函数gauge\_pointer\_create创建仪表指针控件。如：
  *
  *
- *> 创建之后，需要用guage\_pointer\_set\_image设置仪表指针图片。
+ *> 创建之后，需要用gauge\_pointer\_set\_image设置仪表指针图片。
  *
  */
-class TGuagePointer : public TWidget {
+class TGaugePointer : public TWidget {
  public:
-  TGuagePointer(widget_t* nativeObj) : TWidget(nativeObj) {
+  TGaugePointer(widget_t* nativeObj) : TWidget(nativeObj) {
   }
 
-  TGuagePointer(const guage_pointer_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  TGaugePointer(const gauge_pointer_t* nativeObj) : TWidget((widget_t*)nativeObj) {
   }
 
-  static TGuagePointer Cast(widget_t* nativeObj) {
-    return TGuagePointer(nativeObj);
+  static TGaugePointer Cast(widget_t* nativeObj) {
+    return TGaugePointer(nativeObj);
   }
 
-  static TGuagePointer Cast(const widget_t* nativeObj) {
-    return TGuagePointer((widget_t*)nativeObj);
+  static TGaugePointer Cast(const widget_t* nativeObj) {
+    return TGaugePointer((widget_t*)nativeObj);
   }
 
-  static TGuagePointer Cast(TWidget& obj) {
-    return TGuagePointer(obj.nativeObj);
+  static TGaugePointer Cast(TWidget& obj) {
+    return TGaugePointer(obj.nativeObj);
   }
 
-  static TGuagePointer Cast(const TWidget& obj) {
-    return TGuagePointer(obj.nativeObj);
+  static TGaugePointer Cast(const TWidget& obj) {
+    return TGaugePointer(obj.nativeObj);
   }
 
   /**
-   * 创建guage_pointer对象
+   * 创建gauge_pointer对象
    * 
    * @param parent 父控件
    * @param x x坐标
@@ -6898,28 +6898,28 @@ class TGuagePointer : public TWidget {
  *
  *表盘控件就是一张图片。
  *
- *guage\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于guage\_t控件。
+ *gauge\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于gauge\_t控件。
  *
- *在xml中使用"guage"标签创建表盘控件。如：
+ *在xml中使用"gauge"标签创建表盘控件。如：
  *
  *```xml
- *<guage x="c" y="10" w="240" h="240" image="guage_bg"
+ *<gauge x="c" y="10" w="240" h="240" image="gauge_bg"
  *```
  *
  *> 更多用法请参考：
- *[guage.xml](https://github.com/zlgopen/awtk/blob/master/design/default/ui/guage.xml)
+ *[gauge.xml](https://github.com/zlgopen/awtk/blob/master/design/default/ui/gauge.xml)
  *
- *在c代码中使用函数guage\_create创建表盘控件。如：
+ *在c代码中使用函数gauge\_create创建表盘控件。如：
  *
  *
  *可用通过style来设置控件的显示风格，如背景和边框等。如：
  *
  *```xml
- *<guage>
+ *<gauge>
  *<style name="border">
  *<normal border_color="#000000" bg_color="#e0e0e0" text_color="black"/>
  *</style>
- *</guage>
+ *</gauge>
  *```
  *
  *> 更多用法请参考：
@@ -6927,32 +6927,32 @@ class TGuagePointer : public TWidget {
  *default](https://github.com/zlgopen/awtk/blob/master/design/default/styles/default.xml)
  *
  */
-class TGuage : public TWidget {
+class TGauge : public TWidget {
  public:
-  TGuage(widget_t* nativeObj) : TWidget(nativeObj) {
+  TGauge(widget_t* nativeObj) : TWidget(nativeObj) {
   }
 
-  TGuage(const guage_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  TGauge(const gauge_t* nativeObj) : TWidget((widget_t*)nativeObj) {
   }
 
-  static TGuage Cast(widget_t* nativeObj) {
-    return TGuage(nativeObj);
+  static TGauge Cast(widget_t* nativeObj) {
+    return TGauge(nativeObj);
   }
 
-  static TGuage Cast(const widget_t* nativeObj) {
-    return TGuage((widget_t*)nativeObj);
+  static TGauge Cast(const widget_t* nativeObj) {
+    return TGauge((widget_t*)nativeObj);
   }
 
-  static TGuage Cast(TWidget& obj) {
-    return TGuage(obj.nativeObj);
+  static TGauge Cast(TWidget& obj) {
+    return TGauge(obj.nativeObj);
   }
 
-  static TGuage Cast(const TWidget& obj) {
-    return TGuage(obj.nativeObj);
+  static TGauge Cast(const TWidget& obj) {
+    return TGauge(obj.nativeObj);
   }
 
   /**
-   * 创建guage对象
+   * 创建gauge对象
    * 
    * @param parent 父控件
    * @param x x坐标
@@ -7188,6 +7188,24 @@ class TImageAnimation : public TWidget {
   ret_t SetUnloadAfterPaint(bool unload_after_paint);
 
   /**
+   * 设置是否倒序播放。
+   * 
+   * @param reverse 是否倒序播放。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetReverse(bool reverse);
+
+  /**
+   * 设置结束播放后是否保持显示最后一帧。
+   * 
+   * @param show_when_done 是否继续显示最后一帧。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetShowWhenDone(bool show_when_done);
+
+  /**
    * 判断是否在播放。
    * 
    *
@@ -7218,6 +7236,12 @@ class TImageAnimation : public TWidget {
    *
    */
   uint32_t GetEndIndex() const;
+
+  /**
+   * 是否倒序播放。
+   *
+   */
+  bool GetReverse() const;
 
   /**
    * 是否循环播放。
@@ -7254,6 +7278,12 @@ class TImageAnimation : public TWidget {
    *
    */
   uint32_t GetDelay() const;
+
+  /**
+   * 结束后是否继续显示最后一帧。
+   *
+   */
+  bool GetShowWhenDone() const;
 };
 
 /**

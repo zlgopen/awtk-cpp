@@ -2422,57 +2422,57 @@ bool TFileChooser::IsAborted() {
   return file_chooser_is_aborted(((file_chooser_t*)(this->nativeObj)));
 }
 
-TWidget TGuagePointer::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGuagePointer(
-      (widget_t*)(guage_pointer_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TWidget TGaugePointer::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGaugePointer(
+      (widget_t*)(gauge_pointer_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TGuagePointer::SetAngle(int32_t angle) {
-  return guage_pointer_set_angle(((widget_t*)(this->nativeObj)), angle);
+ret_t TGaugePointer::SetAngle(int32_t angle) {
+  return gauge_pointer_set_angle(((widget_t*)(this->nativeObj)), angle);
 }
 
-ret_t TGuagePointer::SetImage(const char* image) {
-  return guage_pointer_set_image(((widget_t*)(this->nativeObj)), image);
+ret_t TGaugePointer::SetImage(const char* image) {
+  return gauge_pointer_set_image(((widget_t*)(this->nativeObj)), image);
 }
 
-ret_t TGuagePointer::SetAnchor(const char* anchor_x, const char* anchor_y) {
-  return guage_pointer_set_anchor(((widget_t*)(this->nativeObj)), anchor_x, anchor_y);
+ret_t TGaugePointer::SetAnchor(const char* anchor_x, const char* anchor_y) {
+  return gauge_pointer_set_anchor(((widget_t*)(this->nativeObj)), anchor_x, anchor_y);
 }
 
-int32_t TGuagePointer::GetAngle() const {
-  return ((guage_pointer_t*)(this->nativeObj))->angle;
+int32_t TGaugePointer::GetAngle() const {
+  return ((gauge_pointer_t*)(this->nativeObj))->angle;
 }
 
-char* TGuagePointer::GetImage() const {
-  return ((guage_pointer_t*)(this->nativeObj))->image;
+char* TGaugePointer::GetImage() const {
+  return ((gauge_pointer_t*)(this->nativeObj))->image;
 }
 
-char* TGuagePointer::GetAnchorX() const {
-  return ((guage_pointer_t*)(this->nativeObj))->anchor_x;
+char* TGaugePointer::GetAnchorX() const {
+  return ((gauge_pointer_t*)(this->nativeObj))->anchor_x;
 }
 
-char* TGuagePointer::GetAnchorY() const {
-  return ((guage_pointer_t*)(this->nativeObj))->anchor_y;
+char* TGaugePointer::GetAnchorY() const {
+  return ((gauge_pointer_t*)(this->nativeObj))->anchor_y;
 }
 
-TWidget TGuage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
-  return TGuage((widget_t*)(guage_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+TWidget TGauge::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TGauge((widget_t*)(gauge_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TGuage::SetImage(char* name) {
-  return guage_set_image(((widget_t*)(this->nativeObj)), name);
+ret_t TGauge::SetImage(char* name) {
+  return gauge_set_image(((widget_t*)(this->nativeObj)), name);
 }
 
-ret_t TGuage::SetDrawType(image_draw_type_t draw_type) {
-  return guage_set_draw_type(((widget_t*)(this->nativeObj)), draw_type);
+ret_t TGauge::SetDrawType(image_draw_type_t draw_type) {
+  return gauge_set_draw_type(((widget_t*)(this->nativeObj)), draw_type);
 }
 
-char* TGuage::GetImage() const {
-  return ((guage_t*)(this->nativeObj))->image;
+char* TGauge::GetImage() const {
+  return ((gauge_t*)(this->nativeObj))->image;
 }
 
-image_draw_type_t TGuage::GetDrawType() const {
-  return ((guage_t*)(this->nativeObj))->draw_type;
+image_draw_type_t TGauge::GetDrawType() const {
+  return ((gauge_t*)(this->nativeObj))->draw_type;
 }
 
 TWidget TImageAnimation::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -2532,6 +2532,14 @@ ret_t TImageAnimation::SetUnloadAfterPaint(bool unload_after_paint) {
   return image_animation_set_unload_after_paint(((widget_t*)(this->nativeObj)), unload_after_paint);
 }
 
+ret_t TImageAnimation::SetReverse(bool reverse) {
+  return image_animation_set_reverse(((widget_t*)(this->nativeObj)), reverse);
+}
+
+ret_t TImageAnimation::SetShowWhenDone(bool show_when_done) {
+  return image_animation_set_show_when_done(((widget_t*)(this->nativeObj)), show_when_done);
+}
+
 bool TImageAnimation::IsPlaying() {
   return image_animation_is_playing(((widget_t*)(this->nativeObj)));
 }
@@ -2550,6 +2558,10 @@ uint32_t TImageAnimation::GetStartIndex() const {
 
 uint32_t TImageAnimation::GetEndIndex() const {
   return ((image_animation_t*)(this->nativeObj))->end_index;
+}
+
+bool TImageAnimation::GetReverse() const {
+  return ((image_animation_t*)(this->nativeObj))->reverse;
 }
 
 bool TImageAnimation::GetLoop() const {
@@ -2574,6 +2586,10 @@ uint32_t TImageAnimation::GetInterval() const {
 
 uint32_t TImageAnimation::GetDelay() const {
   return ((image_animation_t*)(this->nativeObj))->delay;
+}
+
+bool TImageAnimation::GetShowWhenDone() const {
+  return ((image_animation_t*)(this->nativeObj))->show_when_done;
 }
 
 TWidget TImageValue::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
