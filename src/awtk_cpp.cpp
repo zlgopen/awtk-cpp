@@ -1,5 +1,5 @@
 ﻿#include "awtk_cpp.hpp"
-int TEvent::GetType() {
+uint32_t TEvent::GetType() {
   return event_get_type(((event_t*)(this->nativeObj)));
 }
 
@@ -1085,6 +1085,10 @@ TWidget TWidget::GetChild(int32_t index) {
   return TWidget((widget_t*)(widget_get_child(((widget_t*)(this->nativeObj)), index)));
 }
 
+TWidget TWidget::GetFocusedWidget() {
+  return TWidget((widget_t*)(widget_get_focused_widget(((widget_t*)(this->nativeObj)))));
+}
+
 TNativeWindow TWidget::GetNativeWindow() {
   return TNativeWindow((emitter_t*)(widget_get_native_window(((widget_t*)(this->nativeObj)))));
 }
@@ -1095,6 +1099,14 @@ int32_t TWidget::IndexOf() {
 
 ret_t TWidget::CloseWindow() {
   return widget_close_window(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TWidget::Back() {
+  return widget_back(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TWidget::BackToHome() {
+  return widget_back_to_home(((widget_t*)(this->nativeObj)));
 }
 
 ret_t TWidget::Move(xy_t x, xy_t y) {
@@ -2182,6 +2194,10 @@ bool TWindowBase::GetSingleInstance() const {
   return ((window_base_t*)(this->nativeObj))->single_instance;
 }
 
+bool TWindowBase::GetStronglyFocus() const {
+  return ((window_base_t*)(this->nativeObj))->strongly_focus;
+}
+
 TWidget TWindowManager::GetTopMainWindow() {
   return TWidget((widget_t*)(window_manager_get_top_main_window(((widget_t*)(this->nativeObj)))));
 }
@@ -2212,6 +2228,11 @@ bool TWindowManager::IsAnimating() {
 
 ret_t TWindowManager::SetShowFps(bool show_fps) {
   return window_manager_set_show_fps(((widget_t*)(this->nativeObj)), show_fps);
+}
+
+ret_t TWindowManager::SetIgnoreInputEvents(bool ignore_input_events) {
+  return window_manager_set_ignore_input_events(((widget_t*)(this->nativeObj)),
+                                                ignore_input_events);
 }
 
 ret_t TWindowManager::SetScreenSaverTime(uint32_t screen_saver_time) {
@@ -2443,7 +2464,7 @@ TWidget TGaugePointer::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
       (widget_t*)(gauge_pointer_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
-ret_t TGaugePointer::SetAngle(int32_t angle) {
+ret_t TGaugePointer::SetAngle(float_t angle) {
   return gauge_pointer_set_angle(((widget_t*)(this->nativeObj)), angle);
 }
 
@@ -2455,7 +2476,7 @@ ret_t TGaugePointer::SetAnchor(const char* anchor_x, const char* anchor_y) {
   return gauge_pointer_set_anchor(((widget_t*)(this->nativeObj)), anchor_x, anchor_y);
 }
 
-int32_t TGaugePointer::GetAngle() const {
+float_t TGaugePointer::GetAngle() const {
   return ((gauge_pointer_t*)(this->nativeObj))->angle;
 }
 
@@ -2749,6 +2770,10 @@ ret_t TMledit::SetMaxLines(uint32_t max_lines) {
   return mledit_set_max_lines(((widget_t*)(this->nativeObj)), max_lines);
 }
 
+ret_t TMledit::SetMaxChars(uint32_t max_chars) {
+  return mledit_set_max_chars(((widget_t*)(this->nativeObj)), max_chars);
+}
+
 ret_t TMledit::SetTips(char* tips) {
   return mledit_set_tips(((widget_t*)(this->nativeObj)), tips);
 }
@@ -2807,6 +2832,10 @@ char* TMledit::GetKeyboard() const {
 
 uint32_t TMledit::GetMaxLines() const {
   return ((mledit_t*)(this->nativeObj))->max_lines;
+}
+
+uint32_t TMledit::GetMaxChars() const {
+  return ((mledit_t*)(this->nativeObj))->max_chars;
 }
 
 bool TMledit::GetWrapWord() const {
@@ -3110,6 +3139,10 @@ ret_t TScrollBar::SetValueOnly(int32_t value) {
   return scroll_bar_set_value_only(((widget_t*)(this->nativeObj)), value);
 }
 
+ret_t TScrollBar::SetAutoHide(bool auto_hide) {
+  return scroll_bar_set_auto_hide(((widget_t*)(this->nativeObj)), auto_hide);
+}
+
 bool TScrollBar::IsMobile() {
   return scroll_bar_is_mobile(((widget_t*)(this->nativeObj)));
 }
@@ -3128,6 +3161,10 @@ int32_t TScrollBar::GetRow() const {
 
 bool TScrollBar::GetAnimatable() const {
   return ((scroll_bar_t*)(this->nativeObj))->animatable;
+}
+
+bool TScrollBar::GetAutoHide() const {
+  return ((scroll_bar_t*)(this->nativeObj))->auto_hide;
 }
 
 TWidget TScrollView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3473,6 +3510,10 @@ ret_t TTextSelector::SetYspeedScale(float_t yspeed_scale) {
   return text_selector_set_yspeed_scale(((widget_t*)(this->nativeObj)), yspeed_scale);
 }
 
+ret_t TTextSelector::SetAnimatingTime(uint32_t animating_time) {
+  return text_selector_set_animating_time(((widget_t*)(this->nativeObj)), animating_time);
+}
+
 uint32_t TTextSelector::GetVisibleNr() const {
   return ((text_selector_t*)(this->nativeObj))->visible_nr;
 }
@@ -3487,6 +3528,10 @@ char* TTextSelector::GetOptions() const {
 
 float_t TTextSelector::GetYspeedScale() const {
   return ((text_selector_t*)(this->nativeObj))->yspeed_scale;
+}
+
+uint32_t TTextSelector::GetAnimatingTime() const {
+  return ((text_selector_t*)(this->nativeObj))->animating_time;
 }
 
 bool TTextSelector::GetLocalizeOptions() const {
@@ -3599,6 +3644,26 @@ char* TTimeClock::GetSecondAnchorX() const {
 
 char* TTimeClock::GetSecondAnchorY() const {
   return ((time_clock_t*)(this->nativeObj))->second_anchor_y;
+}
+
+TWidget TVpage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
+  return TVpage((widget_t*)(vpage_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TVpage::SetUiAsset(const char* ui_asset) {
+  return vpage_set_ui_asset(((widget_t*)(this->nativeObj)), ui_asset);
+}
+
+ret_t TVpage::SetAnimHint(const char* anim_hint) {
+  return vpage_set_anim_hint(((widget_t*)(this->nativeObj)), anim_hint);
+}
+
+char* TVpage::GetUiAsset() const {
+  return ((vpage_t*)(this->nativeObj))->ui_asset;
+}
+
+char* TVpage::GetAnimHint() const {
+  return ((vpage_t*)(this->nativeObj))->anim_hint;
 }
 
 const char* TPropChangeEvent::GetName() const {
@@ -4357,6 +4422,18 @@ bool TWindow::GetFullscreen() const {
 
 TWidget TGifImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TGifImage((widget_t*)(gif_image_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
+}
+
+ret_t TGifImage::Play() {
+  return gif_image_play(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TGifImage::Stop() {
+  return gif_image_stop(((widget_t*)(this->nativeObj)));
+}
+
+ret_t TGifImage::Pause() {
+  return gif_image_pause(((widget_t*)(this->nativeObj)));
 }
 
 TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {

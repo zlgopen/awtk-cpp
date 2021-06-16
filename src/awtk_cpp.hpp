@@ -47,7 +47,7 @@ class TEvent {
    *
    * @return 返回event类型。
    */
-  int GetType();
+  uint32_t GetType();
 
   /**
    * 创建event对象。
@@ -2302,9 +2302,9 @@ class TStyle {
 };
 
 /**
- * 主题。
+ * 窗体样式。
  *
- *负责管理缺省的主题数据，方便实现style\_const。
+ *负责管理缺省的窗体样式数据，方便实现style\_const。
  *
  */
 class TTheme {
@@ -2329,10 +2329,10 @@ class TTheme {
   }
 
   /**
-   * 获取缺省的主题对象。
+   * 获取缺省的窗体样式对象。
    * 
    *
-   * @return 返回主题对象。
+   * @return 返回窗体样式对象。
    */
   static TTheme Instance();
 };
@@ -3063,6 +3063,14 @@ class TWidget {
   TWidget GetChild(int32_t index);
 
   /**
+   * 获取当前窗口中的焦点控件。
+   * 
+   *
+   * @return 焦点控件。
+   */
+  TWidget GetFocusedWidget();
+
+  /**
    * 获取原生窗口对象。
    * 
    *
@@ -3085,6 +3093,22 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t CloseWindow();
+
+  /**
+   * 请求返回到前一个窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Back();
+
+  /**
+   * 请求返回到home窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t BackToHome();
 
   /**
    * 移动控件。
@@ -4106,7 +4130,7 @@ class TWidget {
   ret_t SetStyleStr(const char* state_and_name, const char* value);
 
   /**
-   * widget_set_style_color(label, "style:normal:bg_color", 0xFF332211);
+   * widget_set_style_color(label, "normal:bg_color", 0xFF332211);
    *```
    * 
    * @param state_and_name 状态和名字，用英文的冒号分隔。
@@ -5019,7 +5043,7 @@ class TTimerManager {
 
 /**
  * 资源管理器。
- *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、主题、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
+ *这里的资源管理器并非Windows下的文件浏览器，而是负责对各种资源，比如字体、窗体样式、图片、界面数据、字符串和其它数据的进行集中管理的组件。引入资源管理器的目的有以下几个：
  *
  ** 让上层不需要了解存储的方式。
  *在没有文件系统时或者内存紧缺时，把资源转成常量数组直接编译到代码中。在有文件系统而且内存充足时，资源放在文件系统中。在有网络时，资源也可以存放在服务器上(暂未实现)。资源管理器为上层提供统一的接口，让上层而不用关心底层的存储方式。
@@ -5031,7 +5055,7 @@ class TTimerManager {
  *不同的屏幕密度下需要加载不同的图片，比如MacPro的Retina屏就需要用双倍解析度的图片，否则就出现界面模糊。AWTK以后会支持PC软件和手机软件的开发，所以资源管理器需要为此提供支持，让上层不需关心屏幕的密度。
  *
  ** 对资源进行内存缓存。
- *不同类型的资源使用方式是不一样的，比如字体和主题加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
+ *不同类型的资源使用方式是不一样的，比如字体和窗体样式加载之后会一直使用，UI文件在生成界面之后就暂时不需要了，PNG文件解码之后就只需要保留解码的位图数据即可。资源管理器配合图片管理器等其它组件实现资源的自动缓存。
  *
  *当从文件系统加载资源时，目录结构要求如下：
  *
@@ -5044,7 +5068,7 @@ class TTimerManager {
  *x3   3倍密度屏幕的图片。
  *xx   密度无关的图片。
  *strings 需要翻译的字符串。
- *styles  主题数据。
+ *styles  窗体样式数据。
  *ui      UI描述数据。
  *```
  *
@@ -5820,10 +5844,10 @@ class TWindowBase : public TWidget {
   }
 
   /**
-   * 主题资源的名称。
-   *每个窗口都可以有独立的主题文件，如果没指定，则使用系统缺省的主题文件。
-   *主题是一个XML文件，放在assets/raw/styles目录下。
-   *请参考[主题](https://github.com/zlgopen/awtk/blob/master/docs/theme.md)
+   * 窗体样式资源的名称。
+   *每个窗口都可以有独立的窗体样式文件，如果没指定，则使用系统缺省的窗体样式文件。
+   *窗体样式是一个XML文件，放在assets/raw/styles目录下。
+   *请参考[窗体样式](https://github.com/zlgopen/awtk/blob/master/docs/theme.md)
    *
    */
   char* GetTheme() const;
@@ -5951,6 +5975,12 @@ class TWindowBase : public TWidget {
    *
    */
   bool GetSingleInstance() const;
+
+  /**
+   * 点击非focusable控件时，是否让当前焦点控件失去焦点。比如点击窗口空白区域，是否让编辑器失去焦点。
+   *
+   */
+  bool GetStronglyFocus() const;
 };
 
 /**
@@ -6045,6 +6075,15 @@ class TWindowManager : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetShowFps(bool show_fps);
+
+  /**
+   * 设置是否忽略用户输入事件。
+   * 
+   * @param ignore_input_events 是否忽略用户输入事件。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetIgnoreInputEvents(bool ignore_input_events);
 
   /**
    * 设置屏保时间。
@@ -6877,7 +6916,7 @@ class TGaugePointer : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetAngle(int32_t angle);
+  ret_t SetAngle(float_t angle);
 
   /**
    * 设置指针的图片。
@@ -6902,7 +6941,7 @@ class TGaugePointer : public TWidget {
    * 指针角度。12点钟方向为0度，顺时钟方向为正，单位为度。
    *
    */
-  int32_t GetAngle() const;
+  float_t GetAngle() const;
 
   /**
    * 指针图片。
@@ -7884,6 +7923,15 @@ class TMledit : public TWidget {
   ret_t SetMaxLines(uint32_t max_lines);
 
   /**
+   * 设置编辑器的最大字符数（0 为不限制字符数）。
+   * 
+   * @param max_chars 最大字符数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaxChars(uint32_t max_chars);
+
+  /**
    * 设置编辑器的输入提示。
    * 
    * @param tips 输入提示。
@@ -8008,6 +8056,12 @@ class TMledit : public TWidget {
    *
    */
   uint32_t GetMaxLines() const;
+
+  /**
+   * 最大字符数。
+   *
+   */
+  uint32_t GetMaxChars() const;
 
   /**
    * 是否自动折行。
@@ -9122,6 +9176,17 @@ class TScrollBar : public TWidget {
   ret_t SetValueOnly(int32_t value);
 
   /**
+   * 设置auto_hide属性。
+   *
+   *>仅对mobile风格的滚动条有效
+   * 
+   * @param auto_hide 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAutoHide(bool auto_hide);
+
+  /**
    * 判断是否是mobile风格的滚动条。
    * 
    *
@@ -9152,6 +9217,12 @@ class TScrollBar : public TWidget {
    *
    */
   bool GetAnimatable() const;
+
+  /**
+   * 是否自动隐藏(仅对mobile风格的滚动条有效)。
+   *
+   */
+  bool GetAutoHide() const;
 };
 
 /**
@@ -10247,6 +10318,15 @@ class TTextSelector : public TWidget {
   ret_t SetYspeedScale(float_t yspeed_scale);
 
   /**
+   * 设置滚动动画播放时间。
+   * 
+   * @param animating_time 滚动动画播放时间。(单位毫秒)
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAnimatingTime(uint32_t animating_time);
+
+  /**
    * 可见的选项数量(只能是1或者3或者5，缺省为5)。
    *
    */
@@ -10271,6 +10351,12 @@ class TTextSelector : public TWidget {
    *
    */
   float_t GetYspeedScale() const;
+
+  /**
+   * 滚动动画播放时间。(单位毫秒)
+   *
+   */
+  uint32_t GetAnimatingTime() const;
 
   /**
    * 是否本地化(翻译)选项(缺省为FALSE)。
@@ -10534,6 +10620,105 @@ class TTimeClock : public TWidget {
    *
    */
   char* GetSecondAnchorY() const;
+};
+
+/**
+ * 虚拟页面(根据情况自动加载/卸载页面，并提供入场/出场动画)。
+ *
+ *> 虚拟页面只能作为pages的直接子控件使用。
+ *
+ *如果指定了ui_asset:
+ *
+ ** 当页面切换到后台时自动卸载，并触发EVT\_VPAGE\_CLOSE消息。
+ ** 当页面切换到前台时自动加载，在动画前出发EVT\_VPAGE\_WILL\_OPEN消息，在动画完成时触发 EVT\_VPAGE\_CLOSE消息。
+ *
+ *vpage\_t也可以当作普通view嵌入到pages中，让tab控件在切换时具有动画效果。
+ *
+ *在xml中使用"vpage"标签创建控件。如：
+ *
+ *```xml
+ *<!-- ui -->
+ *<vpage x="c" y="50" w="100" h="100" ui_asset="mypage"/>
+ *```
+ *
+ *可用通过style来设置控件的显示风格，如字体的大小和颜色等等(一般无需指定)。如：
+ *
+ *```xml
+ *<!-- style -->
+ *<vpage>
+ *<style name="default">
+ *<normal />
+ *</style>
+ *</vpage>
+ *```
+ *
+ */
+class TVpage : public TWidget {
+ public:
+  TVpage(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TVpage(const vpage_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TVpage Cast(widget_t* nativeObj) {
+    return TVpage(nativeObj);
+  }
+
+  static TVpage Cast(const widget_t* nativeObj) {
+    return TVpage((widget_t*)nativeObj);
+  }
+
+  static TVpage Cast(TWidget& obj) {
+    return TVpage(obj.nativeObj);
+  }
+
+  static TVpage Cast(const TWidget& obj) {
+    return TVpage(obj.nativeObj);
+  }
+
+  /**
+   * 创建vpage对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return vpage对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置 UI资源名称。
+   * 
+   * @param ui_asset UI资源名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetUiAsset(const char* ui_asset);
+
+  /**
+   * 设置动画类型(vtranslate: 垂直平移，htranslate: 水平平移)。
+   * 
+   * @param anim_hint 动画类型。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAnimHint(const char* anim_hint);
+
+  /**
+   * UI资源名称。
+   *
+   */
+  char* GetUiAsset() const;
+
+  /**
+   * 动画类型(目前支持：vtranslate: 垂直平移，htranslate: 水平平移)。
+   *
+   */
+  char* GetAnimHint() const;
 };
 
 /**
@@ -11189,7 +11374,7 @@ class TClipView : public TWidget {
 /**
  * 色块控件。
  *
- *用来显示一个颜色块，它通过属性而不是主题来设置颜色，方便在运行时动态改变颜色。
+ *用来显示一个颜色块，它通过属性而不是窗体样式来设置颜色，方便在运行时动态改变颜色。
  *
  *可以使用value属性访问背景颜色的颜色值。
  *
@@ -12442,7 +12627,7 @@ class TLabel : public TWidget {
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
-   * 设置显示字符的个数(小余0时全部显示)。。
+   * 设置显示字符的个数(小余0时全部显示)。
    * 
    * @param length 最大可显示字符个数。
    *
@@ -12497,13 +12682,14 @@ class TLabel : public TWidget {
   int32_t GetLength() const;
 
   /**
-   * 是否自动换行。
+   * 是否自动换行(默认FALSE)。
    *
    */
   bool GetLineWrap() const;
 
   /**
-   * 是否允许整个单词换行。(需要开启自动换行才有效果)
+   * 是否允许整个单词换行(默认FALSE)。
+   *> 需要开启自动换行才有效果
    *
    */
   bool GetWordWrap() const;
@@ -13635,7 +13821,7 @@ class TDialog : public TWindowBase {
   /**
    * 显示『短暂提示信息』对话框。
    *
-   *主题由dialog_toast.xml文件决定。
+   *窗体样式由dialog_toast.xml文件决定。
    * 
    * @param text 文本内容。
    * @param duration 显示时间(单位为毫秒)。
@@ -13647,7 +13833,7 @@ class TDialog : public TWindowBase {
   /**
    * 显示『提示信息』对话框。
    *
-   *主题由dialog_info.xml文件决定。
+   *窗体样式由dialog_info.xml文件决定。
    * 
    * @param title 标题。
    * @param text 文本内容。
@@ -13659,7 +13845,7 @@ class TDialog : public TWindowBase {
   /**
    * 显示『警告』对话框。
    *
-   *主题由dialog_warn.xml文件决定。
+   *窗体样式由dialog_warn.xml文件决定。
    * 
    * @param title 标题。
    * @param text 文本内容。
@@ -13671,7 +13857,7 @@ class TDialog : public TWindowBase {
   /**
    * 显示『确认』对话框。
    *
-   *主题由dialog_confirm.xml文件决定。
+   *窗体样式由dialog_confirm.xml文件决定。
    * 
    * @param title 标题。
    * @param text 文本内容。
@@ -13807,7 +13993,7 @@ class TNativeWindow : public TObject {
  *
  *window\_t是[window\_base\_t](window_base_t.md)的子类控件，window\_base\_t的函数均适用于window\_t控件。
  *
- *在xml中使用"window"标签创建窗口。无需指定坐标和大小，可以指定主题和动画名称。如：
+ *在xml中使用"window"标签创建窗口。无需指定坐标和大小，可以指定窗体样式和动画名称。如：
  *
  *```xml
  *<window theme="basic" anim_hint="htranslate">
@@ -13944,7 +14130,7 @@ class TWindow : public TWindowBase {
   /**
    * 是否全屏。
    *
-   *>这里全屏是指与LCD相同大小，而非让SDL窗口全屏。
+   *>对于模拟器，全屏是让窗口和LCD具有相同大小，而非让SDL窗口全屏。
    *
    */
   bool GetFullscreen() const;
@@ -14028,6 +14214,30 @@ class TGifImage : public TImageBase {
    * @return 对象。
    */
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 播放。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Play();
+
+  /**
+   * 停止(并重置index为-1)。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Stop();
+
+  /**
+   * 暂停。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Pause();
 };
 
 /**
@@ -14689,7 +14899,7 @@ class TCalibrationWin : public TWindowBase {
  *</combo_box>
  *```
  *
- ** 1.combobox的下拉按钮的style名称为combobox_down，可以在主题文件中设置。
+ ** 1.combobox的下拉按钮的style名称为combobox_down，可以在窗体样式文件中设置。
  *
  *```xml
  *<button>
@@ -14701,7 +14911,7 @@ class TCalibrationWin : public TWindowBase {
  *</button>
  *```
  *
- ** 2.combobox的弹出popup窗口的style名称为combobox_popup，可以在主题文件中设置。
+ ** 2.combobox的弹出popup窗口的style名称为combobox_popup，可以在窗体样式文件中设置。
  *
  *```xml
  *<popup>
@@ -15003,7 +15213,7 @@ class TImage : public TImageBase {
  *
  *overlay\_t是[window\_base\_t](window_base_t.md)的子类控件，window\_base\_t的函数均适用于overlay\_t控件。
  *
- *在xml中使用"overlay"标签创建窗口。需要指定坐标和大小，可以指定主题和动画名称。如：
+ *在xml中使用"overlay"标签创建窗口。需要指定坐标和大小，可以指定窗体样式和动画名称。如：
  *
  *```xml
  *<overlay theme="basic" x="100" y="100" w="200" h="300">
