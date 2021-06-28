@@ -7,4 +7,4 @@ helper = app.Helper(ARGUMENTS);
 helper.add_libs(['awtk-cpp']).call(DefaultEnvironment)
 
 SConscriptFiles = ['3rd/quickjs/SConscript', 'src/SConscript', 'demos/SConscript']
-SConscript(SConscriptFiles)
+helper.SConscript(SConscriptFiles)
