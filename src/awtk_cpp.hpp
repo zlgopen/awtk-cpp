@@ -252,6 +252,56 @@ class TPointf {
  * 矩形。包括一个x坐标、y坐标、宽度和高度。
  *
  */
+class TRectf {
+ public:
+  //nativeObj is public for internal use only.
+  rectf_t* nativeObj;
+
+  TRectf(rectf_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TRectf(const rectf_t* nativeObj) {
+    this->nativeObj = (rectf_t*)nativeObj;
+  }
+
+  static TRectf Cast(rectf_t* nativeObj) {
+    return TRectf(nativeObj);
+  }
+
+  static TRectf Cast(const rectf_t* nativeObj) {
+    return TRectf((rectf_t*)nativeObj);
+  }
+
+  /**
+   * x坐标。
+   *
+   */
+  float GetX() const;
+
+  /**
+   * y坐标。
+   *
+   */
+  float GetY() const;
+
+  /**
+   * 宽度。
+   *
+   */
+  float GetW() const;
+
+  /**
+   * 高度。
+   *
+   */
+  float GetH() const;
+};
+
+/**
+ * 矩形。包括一个x坐标、y坐标、宽度和高度。
+ *
+ */
 class TRect {
  public:
   //nativeObj is public for internal use only.
@@ -2673,6 +2723,15 @@ class TVgcanvas {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetTransform(float_t a, float_t b, float_t c, float_t d, float_t e, float_t f);
+
+  /**
+   * 使用当前的path裁剪。
+   *>目前只有部分backend支持(如cairo)。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ClipPath();
 
   /**
    * 矩形裁剪。
@@ -6075,6 +6134,17 @@ class TWindowManager : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetShowFps(bool show_fps);
+
+  /**
+   * 限制最大帧率。
+   *
+   *> TK\_MAX\_LOOP\_FPS/max\_fps最好是整数，比如TK\_MAX\_LOOP\_FPS为120，max\_fps可取60/30/20/10等。
+   * 
+   * @param max_fps 最大帧率。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaxFps(uint32_t max_fps);
 
   /**
    * 设置是否忽略用户输入事件。

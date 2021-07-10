@@ -59,6 +59,22 @@ ret_t TEmitter::Destroy() {
   return emitter_destroy(((emitter_t*)(this->nativeObj)));
 }
 
+float TRectf::GetX() const {
+  return ((rectf_t*)(this->nativeObj))->x;
+}
+
+float TRectf::GetY() const {
+  return ((rectf_t*)(this->nativeObj))->y;
+}
+
+float TRectf::GetW() const {
+  return ((rectf_t*)(this->nativeObj))->w;
+}
+
+float TRectf::GetH() const {
+  return ((rectf_t*)(this->nativeObj))->h;
+}
+
 TRect TRect::Create(xy_t x, xy_t y, wh_t w, wh_t h) {
   return TRect((rect_t*)(rect_create(x, y, w, h)));
 }
@@ -923,6 +939,10 @@ ret_t TVgcanvas::Transform(float_t a, float_t b, float_t c, float_t d, float_t e
 
 ret_t TVgcanvas::SetTransform(float_t a, float_t b, float_t c, float_t d, float_t e, float_t f) {
   return vgcanvas_set_transform(((vgcanvas_t*)(this->nativeObj)), a, b, c, d, e, f);
+}
+
+ret_t TVgcanvas::ClipPath() {
+  return vgcanvas_clip_path(((vgcanvas_t*)(this->nativeObj)));
 }
 
 ret_t TVgcanvas::ClipRect(float_t x, float_t y, float_t w, float_t h) {
@@ -2228,6 +2248,10 @@ bool TWindowManager::IsAnimating() {
 
 ret_t TWindowManager::SetShowFps(bool show_fps) {
   return window_manager_set_show_fps(((widget_t*)(this->nativeObj)), show_fps);
+}
+
+ret_t TWindowManager::SetMaxFps(uint32_t max_fps) {
+  return window_manager_set_max_fps(((widget_t*)(this->nativeObj)), max_fps);
 }
 
 ret_t TWindowManager::SetIgnoreInputEvents(bool ignore_input_events) {
