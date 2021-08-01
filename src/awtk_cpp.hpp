@@ -10061,6 +10061,15 @@ class TSlideView : public TWidget {
   ret_t SetLoop(bool loop);
 
   /**
+   * 删除指定序号页面。
+   * 
+   * @param index 删除页面的序号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t RemoveIndex(uint32_t index);
+
+  /**
    * 是否为上下滑动模式。
    *
    */
@@ -14329,6 +14338,7 @@ class TGifImage : public TImageBase {
  *| INPUT\_HEX      | kb\_hex.xml      |
  *| INPUT\_EMAIL    | kb\_ascii.xml    |
  *| INPUT\_PASSWORD | kb\_ascii.xml    |
+ *| INPUT\_ASCII    | kb\_ascii.xml    |
  *| INPUT\_CUSTOM   | 使用自定义的键盘 |
  *| 其它            | kb\_default.xml  |
  *
@@ -14711,6 +14721,24 @@ class TObjectArray : public TObject {
   ret_t Push(TValue& v);
 
   /**
+   * 查找元素出现的第一个位置。
+   * 
+   * @param v 值。
+   *
+   * @return 如果找到返回其位置，否则返回-1。
+   */
+  int32_t IndexOf(TValue& v);
+
+  /**
+   * 查找元素出现的最后一个位置。
+   * 
+   * @param v 值。
+   *
+   * @return 如果找到返回其位置，否则返回-1。
+   */
+  int32_t LastIndexOf(TValue& v);
+
+  /**
    * 在指定位置删除一个元素。
    * 
    * @param index 位置。
@@ -14718,6 +14746,16 @@ class TObjectArray : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Remove(uint32_t index);
+
+  /**
+   * 在指定位置删除一个元素，并返回它。
+   * 
+   * @param index 位置。
+   * @param v 用于返回值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t GetAndRemove(uint32_t index, TValue& v);
 
   /**
    * 属性个数。
