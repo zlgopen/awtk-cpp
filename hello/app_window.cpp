@@ -41,6 +41,13 @@ void TAppWindow::OnToForeGround() {
   log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
+ret_t TAppWindow::CloseForce(const char* name) {
+  widget_t* target = widget_child(window_manager(), name);
+  return_value_if_fail(target != NULL, RET_FAIL);
+
+  return window_manager_close_window_force(window_manager(), target);
+}
+
 ret_t TAppWindow::SwitchTo(const char* name, bool close_current) {
   if (TAppWindow::isWindowOpen(name)) {
     widget_t* target = widget_child(window_manager(), name);

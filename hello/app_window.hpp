@@ -32,8 +32,8 @@ class TAppWindow {
 
  public: /*virtual*/
   virtual void OnOpen();
-  virtual void OnWillOpen();
   virtual void OnClose();
+  virtual void OnWillOpen();
   virtual void OnToBackGround();
   virtual void OnToForeGround();
 
@@ -43,8 +43,9 @@ class TAppWindow {
   ret_t Back();
   ret_t BackToHome();
 
-  static ret_t SwitchTo(const char* name, bool close_current);
+  static ret_t CloseForce(const char* name);
   static bool isWindowOpen(const char* name);
+  static ret_t SwitchTo(const char* name, bool close_current);
 
   TWidget Lookup(const char* name);
   uint32_t On(event_type_t etype);
