@@ -1,7 +1,7 @@
 /**
  * File:   request.hpp
  * Author: AWTK Develop Team
- * Brief:  base class of app window
+ * Brief:  window open request
  *
  * Copyright (c) 2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
