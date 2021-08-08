@@ -1,9 +1,9 @@
 /**
- * File:   button.cpp
+ * File:   basic.cpp
  * Author: AWTK Develop Team
- * Brief:  button demo
+ * Brief:  basic demo
  *
- * Copyright (c) 2018 - 2019  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2021 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,72 +15,58 @@
 /**
  * History:
  * ================================================================
- * 2019-12-21 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-08-08 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
-#include <string>
 #include "awtk_cpp.hpp"
 #include "application.hpp"
 
-using std::string;
+static ret_t OnQuit(void* ctx, event_t* e) {
+  TPointerEvent evt = TPointerEvent::Cast(e);
 
-static ret_t OpenWindow(const char* name);
-
-static ret_t OnClick(void* ctx, event_t* e) {
-  TWidget w = TWidget(WIDGET(e->target));
-  TWindow win = TWindow::Cast(w.GetWindow());
-
-  string name = w.GetName();
-  if(name == "close") {
-    win.Close();
-  } else if(name == "quit") {
-    TDialog::Cast(win).Quit(0);
-  } else if(name == "exit") {
-    TGlobal::Quit();
-  } else if(name.find("open:") == 0) {
-    OpenWindow(name.substr(5).c_str());
-  }
+  printf("click: %d %d\n", evt.GetX(), evt.GetY());
+  TGlobal::Quit();
 
   return RET_OK;
 }
 
-static ret_t OnWidget(void* ctx, const void* data) {
-  TWidget w = TWidget(WIDGET(data));
+static ret_t OnInc(void* ctx, event_t* e) {
+  TWidget button = TWidget(WIDGET(e->target));
+  TWindow win = TWindow::Cast(button.GetWindow());
 
-  if(w.GetName() != NULL) {
-    w.On(EVT_CLICK, OnClick, NULL);
-  }
+  TWidget bar1 = win.Lookup("bar1", TRUE);
+  TWidget bar2 = win.Lookup("bar2", TRUE);
+
+  bar1.AddValue(10);
+  bar2.AddValue(10);
 
   return RET_OK;
 }
 
-static ret_t OpenWindow(const char* name) {
- 
-  if(name == string("toast")) {
-    return TDialog::Toast("Hello AWTK, This is a Toast!", 3000);
-  } else if(name == string("info")) {
-    return TDialog::Info("Info", "Hello AWTK, Timeout!");
-  } else if(name == string("warn")) {
-    return TDialog::Info("Warnning", "Hello AWTK, Timeout!");
-  } else if(name == string("confirm")) {
-    return TDialog::Info("Confirm", "Hello AWTK, Are You Sure to Quit?");
-  }
+static ret_t OnDec(void* ctx, event_t* e) {
+  TWidget button = TWidget(WIDGET(e->target));
+  TWindow win = TWindow::Cast(button.GetWindow());
 
-  TWidget win = TWindow::Open(name);
-  win.Foreach(OnWidget, NULL);
+  TWidget bar1 = win.Lookup("bar1", TRUE);
+  TWidget bar2 = win.Lookup("bar2", TRUE);
 
-  if(win.IsDialog()) {
-    TDialog::Cast(win).Modal();
-  }
+  bar1.AddValue(-10);
+  bar2.AddValue(-10);
 
   return RET_OK;
 }
 
 bool Application::Init(void) {
-  TWindow::Open("system_bar");
+  TWidget win = TWindow::Open("basic");
+  TWidget inc = win.Lookup("inc", TRUE);
+  TWidget dec = win.Lookup("dec", TRUE);
+  TWidget quit = win.Lookup("quit", TRUE);
 
-  OpenWindow("main");
+  inc.On(EVT_CLICK, OnInc, NULL);
+  dec.On(EVT_CLICK, OnDec, NULL);
+  quit.On(EVT_CLICK, OnQuit, NULL);
+
   return true;
 }
 

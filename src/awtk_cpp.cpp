@@ -1,4 +1,5 @@
 ﻿#include "awtk_cpp.hpp"
+
 uint32_t TEvent::GetType() {
   return event_get_type(((event_t*)(this->nativeObj)));
 }
