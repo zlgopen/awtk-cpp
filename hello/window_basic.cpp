@@ -33,7 +33,7 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
       this->Lookup("bar1").AddValue(-10);
       this->Lookup("bar2").AddValue(010);
     } else if (strstr(name, "switch_to:main") != NULL) {
-      this->BackToHome();
+      TAppWindow::SwitchTo("main", false);
     }
   }
 
@@ -41,15 +41,19 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
 }
 
 ret_t WindowBasic::Open(TRequestPtr request) {
-  WindowBasic* win = new WindowBasic(TWindow::Open("basic"), request);
-  int value = request->GetInt("value", 10);
+  if(TAppWindow::isWindowOpen("basic")) {
+    log_debug("basic exist, switch to it");
+    TAppWindow::SwitchTo("basic", false);
+  } else {
+    WindowBasic* win = new WindowBasic(TWindow::Open("basic"), request);
+    int value = request->GetInt("value", 10);
 
-  win->OnChild(EVT_CLICK, "inc_value");
-  win->OnChild(EVT_CLICK, "dec_value");
-  win->OnChild(EVT_CLICK, "switch_to:main");
+    win->OnChild(EVT_CLICK, "inc_value");
+    win->OnChild(EVT_CLICK, "dec_value");
+    win->OnChild(EVT_CLICK, "switch_to:main");
 
-  win->Lookup("bar1").SetValue(value);
-  win->Lookup("bar2").SetValue(value);
-
+    win->Lookup("bar1").SetValue(value);
+    win->Lookup("bar2").SetValue(value);
+  }
   return RET_OK;
 }

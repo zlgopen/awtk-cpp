@@ -22,18 +22,38 @@
 #include "app_window.hpp"
 
 void TAppWindow::OnOpen() {
+  log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
 void TAppWindow::OnWillOpen() {
+  log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
 void TAppWindow::OnClose() {
+  log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
 void TAppWindow::OnToBackGround() {
+  log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
 void TAppWindow::OnToForeGround() {
+  log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
+}
+  
+ret_t TAppWindow::SwitchTo(const char* name, bool close_current) {
+  if(TAppWindow::isWindowOpen(name)) {
+    widget_t* target = widget_child(window_manager(), name);
+    widget_t* curr = window_manager_get_top_window(window_manager());
+     
+    return window_manager_switch_to(window_manager(), curr, target, close_current); 
+  }
+
+  return RET_FAIL;
+}
+
+bool TAppWindow::isWindowOpen(const char* name) {
+  return widget_child(window_manager(), name) != NULL;
 }
 
 ret_t TAppWindow::OnEvent(TWidget& target, TEvent& e) {
@@ -50,8 +70,9 @@ ret_t TAppWindow::OnEvent(TWidget& target, TEvent& e) {
       if (mRequest != NULL) {
         mRequest->OnTargetClose(this);
       }
-
       this->OnClose();
+      delete this;
+
       break;
     }
     case EVT_WINDOW_TO_BACKGROUND: {
@@ -108,8 +129,6 @@ uint32_t TAppWindow::OnChild(event_type_t etype, const char* name) {
 }
 
 void TAppWindow::HookEvents() {
-  TWidget win = mWindow;
-
   this->On(EVT_WINDOW_OPEN);
   this->On(EVT_WINDOW_WILL_OPEN);
   this->On(EVT_WINDOW_CLOSE);
