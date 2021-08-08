@@ -14,5 +14,5 @@ else:
 helper.add_cxxflags(APP_CXXFLAGS)
 helper.add_libs(['awtk-cpp']).call(DefaultEnvironment)
 
-SConscriptFiles = ['3rd/quickjs/SConscript', 'src/SConscript', 'demos/SConscript']
+SConscriptFiles = ['3rd/quickjs/SConscript', 'src/SConscript', 'demos/SConscript', 'hello/SConscript']
 helper.SConscript(SConscriptFiles)
