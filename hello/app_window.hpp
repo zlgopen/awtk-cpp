@@ -26,7 +26,7 @@
 
 class TAppWindow {
  public:
-  TAppWindow(TWidget win, TRequestPtr request) : mWindow(win), mRequest(request) {
+  TAppWindow(TWidget win, TRequestPtrRef request) : mWindow(win), mRequest(request) {
     this->HookEvents();
   }
 

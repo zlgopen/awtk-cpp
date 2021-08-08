@@ -38,8 +38,7 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       }));
 
       req->Set("value", 66);
-      WindowBasic::Open(req);
-      req.reset();
+      WindowBasic::Open(std::move(req));
     } else if (strstr(name, "edit") != NULL) {
       WindowEdit::Open(NULL);
     }

@@ -40,13 +40,13 @@ void TAppWindow::OnToBackGround() {
 void TAppWindow::OnToForeGround() {
   log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
-  
+
 ret_t TAppWindow::SwitchTo(const char* name, bool close_current) {
-  if(TAppWindow::isWindowOpen(name)) {
+  if (TAppWindow::isWindowOpen(name)) {
     widget_t* target = widget_child(window_manager(), name);
     widget_t* curr = window_manager_get_top_window(window_manager());
-     
-    return window_manager_switch_to(window_manager(), curr, target, close_current); 
+
+    return window_manager_switch_to(window_manager(), curr, target, close_current);
   }
 
   return RET_FAIL;

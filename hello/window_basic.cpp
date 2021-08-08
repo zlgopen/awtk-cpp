@@ -41,7 +41,7 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
 }
 
 ret_t WindowBasic::Open(TRequestPtr request) {
-  if(TAppWindow::isWindowOpen("basic")) {
+  if (TAppWindow::isWindowOpen("basic")) {
     log_debug("basic exist, switch to it");
     TAppWindow::SwitchTo("basic", false);
   } else {

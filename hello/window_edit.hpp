@@ -27,7 +27,7 @@
 
 class WindowEdit : public TAppWindow {
  public:
-  WindowEdit(TWidget win, TRequestPtr request) : TAppWindow(win, request) {
+  WindowEdit(TWidget win, TRequestPtrRef request) : TAppWindow(win, request) {
   }
 
  public:

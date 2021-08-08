@@ -66,4 +66,3 @@ typedef std::shared_ptr<TRequest> TRequestPtr;
 typedef std::shared_ptr<TRequest>& TRequestPtrRef;
 
 #endif /*TK_REQUEST_H*/
-

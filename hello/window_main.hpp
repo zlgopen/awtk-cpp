@@ -27,7 +27,7 @@
 
 class WindowMain : public TAppWindow {
  public:
-  WindowMain(TWidget win, TRequestPtr request) : TAppWindow(win, request) {
+  WindowMain(TWidget win, TRequestPtrRef request) : TAppWindow(win, request) {
   }
 
  public:

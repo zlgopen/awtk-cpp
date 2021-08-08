@@ -27,7 +27,7 @@
 
 class WindowButton : public TAppWindow {
  public:
-  WindowButton(TWidget win, TRequestPtr request) : TAppWindow(win, request) {
+  WindowButton(TWidget win, TRequestPtrRef request) : TAppWindow(win, request) {
   }
 
  public:
