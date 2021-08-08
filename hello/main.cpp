@@ -1,7 +1,7 @@
 ﻿/**
- * File:   demo_main.cpp
+ * File:   main.cpp
  * Author: AWTK Develop Team
- * Brief:  demo main
+ * Brief:  app main
  *
  * Copyright (c) 2018 - 2019  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
@@ -15,7 +15,7 @@
 /**
  * History:
  * ================================================================
- * 2019-12-21 Li XianJing <xianjimli@hotmail.com> created
+ * 2021-08-08 Li XianJing <xianjimli@hotmail.com> created
  *
  */
 
