@@ -67,8 +67,8 @@ ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, bool close_curr
   single_instance = object_get_prop_bool(mCreators, single_instance_prop_name, FALSE);
   return_value_if_fail(create != NULL, RET_NOT_FOUND);
 
-  if (caller != NULL && single_instance && TAppWindow::isWindowOpen("basic")) {
-    return caller->SwitchTo("basic", close_current, request);
+  if (caller != NULL && single_instance && TAppWindow::isWindowOpen(name)) {
+    return caller->SwitchTo(name, close_current, request);
   } else {
     TAppWindow* win = create(caller, close_current);
     return win->OnRequest(request, true);
