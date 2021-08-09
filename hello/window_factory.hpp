@@ -40,23 +40,24 @@ class TWindowFactory {
 
  public:
   static TWindowFactory* instance();
+
  private:
   object_t* mCreators;
   static TWindowFactory* sInstance;
 };
 
-#define WINDOW_REGISTER(Name, Class, SingleInstance) \
-static struct WindowFactory##Class{ \
-        static TAppWindow* create(TAppWindow* caller, bool close_current) { \
-            if(close_current && caller != NULL) { \
-              return new Class(TWindow::OpenAndClose(Name, caller->GetWindow())); \
-            } else { \
-              return new Class(TWindow::Open(Name)); \
-            } \
-        } \
-        WindowFactory##Class() { \
-          TWindowFactory::instance()->Register(Name, create, SingleInstance); \
-        } \
-    } aWindowFactory##Class;
+#define WINDOW_REGISTER(Name, Class, SingleInstance)                        \
+  static struct WindowFactory##Class {                                      \
+    static TAppWindow* create(TAppWindow* caller, bool close_current) {     \
+      if (close_current && caller != NULL) {                                \
+        return new Class(TWindow::OpenAndClose(Name, caller->GetWindow())); \
+      } else {                                                              \
+        return new Class(TWindow::Open(Name));                              \
+      }                                                                     \
+    }                                                                       \
+    WindowFactory##Class() {                                                \
+      TWindowFactory::instance()->Register(Name, create, SingleInstance);   \
+    }                                                                       \
+  } aWindowFactory##Class;
 
 #endif /*TK_WINDOW_FACTORY_H*/

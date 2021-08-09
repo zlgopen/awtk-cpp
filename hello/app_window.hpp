@@ -54,8 +54,9 @@ class TAppWindow {
   TWidget Lookup(const char* name);
   uint32_t On(event_type_t etype);
   uint32_t OnChild(event_type_t etype, const char* name);
-  
+
   static ret_t OpenFirst(const char* name, TRequestPtr request);
+
  public:
   virtual ~TAppWindow() {
     log_debug("~TAppWindow\n");

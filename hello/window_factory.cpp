@@ -32,7 +32,7 @@ TWindowFactory::~TWindowFactory() {
 }
 
 TWindowFactory* TWindowFactory::instance() {
-  if(TWindowFactory::sInstance == NULL) {
+  if (TWindowFactory::sInstance == NULL) {
     TWindowFactory::sInstance = new TWindowFactory();
   }
   return TWindowFactory::sInstance;
@@ -55,7 +55,8 @@ ret_t TWindowFactory::Register(const char* name, window_create_t create, bool si
   return RET_OK;
 }
 
-ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, bool close_current, TRequestPtr request) {
+ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, bool close_current,
+                           TRequestPtr request) {
   char single_instance_prop_name[128];
   window_create_t create = NULL;
   bool_t single_instance = FALSE;

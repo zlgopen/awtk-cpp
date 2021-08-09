@@ -56,4 +56,3 @@ ret_t WindowBasic::OnRequest(TRequestPtrRef request, bool first_time) {
 }
 
 WINDOW_REGISTER("basic", WindowBasic, TRUE);
-
