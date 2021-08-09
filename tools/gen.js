@@ -214,6 +214,10 @@ function toWidgetType(type) {
   return `T${upperCamelName(type)}`;
 }
 
+function toVarName(name) {
+  return name.replace(/[^a-zA-Z0-9]/gi,'_');;
+}
+
 function genUICode(name, filename) {
   let decls = '';
   let lookups = ''
@@ -221,8 +225,8 @@ function genUICode(name, filename) {
   let namedWidgets = parseNamedWidgets(filename);
 
   namedWidgets.forEach(iter => {
-    decls += `  ${toWidgetType(iter.type)} ${iter.name};\n`
-    lookups += `    this->${iter.name} = ${toWidgetType(iter.type)}::Cast(win.Lookup("${iter.name}", TRUE));\n`
+    decls += `  ${toWidgetType(iter.type)} ${toVarName(iter.name)};\n`
+    lookups += `    this->${toVarName(iter.name)} = ${toWidgetType(iter.type)}::Cast(win.Lookup("${iter.name}", TRUE));\n`
   })
 
 let uiClass = `

@@ -1,8 +1,8 @@
 ﻿
 /**
- * File:   window_button.cpp
+ * File:   window_list_view.cpp
  * Author: AWTK Develop Team
- * Brief:  button window
+ * Brief:  list_view window
  *
  * Copyright (c) 2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
@@ -20,55 +20,51 @@
  *
  */
 
-#include "window_button.hpp"
-#include "window_button_ui.hpp"
+#include "window_list_view.hpp"
+#include "window_list_view_ui.hpp"
 
-void WindowButton::OnOpen() {
+void WindowListView::OnOpen() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
 }
 
-void WindowButton::OnWillOpen() {
+void WindowListView::OnWillOpen() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
 }
 
-void WindowButton::OnClose() {
+void WindowListView::OnClose() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
 }
 
-void WindowButton::OnToBackGround() {
+void WindowListView::OnToBackGround() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
 }
 
-void WindowButton::OnToForeGround() {
+void WindowListView::OnToForeGround() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
 }
 
-ret_t WindowButton::OnEvent(TWidget& target, TEvent& e) {
-  if (e.GetType() == EVT_CLICK || e.GetType() == EVT_LONG_PRESS) {
+ret_t WindowListView::OnEvent(TWidget& target, TEvent& e) {
+  if (e.GetType() == EVT_CLICK) {
     const char* name = target.GetName();
     log_debug("%s clicked\n", name);
     if (strstr(name, "close") != NULL) {
       this->Back();
-    } else if (strstr(name, "fullscreen") != NULL) {
-      TWindow win = TWindow::Cast(this->GetWindow());
-      win.SetFullscreen(!win.GetFullscreen());
-    } else if (strstr(name, "open:dialog1") != NULL) {
-      this->Open("dialog1", true, NULL);
     }
   }
 
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowButton::OnHookEvents() {
-  this->OnChild(EVT_LONG_PRESS, "open:dialog1");
-  this->OnChild(EVT_CLICK, "fullscreen");
+ret_t WindowListView::OnHookEvents() {
+/*
+ * TODO: hook events at here
+ */
   this->OnChild(EVT_CLICK, "close");
 
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowButton::OnInit(TRequestPtrRef request, bool first_time) {
+ret_t WindowListView::OnInit(TRequestPtrRef request, bool first_time) {
 /*
   TODO: initialize widget at here
   int value = request->GetInt("value", 10);
@@ -78,4 +74,4 @@ ret_t WindowButton::OnInit(TRequestPtrRef request, bool first_time) {
   return RET_OK;
 }
 
-WINDOW_REGISTER("button", WindowButton, TRUE);
+WINDOW_REGISTER("list_view", WindowListView, TRUE);

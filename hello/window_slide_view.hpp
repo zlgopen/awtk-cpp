@@ -1,8 +1,8 @@
 ﻿
 /**
- * File:   window_edit.hpp
+ * File:   window_slide_view.hpp
  * Author: AWTK Develop Team
- * Brief:  edit window
+ * Brief:  slide_view window
  *
  * Copyright (c) 2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
@@ -20,15 +20,15 @@
  *
  */
 
-#ifndef TK_WINDOW_EDIT_H
-#define TK_WINDOW_EDIT_H
+#ifndef TK_WINDOW_SLIDE_VIEW_H
+#define TK_WINDOW_SLIDE_VIEW_H
 
 #include "app_window.hpp"
-#include "window_edit_ui.hpp"
+#include "window_slide_view_ui.hpp"
 
-class WindowEdit : public TAppWindow {
+class WindowSlideView : public TAppWindow {
  public:
-  WindowEdit(TWidget win) : TAppWindow(win) {
+  WindowSlideView(TWidget win) : TAppWindow(win) {
     this->ui.Init(win, this);
   }
 
@@ -42,7 +42,7 @@ class WindowEdit : public TAppWindow {
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
   virtual ret_t OnInit(TRequestPtrRef request, bool first_time);
 private:
-  WindowEditUI ui;
+  WindowSlideViewUI ui;
 };
 
-#endif /*TK_WINDOW_EDIT_H*/
+#endif /*TK_WINDOW_SLIDE_VIEW_H*/

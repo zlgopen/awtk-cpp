@@ -45,6 +45,10 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       this->Open("keyboard");
     } else if (strstr(name, "gauge") != NULL) {
       this->Open("gauge");
+    } else if (strstr(name, "list_view") != NULL) {
+      this->Open("list_view");
+    } else if (strstr(name, "slide_view") != NULL) {
+      this->Open("slide_view");
     }
   }
 
@@ -57,6 +61,8 @@ ret_t WindowMain::OnHookEvents() {
   this->OnChild(EVT_CLICK, "open:edit");
   this->OnChild(EVT_CLICK, "open:gauge");
   this->OnChild(EVT_CLICK, "open:keyboard");
+  this->OnChild(EVT_CLICK, "open:list_view");
+  this->OnChild(EVT_CLICK, "open:slide_view");
 
   return TAppWindow::OnHookEvents();
 }
