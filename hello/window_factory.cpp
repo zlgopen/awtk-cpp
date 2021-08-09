@@ -55,7 +55,7 @@ ret_t TWindowFactory::Register(const char* name, window_create_t create, bool si
   return RET_OK;
 }
 
-ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, TRequestPtr request) {
+ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, bool close_current, TRequestPtr request) {
   char single_instance_prop_name[128];
   window_create_t create = NULL;
   bool_t single_instance = FALSE;
@@ -67,9 +67,9 @@ ret_t TWindowFactory::Open(const char* name, TAppWindow* caller, TRequestPtr req
   return_value_if_fail(create != NULL, RET_NOT_FOUND);
 
   if (caller != NULL && single_instance && TAppWindow::isWindowOpen("basic")) {
-    return caller->SwitchTo("basic", false, request);
+    return caller->SwitchTo("basic", close_current, request);
   } else {
-    TAppWindow* win = create();
+    TAppWindow* win = create(caller, close_current);
     return win->OnRequest(request, true);
   }
 }

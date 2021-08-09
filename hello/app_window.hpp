@@ -45,12 +45,14 @@ class TAppWindow {
 
   static ret_t CloseForce(const char* name);
   static bool isWindowOpen(const char* name);
+
+  ret_t Open(const char* name);
+  ret_t Open(const char* name, bool close_current, TRequestPtr request);
   ret_t SwitchTo(const char* name, bool close_current, TRequestPtr request);
 
   TWidget Lookup(const char* name);
   uint32_t On(event_type_t etype);
   uint32_t OnChild(event_type_t etype, const char* name);
-  ret_t Open(const char* name, TRequestPtr request);
   
   static ret_t OpenFirst(const char* name, TRequestPtr request);
  public:
@@ -58,12 +60,12 @@ class TAppWindow {
     log_debug("~TAppWindow\n");
   }
 
-  TWidget GetWindow() const {
+  TWidget& GetWindow() const {
     return mWindow;
   }
 
  private:
-  TWidget mWindow;
+  mutable TWidget mWindow;
   TRequestPtr mRequest;
 
  private:

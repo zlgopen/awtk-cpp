@@ -26,7 +26,7 @@
 
 class TAppWindow;
 
-typedef TAppWindow* (*window_create_t)();
+typedef TAppWindow* (*window_create_t)(TAppWindow* caller, bool close_current);
 
 class TWindowFactory {
  private:
@@ -35,7 +35,7 @@ class TWindowFactory {
 
  public:
   ret_t Register(const char* name, window_create_t create, bool single_instance);
-  ret_t Open(const char* name, TAppWindow* caller, TRequestPtr request);
+  ret_t Open(const char* name, TAppWindow* caller, bool close_current, TRequestPtr request);
   ret_t Unregister(const char* name);
 
  public:
@@ -47,8 +47,12 @@ class TWindowFactory {
 
 #define WINDOW_REGISTER(Name, Class, SingleInstance) \
 static struct WindowFactory##Class{ \
-        static TAppWindow* create() { \
-            return new Class(TWindow::Open(Name)); \
+        static TAppWindow* create(TAppWindow* caller, bool close_current) { \
+            if(close_current && caller != NULL) { \
+              return new Class(TWindow::OpenAndClose(Name, caller->GetWindow())); \
+            } else { \
+              return new Class(TWindow::Open(Name)); \
+            } \
         } \
         WindowFactory##Class() { \
           TWindowFactory::instance()->Register(Name, create, SingleInstance); \

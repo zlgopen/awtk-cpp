@@ -50,12 +50,16 @@ ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   return RET_OK;
 }
 
-ret_t TAppWindow::Open(const char* name, TRequestPtr request) {
-  return TWindowFactory::instance()->Open(name, this, request);
+ret_t TAppWindow::Open(const char* name) {
+  return this->Open(name, false, NULL);
+}
+
+ret_t TAppWindow::Open(const char* name, bool close_current, TRequestPtr request) {
+  return TWindowFactory::instance()->Open(name, this, close_current, request);
 }
 
 ret_t TAppWindow::OpenFirst(const char* name, TRequestPtr request) {
-  return TWindowFactory::instance()->Open(name, NULL, request);
+  return TWindowFactory::instance()->Open(name, NULL, false, request);
 }
 
 ret_t TAppWindow::CloseForce(const char* name) {

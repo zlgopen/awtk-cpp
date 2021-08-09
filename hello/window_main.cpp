@@ -30,7 +30,7 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
     log_debug("%s clicked\n", name);
 
     if (strstr(name, "button") != NULL) {
-      this->Open("button", NULL);
+      this->Open("button");
     } else if (strstr(name, "basic") != NULL) {
       TRequestPtr req(new TRequest([](TAppWindow* target) -> void {
         TWidget bar1 = target->Lookup("bar1");
@@ -38,9 +38,9 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       }));
 
       req->Set("value", 66);
-      this->Open("basic", std::move(req));
+      this->Open("basic", false, std::move(req));
     } else if (strstr(name, "edit") != NULL) {
-      this->Open("edit", NULL);
+      this->Open("edit");
     }
   }
 
