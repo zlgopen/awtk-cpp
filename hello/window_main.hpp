@@ -27,14 +27,15 @@
 
 class WindowMain : public TAppWindow {
  public:
-  WindowMain(TWidget win, TRequestPtrRef request) : TAppWindow(win, request) {
+  WindowMain(TWidget win) : TAppWindow(win) {
   }
 
  public:
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
+  virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
 
  public:
-  static ret_t Open(TRequestPtr request);
+  static ret_t Open(TAppWindow* caller, TRequestPtr request);
 };
 
 #endif /*TK_WINDOW_MAIN_H*/

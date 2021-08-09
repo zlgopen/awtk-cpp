@@ -36,11 +36,19 @@ ret_t WindowButton::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowButton::Open(TRequestPtr request) {
-  WindowButton* win = new WindowButton(TWindow::Open("button"), request);
+ret_t WindowButton::OnRequest(TRequestPtrRef request, bool first_time) {
+  if (first_time) {
+    this->OnChild(EVT_CLICK, "fullscreen");
+    this->OnChild(EVT_CLICK, "close");
+  }
 
-  win->OnChild(EVT_CLICK, "fullscreen");
-  win->OnChild(EVT_CLICK, "close");
+  return TAppWindow::OnRequest(request, first_time);
+}
+
+ret_t WindowButton::Open(TAppWindow* caller, TRequestPtr request) {
+  WindowButton* win = new WindowButton(TWindow::Open("button"));
+
+  win->OnRequest(request, true);
 
   return RET_OK;
 }

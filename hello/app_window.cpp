@@ -21,6 +21,8 @@
 
 #include "app_window.hpp"
 
+#define WIDGET_PROP_APP_WINDOW "app_window"
+
 void TAppWindow::OnOpen() {
   log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
@@ -41,6 +43,12 @@ void TAppWindow::OnToForeGround() {
   log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
+ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
+  mRequest = request;
+
+  return RET_OK;
+}
+
 ret_t TAppWindow::CloseForce(const char* name) {
   widget_t* target = widget_child(window_manager(), name);
   return_value_if_fail(target != NULL, RET_FAIL);
@@ -48,10 +56,16 @@ ret_t TAppWindow::CloseForce(const char* name) {
   return window_manager_close_window_force(window_manager(), target);
 }
 
-ret_t TAppWindow::SwitchTo(const char* name, bool close_current) {
+ret_t TAppWindow::SwitchTo(const char* name, bool close_current, TRequestPtr request) {
   if (TAppWindow::isWindowOpen(name)) {
     widget_t* target = widget_child(window_manager(), name);
-    widget_t* curr = window_manager_get_top_window(window_manager());
+    widget_t* curr = this->GetWindow().nativeObj;
+    TAppWindow* app_window =
+        static_cast<TAppWindow*>(widget_get_prop_pointer(target, WIDGET_PROP_APP_WINDOW));
+
+    if (app_window != NULL) {
+      app_window->OnRequest(request, false);
+    }
 
     return window_manager_switch_to(window_manager(), curr, target, close_current);
   }
@@ -141,6 +155,7 @@ void TAppWindow::HookEvents() {
   this->On(EVT_WINDOW_CLOSE);
   this->On(EVT_WINDOW_TO_BACKGROUND);
   this->On(EVT_WINDOW_TO_FOREGROUND);
+  this->mWindow.SetPropPointer(WIDGET_PROP_APP_WINDOW, this);
 
   return;
 }

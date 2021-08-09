@@ -33,27 +33,36 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
       this->Lookup("bar1").AddValue(-10);
       this->Lookup("bar2").AddValue(010);
     } else if (strstr(name, "switch_to:main") != NULL) {
-      TAppWindow::SwitchTo("main", false);
+      this->SwitchTo("main", false, NULL);
     }
   }
 
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowBasic::Open(TRequestPtr request) {
+ret_t WindowBasic::OnRequest(TRequestPtrRef request, bool first_time) {
+  int value = request->GetInt("value", 10);
+
+  if (first_time) {
+    this->OnChild(EVT_CLICK, "inc_value");
+    this->OnChild(EVT_CLICK, "dec_value");
+    this->OnChild(EVT_CLICK, "switch_to:main");
+  }
+
+  this->Lookup("bar1").SetValue(value);
+  this->Lookup("bar2").SetValue(value);
+
+  return TAppWindow::OnRequest(request, first_time);
+}
+
+ret_t WindowBasic::Open(TAppWindow* caller, TRequestPtr request) {
   if (TAppWindow::isWindowOpen("basic")) {
     log_debug("basic exist, switch to it");
-    TAppWindow::SwitchTo("basic", false);
+    caller->SwitchTo("basic", false, request);
   } else {
-    WindowBasic* win = new WindowBasic(TWindow::Open("basic"), request);
-    int value = request->GetInt("value", 10);
-
-    win->OnChild(EVT_CLICK, "inc_value");
-    win->OnChild(EVT_CLICK, "dec_value");
-    win->OnChild(EVT_CLICK, "switch_to:main");
-
-    win->Lookup("bar1").SetValue(value);
-    win->Lookup("bar2").SetValue(value);
+    WindowBasic* win = new WindowBasic(TWindow::Open("basic"));
+    win->OnRequest(request, true);
   }
+
   return RET_OK;
 }

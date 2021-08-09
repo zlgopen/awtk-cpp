@@ -26,7 +26,7 @@
 
 class TAppWindow {
  public:
-  TAppWindow(TWidget win, TRequestPtrRef request) : mWindow(win), mRequest(request) {
+  TAppWindow(TWidget win) : mWindow(win) {
     this->HookEvents();
   }
 
@@ -36,8 +36,8 @@ class TAppWindow {
   virtual void OnWillOpen();
   virtual void OnToBackGround();
   virtual void OnToForeGround();
-
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
+  virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
 
  public: /*helper*/
   ret_t Back();
@@ -45,7 +45,7 @@ class TAppWindow {
 
   static ret_t CloseForce(const char* name);
   static bool isWindowOpen(const char* name);
-  static ret_t SwitchTo(const char* name, bool close_current);
+  ret_t SwitchTo(const char* name, bool close_current, TRequestPtr request);
 
   TWidget Lookup(const char* name);
   uint32_t On(event_type_t etype);

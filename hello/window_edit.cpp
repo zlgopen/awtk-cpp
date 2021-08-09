@@ -34,10 +34,18 @@ ret_t WindowEdit::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowEdit::Open(TRequestPtr request) {
-  WindowEdit* win = new WindowEdit(TWindow::Open("edit"), request);
+ret_t WindowEdit::OnRequest(TRequestPtrRef request, bool first_time) {
+  if (first_time) {
+    this->OnChild(EVT_CLICK, "close");
+  }
 
-  win->OnChild(EVT_CLICK, "close");
+  return TAppWindow::OnRequest(request, first_time);
+}
+
+ret_t WindowEdit::Open(TAppWindow* caller, TRequestPtr request) {
+  WindowEdit* win = new WindowEdit(TWindow::Open("edit"));
+
+  win->OnRequest(request, true);
 
   return RET_OK;
 }

@@ -30,7 +30,7 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
     log_debug("%s clicked\n", name);
 
     if (strstr(name, "button") != NULL) {
-      WindowButton::Open(NULL);
+      WindowButton::Open(this, NULL);
     } else if (strstr(name, "basic") != NULL) {
       TRequestPtr req(new TRequest([](TAppWindow* target) -> void {
         TWidget bar1 = target->Lookup("bar1");
@@ -38,22 +38,30 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       }));
 
       req->Set("value", 66);
-      WindowBasic::Open(std::move(req));
+      WindowBasic::Open(this, std::move(req));
     } else if (strstr(name, "edit") != NULL) {
-      WindowEdit::Open(NULL);
+      WindowEdit::Open(this, NULL);
     }
   }
 
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowMain::Open(TRequestPtr request) {
-  WindowMain* win = new WindowMain(TWindow::Open("main"), request);
+ret_t WindowMain::OnRequest(TRequestPtrRef request, bool first_time) {
+  if (first_time) {
+    this->OnChild(EVT_CLICK, "open:button");
+    this->OnChild(EVT_CLICK, "open:basic");
+    this->OnChild(EVT_CLICK, "open:edit");
+    this->OnChild(EVT_CLICK, "open:gauge");
+  }
 
-  win->OnChild(EVT_CLICK, "open:button");
-  win->OnChild(EVT_CLICK, "open:basic");
-  win->OnChild(EVT_CLICK, "open:edit");
-  win->OnChild(EVT_CLICK, "open:gauge");
+  return TAppWindow::OnRequest(request, first_time);
+}
+
+ret_t WindowMain::Open(TAppWindow* caller, TRequestPtr request) {
+  WindowMain* win = new WindowMain(TWindow::Open("main"));
+
+  win->OnRequest(request, true);
 
   return RET_OK;
 }
