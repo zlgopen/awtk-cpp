@@ -55,14 +55,5 @@ ret_t WindowBasic::OnRequest(TRequestPtrRef request, bool first_time) {
   return TAppWindow::OnRequest(request, first_time);
 }
 
-ret_t WindowBasic::Open(TAppWindow* caller, TRequestPtr request) {
-  if (TAppWindow::isWindowOpen("basic")) {
-    log_debug("basic exist, switch to it");
-    caller->SwitchTo("basic", false, request);
-  } else {
-    WindowBasic* win = new WindowBasic(TWindow::Open("basic"));
-    win->OnRequest(request, true);
-  }
+WINDOW_REGISTER("basic", WindowBasic, TRUE);
 
-  return RET_OK;
-}

@@ -20,6 +20,7 @@
  */
 
 #include "app_window.hpp"
+#include "window_factory.hpp"
 
 #define WIDGET_PROP_APP_WINDOW "app_window"
 
@@ -47,6 +48,14 @@ ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   mRequest = request;
 
   return RET_OK;
+}
+
+ret_t TAppWindow::Open(const char* name, TRequestPtr request) {
+  return TWindowFactory::instance()->Open(name, this, request);
+}
+
+ret_t TAppWindow::OpenFirst(const char* name, TRequestPtr request) {
+  return TWindowFactory::instance()->Open(name, NULL, request);
 }
 
 ret_t TAppWindow::CloseForce(const char* name) {

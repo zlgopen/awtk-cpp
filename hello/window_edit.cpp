@@ -42,10 +42,4 @@ ret_t WindowEdit::OnRequest(TRequestPtrRef request, bool first_time) {
   return TAppWindow::OnRequest(request, first_time);
 }
 
-ret_t WindowEdit::Open(TAppWindow* caller, TRequestPtr request) {
-  WindowEdit* win = new WindowEdit(TWindow::Open("edit"));
-
-  win->OnRequest(request, true);
-
-  return RET_OK;
-}
+WINDOW_REGISTER("edit", WindowEdit, TRUE);
