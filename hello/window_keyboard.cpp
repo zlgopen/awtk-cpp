@@ -22,6 +22,26 @@
 
 #include "window_keyboard.hpp"
 
+void WindowKeyboard::OnOpen() {
+  log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void WindowKeyboard::OnWillOpen() {
+  log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void WindowKeyboard::OnClose() {
+  log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void WindowKeyboard::OnToBackGround() {
+  log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void WindowKeyboard::OnToForeGround() {
+  log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
 ret_t WindowKeyboard::OnEvent(TWidget& target, TEvent& e) {
   if (e.GetType() == EVT_CLICK) {
     const char* name = target.GetName();

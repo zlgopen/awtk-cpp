@@ -41,6 +41,8 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       this->Open("basic", false, std::move(req));
     } else if (strstr(name, "edit") != NULL) {
       this->Open("edit");
+    } else if (strstr(name, "keyboard") != NULL) {
+      this->Open("keyboard");
     }
   }
 
@@ -52,6 +54,7 @@ ret_t WindowMain::OnHookEvents() {
   this->OnChild(EVT_CLICK, "open:basic");
   this->OnChild(EVT_CLICK, "open:edit");
   this->OnChild(EVT_CLICK, "open:gauge");
+  this->OnChild(EVT_CLICK, "open:keyboard");
 
   return TAppWindow::OnHookEvents();
 }

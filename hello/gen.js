@@ -48,6 +48,26 @@ let c = `
 
 #include "window_${name}.hpp"
 
+void Window${Name}::OnOpen() {
+  log_debug("%s: %s\\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void Window${Name}::OnWillOpen() {
+  log_debug("%s: %s\\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void Window${Name}::OnClose() {
+  log_debug("%s: %s\\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void Window${Name}::OnToBackGround() {
+  log_debug("%s: %s\\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
+void Window${Name}::OnToForeGround() {
+  log_debug("%s: %s\\n", __FUNCTION__, this->GetWindow().GetName());
+}
+
 ret_t Window${Name}::OnEvent(TWidget& target, TEvent& e) {
   if (e.GetType() == EVT_CLICK) {
     const char* name = target.GetName();
@@ -116,6 +136,11 @@ class Window${Name} : public TAppWindow {
   }
 
  public:
+  virtual void OnOpen();
+  virtual void OnClose();
+  virtual void OnWillOpen();
+  virtual void OnToBackGround();
+  virtual void OnToForeGround();
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
   virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);

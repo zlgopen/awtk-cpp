@@ -32,6 +32,11 @@ class WindowKeyboard : public TAppWindow {
   }
 
  public:
+  virtual void OnOpen();
+  virtual void OnClose();
+  virtual void OnWillOpen();
+  virtual void OnToBackGround();
+  virtual void OnToForeGround();
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
   virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
