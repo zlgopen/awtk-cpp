@@ -19,3 +19,5 @@ filter.json
 awtk_all.js
 3rd/jerryscript/jerryscript
 res
+window_foo.cpp
+window_foo.hpp
