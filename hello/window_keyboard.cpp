@@ -4,7 +4,7 @@
  * Author: AWTK Develop Team
  * Brief:  keyboard window
  *
- * Copyright (c) 2018 - 2021  2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,7 @@
  */
 
 #include "window_keyboard.hpp"
+#include "window_keyboard_ui.hpp"
 
 void WindowKeyboard::OnOpen() {
   log_debug("%s: %s\n", __FUNCTION__, this->GetWindow().GetName());

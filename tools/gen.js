@@ -152,7 +152,7 @@ let h = `
 class ${className} : public TAppWindow {
  public:
   ${className}(TWidget win) : TAppWindow(win) {
-    this->ui.Init(win);
+    this->ui.Init(win, this);
   }
 
  public:
@@ -208,6 +208,9 @@ function parseNamedWidgets(filename) {
 }
 
 function toWidgetType(type) {
+  if(type === 'scroll_bar_d' || type === 'scroll_bar_d') {
+    type = 'scroll_bar';
+  }
   return `T${upperCamelName(type)}`;
 }
 
@@ -255,7 +258,7 @@ public:
 public:
 ${decls}
 public:
- void Init(TWidget win) {
+ void Init(TWidget win, TAppWindow* app_win) {
 ${lookups}
     return;
  }

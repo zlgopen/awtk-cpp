@@ -4,7 +4,7 @@
  * Author: AWTK Develop Team
  * Brief:  keyboard window
  *
- * Copyright (c) 2018 - 2021  2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
+ * Copyright (c) 2018 - 2021  Guangzhou ZHIYUAN Electronics Co.,Ltd.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,12 +23,13 @@
 #ifndef TK_WINDOW_KEYBOARD_H
 #define TK_WINDOW_KEYBOARD_H
 
-#include "awtk_cpp.hpp"
 #include "app_window.hpp"
+#include "window_keyboard_ui.hpp"
 
 class WindowKeyboard : public TAppWindow {
  public:
   WindowKeyboard(TWidget win) : TAppWindow(win) {
+    this->ui.Init(win);
   }
 
  public:
@@ -40,6 +41,8 @@ class WindowKeyboard : public TAppWindow {
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
   virtual ret_t OnInit(TRequestPtrRef request, bool first_time);
+private:
+  WindowKeyboardUI ui;
 };
 
 #endif /*TK_WINDOW_KEYBOARD_H*/
