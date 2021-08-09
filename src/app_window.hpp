@@ -29,7 +29,7 @@ class TAppWindow {
   TAppWindow(TWidget win) : mWindow(win) {
   }
 
-public:
+ public:
   ret_t OnRequest(TRequestPtrRef request, bool first_time);
 
  public: /*virtual*/

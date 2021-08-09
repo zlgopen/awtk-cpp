@@ -50,7 +50,7 @@ ret_t TAppWindow::OnInit(TRequestPtrRef request, bool first_time) {
 
 ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   mRequest = request;
- 
+
   if (first_time) {
     this->OnHookEvents();
   }

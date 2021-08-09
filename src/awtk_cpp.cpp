@@ -1,33 +1,4 @@
 ﻿#include "awtk_cpp.hpp"
-
-uint32_t TEvent::GetType() {
-  return event_get_type(((event_t*)(this->nativeObj)));
-}
-
-TEvent TEvent::Create(uint32_t type) {
-  return TEvent((event_t*)(event_create(type)));
-}
-
-ret_t TEvent::Destroy() {
-  return event_destroy(((event_t*)(this->nativeObj)));
-}
-
-int32_t TEvent::GetType() const {
-  return ((event_t*)(this->nativeObj))->type;
-}
-
-int32_t TEvent::GetSize() const {
-  return ((event_t*)(this->nativeObj))->size;
-}
-
-uint64_t TEvent::GetTime() const {
-  return ((event_t*)(this->nativeObj))->time;
-}
-
-void* TEvent::GetTarget() const {
-  return ((event_t*)(this->nativeObj))->target;
-}
-
 TEmitter TEmitter::Create() {
   return TEmitter((emitter_t*)(emitter_create()));
 }
@@ -698,6 +669,38 @@ ret_t TClipBoard::SetText(const char* text) {
 
 const char* TClipBoard::GetText() {
   return clip_board_get_text();
+}
+
+int32_t TEvent::FromName(const char* name) {
+  return event_from_name(name);
+}
+
+uint32_t TEvent::GetType() {
+  return event_get_type(((event_t*)(this->nativeObj)));
+}
+
+TEvent TEvent::Create(uint32_t type) {
+  return TEvent((event_t*)(event_create(type)));
+}
+
+ret_t TEvent::Destroy() {
+  return event_destroy(((event_t*)(this->nativeObj)));
+}
+
+int32_t TEvent::GetType() const {
+  return ((event_t*)(this->nativeObj))->type;
+}
+
+int32_t TEvent::GetSize() const {
+  return ((event_t*)(this->nativeObj))->size;
+}
+
+uint64_t TEvent::GetTime() const {
+  return ((event_t*)(this->nativeObj))->time;
+}
+
+void* TEvent::GetTarget() const {
+  return ((event_t*)(this->nativeObj))->target;
 }
 
 ret_t TFontManager::UnloadFont(char* name, font_size_t size) {
@@ -1697,6 +1700,10 @@ const char* TAppConf::GetStr(const char* key, const char* defval) {
 
 ret_t TAppConf::Remove(const char* key) {
   return app_conf_remove(key);
+}
+
+ret_t TExtWidgets::Init() {
+  return tk_ext_widgets_init();
 }
 
 uint16_t TAssetInfo::GetType() {
@@ -4598,6 +4605,10 @@ ret_t TComboBox::SetItemHeight(uint32_t item_height) {
 
 ret_t TComboBox::AppendOption(int32_t value, const char* text) {
   return combo_box_append_option(((widget_t*)(this->nativeObj)), value, text);
+}
+
+ret_t TComboBox::RemoveOption(int32_t value) {
+  return combo_box_remove_option(((widget_t*)(this->nativeObj)), value);
 }
 
 ret_t TComboBox::SetOptions(const char* options) {

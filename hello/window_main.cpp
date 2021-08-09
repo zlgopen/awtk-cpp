@@ -43,6 +43,8 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
       this->Open("edit");
     } else if (strstr(name, "keyboard") != NULL) {
       this->Open("keyboard");
+    } else if (strstr(name, "gauge") != NULL) {
+      this->Open("gauge");
     }
   }
 
