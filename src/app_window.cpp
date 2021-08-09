@@ -44,12 +44,17 @@ void TAppWindow::OnToForeGround() {
   log_debug("%s: %s\n", __FUNCTION__, mWindow.GetName());
 }
 
+ret_t TAppWindow::OnInit(TRequestPtrRef request, bool first_time) {
+  return RET_OK;
+}
+
 ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   mRequest = request;
  
   if (first_time) {
     this->OnHookEvents();
   }
+  this->OnInit(request, first_time);
 
   return RET_OK;
 }

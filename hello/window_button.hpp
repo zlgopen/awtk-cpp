@@ -33,7 +33,7 @@ class WindowButton : public TAppWindow {
  public:
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
-  virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
+  virtual ret_t OnInit(TRequestPtrRef request, bool first_time);
 };
 
 #endif /*TK_WINDOW_BUTTON_H*/

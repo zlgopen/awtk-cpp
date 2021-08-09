@@ -48,13 +48,13 @@ ret_t WindowBasic::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowBasic::OnRequest(TRequestPtrRef request, bool first_time) {
+ret_t WindowBasic::OnInit(TRequestPtrRef request, bool first_time) {
   int value = request->GetInt("value", 10);
 
   this->Lookup("bar1").SetValue(value);
   this->Lookup("bar2").SetValue(value);
 
-  return TAppWindow::OnRequest(request, first_time);
+  return RET_OK;
 }
 
 WINDOW_REGISTER("basic", WindowBasic, TRUE);

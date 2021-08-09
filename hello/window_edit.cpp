@@ -39,8 +39,8 @@ ret_t WindowEdit::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowEdit::OnRequest(TRequestPtrRef request, bool first_time) {
-  return TAppWindow::OnRequest(request, first_time);
+ret_t WindowEdit::OnInit(TRequestPtrRef request, bool first_time) {
+  return RET_OK;
 }
 
 WINDOW_REGISTER("edit", WindowEdit, TRUE);

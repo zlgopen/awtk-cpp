@@ -89,14 +89,14 @@ ret_t Window${Name}::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t Window${Name}::OnRequest(TRequestPtrRef request, bool first_time) {
+ret_t Window${Name}::OnInit(TRequestPtrRef request, bool first_time) {
 /*
   TODO: initialize widget at here
   int value = request->GetInt("value", 10);
   this->Lookup("bar1").SetValue(value);
   this->Lookup("bar2").SetValue(value);
 */
-  return TAppWindow::OnRequest(request, first_time);
+  return RET_OK;
 }
 
 WINDOW_REGISTER("${name}", Window${Name}, TRUE);
@@ -143,7 +143,7 @@ class Window${Name} : public TAppWindow {
   virtual void OnToForeGround();
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
-  virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
+  virtual ret_t OnInit(TRequestPtrRef request, bool first_time);
 };
 
 #endif /*TK_WINDOW_${NAME}_H*/

@@ -63,14 +63,14 @@ ret_t WindowKeyboard::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowKeyboard::OnRequest(TRequestPtrRef request, bool first_time) {
+ret_t WindowKeyboard::OnInit(TRequestPtrRef request, bool first_time) {
 /*
   TODO: initialize widget at here
   int value = request->GetInt("value", 10);
   this->Lookup("bar1").SetValue(value);
   this->Lookup("bar2").SetValue(value);
 */
-  return TAppWindow::OnRequest(request, first_time);
+  return RET_OK;
 }
 
 WINDOW_REGISTER("keyboard", WindowKeyboard, TRUE);

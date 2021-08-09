@@ -59,8 +59,8 @@ ret_t WindowMain::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowMain::OnRequest(TRequestPtrRef request, bool first_time) {
-  return TAppWindow::OnRequest(request, first_time);
+ret_t WindowMain::OnInit(TRequestPtrRef request, bool first_time) {
+  return RET_OK;
 }
 
 WINDOW_REGISTER("main", WindowMain, TRUE);

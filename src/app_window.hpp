@@ -29,6 +29,9 @@ class TAppWindow {
   TAppWindow(TWidget win) : mWindow(win) {
   }
 
+public:
+  ret_t OnRequest(TRequestPtrRef request, bool first_time);
+
  public: /*virtual*/
   virtual void OnOpen();
   virtual void OnClose();
@@ -38,7 +41,7 @@ class TAppWindow {
 
   virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
-  virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
+  virtual ret_t OnInit(TRequestPtrRef request, bool first_time);
 
  public: /*helper*/
   ret_t Back();

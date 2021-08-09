@@ -43,8 +43,8 @@ ret_t WindowDialog1::OnHookEvents() {
   return TAppWindow::OnHookEvents();
 }
 
-ret_t WindowDialog1::OnRequest(TRequestPtrRef request, bool first_time) {
-  return TAppWindow::OnRequest(request, first_time);
+ret_t WindowDialog1::OnInit(TRequestPtrRef request, bool first_time) {
+  return RET_OK;
 }
 
 WINDOW_REGISTER("dialog1", WindowDialog1, TRUE);
