@@ -40,14 +40,16 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
+ret_t WindowBasic::OnHookEvents() {
+  this->OnChild(EVT_CLICK, "inc_value");
+  this->OnChild(EVT_CLICK, "dec_value");
+  this->OnChild(EVT_CLICK, "switch_to:main");
+
+  return TAppWindow::OnHookEvents();
+}
+
 ret_t WindowBasic::OnRequest(TRequestPtrRef request, bool first_time) {
   int value = request->GetInt("value", 10);
-
-  if (first_time) {
-    this->OnChild(EVT_CLICK, "inc_value");
-    this->OnChild(EVT_CLICK, "dec_value");
-    this->OnChild(EVT_CLICK, "switch_to:main");
-  }
 
   this->Lookup("bar1").SetValue(value);
   this->Lookup("bar2").SetValue(value);

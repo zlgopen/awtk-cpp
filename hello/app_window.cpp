@@ -46,6 +46,10 @@ void TAppWindow::OnToForeGround() {
 
 ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   mRequest = request;
+ 
+  if (first_time) {
+    this->OnHookEvents();
+  }
 
   return RET_OK;
 }
@@ -166,7 +170,7 @@ uint32_t TAppWindow::OnChild(event_type_t etype, const char* name) {
       this);
 }
 
-void TAppWindow::HookEvents() {
+ret_t TAppWindow::OnHookEvents() {
   this->On(EVT_WINDOW_OPEN);
   this->On(EVT_WINDOW_WILL_OPEN);
   this->On(EVT_WINDOW_CLOSE);
@@ -174,5 +178,5 @@ void TAppWindow::HookEvents() {
   this->On(EVT_WINDOW_TO_FOREGROUND);
   this->mWindow.SetPropPointer(WIDGET_PROP_APP_WINDOW, this);
 
-  return;
+  return RET_OK;
 }

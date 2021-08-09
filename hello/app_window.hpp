@@ -27,7 +27,6 @@
 class TAppWindow {
  public:
   TAppWindow(TWidget win) : mWindow(win) {
-    this->HookEvents();
   }
 
  public: /*virtual*/
@@ -36,6 +35,8 @@ class TAppWindow {
   virtual void OnWillOpen();
   virtual void OnToBackGround();
   virtual void OnToForeGround();
+
+  virtual ret_t OnHookEvents();
   virtual ret_t OnEvent(TWidget& target, TEvent& e);
   virtual ret_t OnRequest(TRequestPtrRef request, bool first_time);
 
@@ -71,7 +72,6 @@ class TAppWindow {
   TRequestPtr mRequest;
 
  private:
-  void HookEvents();
   TAppWindow(const TAppWindow& other);
   TAppWindow& operator=(const TAppWindow& other);
 };

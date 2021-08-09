@@ -38,13 +38,14 @@ ret_t WindowButton::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowButton::OnRequest(TRequestPtrRef request, bool first_time) {
-  if (first_time) {
-    this->OnChild(EVT_LONG_PRESS, "open:dialog1");
-    this->OnChild(EVT_CLICK, "fullscreen");
-    this->OnChild(EVT_CLICK, "close");
-  }
+ret_t WindowButton::OnHookEvents() {
+  this->OnChild(EVT_LONG_PRESS, "open:dialog1");
+  this->OnChild(EVT_CLICK, "fullscreen");
+  this->OnChild(EVT_CLICK, "close");
+  return TAppWindow::OnHookEvents();
+}
 
+ret_t WindowButton::OnRequest(TRequestPtrRef request, bool first_time) {
   return TAppWindow::OnRequest(request, first_time);
 }
 

@@ -36,12 +36,14 @@ ret_t WindowDialog1::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowDialog1::OnRequest(TRequestPtrRef request, bool first_time) {
-  if (first_time) {
-    this->OnChild(EVT_CLICK, "quit");
-    this->OnChild(EVT_CLICK, "back_to_home");
-  }
+ret_t WindowDialog1::OnHookEvents() {
+  this->OnChild(EVT_CLICK, "quit");
+  this->OnChild(EVT_CLICK, "back_to_home");
 
+  return TAppWindow::OnHookEvents();
+}
+
+ret_t WindowDialog1::OnRequest(TRequestPtrRef request, bool first_time) {
   return TAppWindow::OnRequest(request, first_time);
 }
 

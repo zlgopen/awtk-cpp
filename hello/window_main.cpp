@@ -47,14 +47,16 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
   return TAppWindow::OnEvent(target, e);
 }
 
-ret_t WindowMain::OnRequest(TRequestPtrRef request, bool first_time) {
-  if (first_time) {
-    this->OnChild(EVT_CLICK, "open:button");
-    this->OnChild(EVT_CLICK, "open:basic");
-    this->OnChild(EVT_CLICK, "open:edit");
-    this->OnChild(EVT_CLICK, "open:gauge");
-  }
+ret_t WindowMain::OnHookEvents() {
+  this->OnChild(EVT_CLICK, "open:button");
+  this->OnChild(EVT_CLICK, "open:basic");
+  this->OnChild(EVT_CLICK, "open:edit");
+  this->OnChild(EVT_CLICK, "open:gauge");
 
+  return TAppWindow::OnHookEvents();
+}
+
+ret_t WindowMain::OnRequest(TRequestPtrRef request, bool first_time) {
   return TAppWindow::OnRequest(request, first_time);
 }
 
