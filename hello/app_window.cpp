@@ -128,6 +128,10 @@ ret_t TAppWindow::Back() {
   return mWindow.Back();
 }
 
+ret_t TAppWindow::Quit() {
+  return TGlobal().Quit();
+}
+
 ret_t TAppWindow::BackToHome() {
   return mWindow.BackToHome();
 }

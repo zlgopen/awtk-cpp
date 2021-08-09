@@ -41,6 +41,7 @@ class TAppWindow {
 
  public: /*helper*/
   ret_t Back();
+  ret_t Quit();
   ret_t BackToHome();
 
   static ret_t CloseForce(const char* name);
