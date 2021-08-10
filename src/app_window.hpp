@@ -50,16 +50,12 @@ class TAppWindow {
 
   static ret_t CloseForce(const char* name);
   static bool isWindowOpen(const char* name);
-
-  ret_t Open(const char* name);
-  ret_t Open(const char* name, bool close_current, TRequestPtr request);
-  ret_t SwitchTo(const char* name, bool close_current, TRequestPtr request);
+  static ret_t Open(const char* name, bool close_current = false, TRequestPtr request = NULL);
+  static ret_t SwitchTo(const char* name, bool close_current = false, TRequestPtr request = NULL);
 
   TWidget Lookup(const char* name);
   uint32_t On(event_type_t etype);
   uint32_t OnChild(event_type_t etype, const char* name);
-
-  static ret_t OpenFirst(const char* name, TRequestPtr request);
 
  public:
   virtual ~TAppWindow() {

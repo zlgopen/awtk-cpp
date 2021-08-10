@@ -25,7 +25,7 @@
 static ret_t application_init(void) {
   TWindow::Open("system_bar");
 
-  TAppWindow::OpenFirst("main", NULL);
+  TAppWindow::Open("main");
 
   return RET_OK;
 }

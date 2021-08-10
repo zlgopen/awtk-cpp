@@ -59,31 +59,27 @@ ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   return RET_OK;
 }
 
-ret_t TAppWindow::Open(const char* name) {
-  return this->Open(name, false, NULL);
+#define GET_APP_WINDOW(target) static_cast<TAppWindow*>(widget_get_prop_pointer(target, WIDGET_PROP_APP_WINDOW))
+
+static TAppWindow* GetCurrentAppWindow(void) {
+  TAppWindow* app_window = NULL;
+  widget_t* current = window_manager_get_top_window(window_manager());
+  if (current != NULL) {
+    app_window = GET_APP_WINDOW(current);
+  }
+
+  return app_window;
 }
 
 ret_t TAppWindow::Open(const char* name, bool close_current, TRequestPtr request) {
-  return TWindowFactory::instance()->Open(name, this, close_current, request);
-}
-
-ret_t TAppWindow::OpenFirst(const char* name, TRequestPtr request) {
-  return TWindowFactory::instance()->Open(name, NULL, false, request);
-}
-
-ret_t TAppWindow::CloseForce(const char* name) {
-  widget_t* target = widget_child(window_manager(), name);
-  return_value_if_fail(target != NULL, RET_FAIL);
-
-  return window_manager_close_window_force(window_manager(), target);
+  return TWindowFactory::instance()->Open(name, GetCurrentAppWindow(), close_current, request);
 }
 
 ret_t TAppWindow::SwitchTo(const char* name, bool close_current, TRequestPtr request) {
   if (TAppWindow::isWindowOpen(name)) {
     widget_t* target = widget_child(window_manager(), name);
-    widget_t* curr = this->GetWindow().nativeObj;
-    TAppWindow* app_window =
-        static_cast<TAppWindow*>(widget_get_prop_pointer(target, WIDGET_PROP_APP_WINDOW));
+    widget_t* curr = window_manager_get_top_window(window_manager());
+    TAppWindow* app_window = GET_APP_WINDOW(target);
 
     if (app_window != NULL) {
       app_window->OnRequest(request, false);
@@ -93,6 +89,14 @@ ret_t TAppWindow::SwitchTo(const char* name, bool close_current, TRequestPtr req
   }
 
   return RET_FAIL;
+}
+
+
+ret_t TAppWindow::CloseForce(const char* name) {
+  widget_t* target = widget_child(window_manager(), name);
+  return_value_if_fail(target != NULL, RET_FAIL);
+
+  return window_manager_close_window_force(window_manager(), target);
 }
 
 bool TAppWindow::isWindowOpen(const char* name) {
