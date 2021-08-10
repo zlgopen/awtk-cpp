@@ -33,7 +33,7 @@ ret_t WindowBasic::OnEvent(TWidget& target, TEvent& e) {
       this->Lookup("bar1").AddValue(-10);
       this->Lookup("bar2").AddValue(010);
     } else if (strstr(name, "switch_to:main") != NULL) {
-      this->SwitchTo("main", false, NULL);
+      this->Open("main", false, NULL);
     }
   }
 

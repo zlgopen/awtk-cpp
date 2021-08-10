@@ -73,3 +73,10 @@ scons LINUX_FB=true
 [AWTK 脚本绑定原理](https://github.com/zlgopen/awtk/blob/master/docs/script_binding.md)
 
 > 本文以 Linux/MacOS 为例，Windows 可能会微妙差异，请酌情处理。
+
+## C++应用程序框架
+
+请参考：hello目录。
+
+> 感谢staunchheart(QQ:36380047)兄提供C++框架(包括代码生成)的思路和各种建议。
+
