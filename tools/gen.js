@@ -29,6 +29,14 @@ const className = `Window${Name}`;
 const uiClassName = `${className}UI`;
 const xmlFilename = `${designDir}/default/ui/${name}.xml`
 
+if(!fs.existsSync(xmlFilename)) {
+  console.log(`${xmlFilename} not exists, please specify a correct name.`);
+  console.log('----------------------------------------------------------------------------');
+  console.log('Ex: node gen.js basic');
+  console.log('----------------------------------------------------------------------------');
+  process.exit(0);
+}
+
 function upperCamelName(name) {
   name = name.replace(/_t$/, '');
   name = name.replace(/(^|_)[a-z]/g, r => {
@@ -274,9 +282,21 @@ ${lookups}
 
 let ui = genUICode(name, xmlFilename);
 
-fs.writeFileSync(cppFileName, UTF8BOM + c);
-fs.writeFileSync(hppFileName, UTF8BOM + h);
-fs.writeFileSync(uiFileName, UTF8BOM + ui);
+if(!fs.existsSync(cppFileName)) {
+  fs.writeFileSync(cppFileName, UTF8BOM + c);
+  console.log(`Write to ${cppFileName}`);
+} else {
+  console.log(`${cppFileName} exists, skip it.`);
+}
 
-console.log(`Output to ${cppFileName} ${hppFileName} ${uiFileName}`);
+if(!fs.existsSync(hppFileName)) {
+  fs.writeFileSync(hppFileName, UTF8BOM + h);
+  console.log(`Write to ${hppFileName}`);
+} else {
+  console.log(`${hppFileName} exists, skip it.`);
+}
+
+fs.writeFileSync(uiFileName, UTF8BOM + ui);
+console.log(`Write to ${uiFileName}`);
+
 
