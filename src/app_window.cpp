@@ -59,7 +59,8 @@ ret_t TAppWindow::OnRequest(TRequestPtrRef request, bool first_time) {
   return RET_OK;
 }
 
-#define GET_APP_WINDOW(target) static_cast<TAppWindow*>(widget_get_prop_pointer(target, WIDGET_PROP_APP_WINDOW))
+#define GET_APP_WINDOW(target) \
+  static_cast<TAppWindow*>(widget_get_prop_pointer(target, WIDGET_PROP_APP_WINDOW))
 
 static TAppWindow* GetCurrentAppWindow(void) {
   TAppWindow* app_window = NULL;
@@ -90,7 +91,6 @@ ret_t TAppWindow::SwitchTo(const char* name, bool close_current, TRequestPtr req
 
   return RET_FAIL;
 }
-
 
 ret_t TAppWindow::CloseForce(const char* name) {
   widget_t* target = widget_child(window_manager(), name);

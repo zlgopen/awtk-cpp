@@ -86,7 +86,7 @@ class TAppWindow {
  private:
   TAppWindow(const TAppWindow& other);
   TAppWindow& operator=(const TAppWindow& other);
- friend class TWindowFactory;
+  friend class TWindowFactory;
 };
 
 #endif /*TK_APP_WINDOW_H*/

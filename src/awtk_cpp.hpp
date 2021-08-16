@@ -3243,6 +3243,14 @@ class TWidget {
   ret_t CloseWindow();
 
   /**
+   * 关闭控件所在的窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t CloseWindowForce();
+
+  /**
    * 请求返回到前一个窗口。
    * 
    *
@@ -6518,6 +6526,19 @@ class TColorComponent : public TWidget {
   static TColorComponent Cast(const TWidget& obj) {
     return TColorComponent(obj.nativeObj);
   }
+
+  /**
+   * 创建color_component对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
@@ -7865,6 +7886,19 @@ class TCandidates : public TWidget {
   static TCandidates Cast(const TWidget& obj) {
     return TCandidates(obj.nativeObj);
   }
+
+  /**
+   * 创建candidates对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
    * 设置是否为预候选字列表。
@@ -10702,6 +10736,15 @@ class TTextSelector : public TWidget {
   ret_t SetAnimatingTime(uint32_t animating_time);
 
   /**
+   * 设置是否修改值时启用动画。
+   * 
+   * @param enable_value_animator 是否修改值时启用动画
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEnableValueAnimator(bool enable_value_animator);
+
+  /**
    * 可见的选项数量(只能是1或者3或者5，缺省为5)。
    *
    */
@@ -10744,6 +10787,12 @@ class TTextSelector : public TWidget {
    *
    */
   bool GetLoopOptions() const;
+
+  /**
+   * 是否修改值时启用动画。
+   *
+   */
+  bool GetEnableValueAnimator() const;
 };
 
 /**
@@ -14963,6 +15012,19 @@ class TMutableImage : public TImageBase {
   static TMutableImage Cast(const TWidget& obj) {
     return TMutableImage(obj.nativeObj);
   }
+
+  /**
+   * 创建mutable_image对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
@@ -15404,6 +15466,19 @@ class TCalibrationWin : public TWindowBase {
   static TCalibrationWin Cast(const TWidget& obj) {
     return TCalibrationWin(obj.nativeObj);
   }
+
+  /**
+   * 创建calibration_win对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 };
 
 /**
