@@ -16,6 +16,7 @@ cd awtk; scons; cd -
 ```
 git clone https://github.com/zlgopen/awtk-cpp.git
 cd awtk-cpp
+scons
 ```
 
 * 生成资源
