@@ -1524,15 +1524,6 @@ class TCanvas {
   wh_t GetHeight();
 
   /**
-   * 获取裁剪区。
-   * 
-   * @param r rect对象。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t GetClipRect(TRect& r);
-
-  /**
    * 设置裁剪区。
    * 
    * @param r rect对象。
@@ -2831,6 +2822,18 @@ class TVgcanvas {
   ret_t ClipRect(float_t x, float_t y, float_t w, float_t h);
 
   /**
+   * 矩形区域是否在矩形裁剪中。
+   * 
+   * @param left 矩形区域左边。
+   * @param top 矩形区域上边。
+   * @param right 矩形区域右边。
+   * @param bottom 矩形区域下边。
+   *
+   * @return 返回 TURE 则在区域中，返回 FALSE 则不在区域中。
+   */
+  bool IsRectfIntClipRect(float_t left, float_t top, float_t right, float_t bottom);
+
+  /**
    * 设置一个与前一个裁剪区做交集的矩形裁剪区。
    *如果下面这种情况，则不能直接调用 rect_intersect 函数来做矩形交集和 vgcanvas_clip_rect 函数设置裁剪区，而采用本函数做交集。
    *由于缩放和旋转以及平移会导致 vg 的坐标系和上一个裁剪区的坐标系不同，
@@ -2956,6 +2959,30 @@ class TVgcanvas {
    */
   ret_t DrawImage(TBitmap& img, float_t sx, float_t sy, float_t sw, float_t sh, float_t dx,
                   float_t dy, float_t dw, float_t dh);
+
+  /**
+   * 绘制图片。
+   *
+   *备注：
+   *当绘制区域大于原图区域时，多余的绘制区域会重复绘制原图区域的东西。（绘制图区按照绘制图片的宽高来绘制的）
+   *当绘制图片的宽高和原图的不同，在重复绘制的同时加入缩放。
+   * 
+   * @param img 图片。
+   * @param sx 原图区域的 x
+   * @param sy 原图区域的 y
+   * @param sw 原图区域的 w
+   * @param sh 原图区域的 h
+   * @param dx 绘制区域的 x
+   * @param dy 绘制区域的 y
+   * @param dw 绘制区域的 w
+   * @param dh 绘制区域的 h
+   * @param dst_w 绘制图片的宽
+   * @param dst_h 绘制图片的高
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t DrawImageRepeat(TBitmap& img, float_t sx, float_t sy, float_t sw, float_t sh, float_t dx,
+                        float_t dy, float_t dw, float_t dh, float_t dst_w, float_t dst_h);
 
   /**
    * 绘制图标。
@@ -3299,6 +3326,14 @@ class TWidget {
   ret_t MoveResize(xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
+   * 获取控件的值。只是对widget\_get\_prop的包装，值的意义由子类控件决定。
+   * 
+   *
+   * @return 返回值。
+   */
+  float_t GetValue();
+
+  /**
    * 设置控件的值。
    *只是对widget\_set\_prop的包装，值的意义由子类控件决定。
    * 
@@ -3306,7 +3341,45 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetValue(int32_t value);
+  ret_t SetValue(float_t value);
+
+  /**
+   * 增加控件的值。
+   *只是对widget\_set\_prop的包装，值的意义由子类控件决定。
+   * 
+   * @param delta 增量。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AddValue(float_t delta);
+
+  /**
+   * 获取控件的值。只是对widget\_get\_prop的包装，值的意义由子类控件决定。
+   * 
+   *
+   * @return 返回值。
+   */
+  int32_t GetValueInt();
+
+  /**
+   * 设置控件的值。
+   *只是对widget\_set\_prop的包装，值的意义由子类控件决定。
+   * 
+   * @param value 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetValueInt(int32_t value);
+
+  /**
+   * 增加控件的值。
+   *只是对widget\_set\_prop的包装，值的意义由子类控件决定。
+   * 
+   * @param delta 增量。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AddValueInt(int32_t delta);
 
   /**
    * 设置控件的值(以动画形式变化到指定的值)。
@@ -3317,17 +3390,7 @@ class TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t AnimateValueTo(int32_t value, uint32_t duration);
-
-  /**
-   * 增加控件的值。
-   *只是对widget\_set\_prop的包装，值的意义由子类控件决定。
-   * 
-   * @param delta 增量。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t AddValue(int32_t delta);
+  ret_t AnimateValueTo(float_t value, uint32_t duration);
 
   /**
    * 查询指定的style是否存在。
@@ -3401,14 +3464,6 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetTrText(const char* text);
-
-  /**
-   * 获取控件的值。只是对widget\_get\_prop的包装，值的意义由子类控件决定。
-   * 
-   *
-   * @return 返回值。
-   */
-  int32_t GetValue();
 
   /**
    * 获取控件enable属性值。
@@ -3498,8 +3553,6 @@ class TWidget {
 
   /**
    * 设置theme的名称，用于动态切换主题。名称与当前主题名称相同，则重新加载全部资源。
-   *
-   *> 目前只支持带有文件系统的平台。
    * 
    * @param name 主题的名称。
    *
@@ -3865,6 +3918,26 @@ class TWidget {
    * @return 返回属性的值。
    */
   void* GetPropPointer(const char* name);
+
+  /**
+   * 设置浮点数格式的属性。
+   * 
+   * @param name 属性的名称。
+   * @param v 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPropFloat(const char* name, float_t v);
+
+  /**
+   * 获取浮点数格式的属性。
+   * 
+   * @param name 属性的名称。
+   * @param defval 缺省值。
+   *
+   * @return 返回属性的值。
+   */
+  float_t GetPropFloat(const char* name, float_t defval);
 
   /**
    * 设置整数格式的属性。
@@ -5484,6 +5557,39 @@ class TValueChangeEvent : public TEvent {
 };
 
 /**
+ * 值变化事件。
+ *
+ */
+class TOffsetChangeEvent : public TEvent {
+ public:
+  TOffsetChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TOffsetChangeEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TOffsetChangeEvent(const offset_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TOffsetChangeEvent Cast(event_t* nativeObj) {
+    return TOffsetChangeEvent(nativeObj);
+  }
+
+  static TOffsetChangeEvent Cast(const event_t* nativeObj) {
+    return TOffsetChangeEvent((event_t*)nativeObj);
+  }
+
+  static TOffsetChangeEvent Cast(TEvent& obj) {
+    return TOffsetChangeEvent(obj.nativeObj);
+  }
+
+  static TOffsetChangeEvent Cast(const TEvent& obj) {
+    return TOffsetChangeEvent(obj.nativeObj);
+  }
+};
+
+/**
  * 指针事件。
  *
  */
@@ -5816,6 +5922,45 @@ class TMultiGestureEvent : public TEvent {
    *
    */
   float GetDistance() const;
+};
+
+/**
+ * 主题变化事件。
+ *
+ */
+class TThemeChangeEvent : public TEvent {
+ public:
+  TThemeChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TThemeChangeEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TThemeChangeEvent(const theme_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TThemeChangeEvent Cast(event_t* nativeObj) {
+    return TThemeChangeEvent(nativeObj);
+  }
+
+  static TThemeChangeEvent Cast(const event_t* nativeObj) {
+    return TThemeChangeEvent((event_t*)nativeObj);
+  }
+
+  static TThemeChangeEvent Cast(TEvent& obj) {
+    return TThemeChangeEvent(obj.nativeObj);
+  }
+
+  static TThemeChangeEvent Cast(const TEvent& obj) {
+    return TThemeChangeEvent(obj.nativeObj);
+  }
+
+  /**
+   * 主题名称。
+   *
+   */
+  const char* GetName() const;
 };
 
 /**
@@ -6772,6 +6917,16 @@ class TDraggable : public TWidget {
   ret_t SetDragWindow(bool drag_window);
 
   /**
+   * 设置drag_parent。
+   *拖动窗口而不是父控件。比如放在对话框的titlebar上，拖动titlebar其实是希望拖动对话框。
+   * 
+   * @param drag_parent 0表示直系父控件，1表示父控件的父控件，依次类推。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDragParent(uint32_t drag_parent);
+
+  /**
    * 拖动范围的顶部限制。缺省为父控件的顶部。
    *
    */
@@ -6812,6 +6967,12 @@ class TDraggable : public TWidget {
    *
    */
   bool GetDragWindow() const;
+
+  /**
+   * 拖动父控件。0表示直系父控件，1表示父控件的父控件，依次类推。
+   *
+   */
+  uint32_t GetDragParent() const;
 };
 
 /**
@@ -8264,6 +8425,15 @@ class TMledit : public TWidget {
   ret_t SetWrapWord(bool wrap_word);
 
   /**
+   * 设置编辑器是否启用覆盖行（在行数达到最大行数时，可继续新增行，但最早的行将会消失）。
+   * 
+   * @param overwrite 是否启用覆盖行。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetOverwrite(bool overwrite);
+
+  /**
    * 设置编辑器的最大行数。
    * 
    * @param max_lines 最大行数。
@@ -8384,6 +8554,16 @@ class TMledit : public TWidget {
   char* GetSelectedText();
 
   /**
+   * 插入一段文本。
+   * 
+   * @param offset 插入的偏移位置。
+   * @param text 待插入的文本。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t InsertText(uint32_t offset, const char* text);
+
+  /**
    * 输入提示。
    *
    */
@@ -8414,16 +8594,22 @@ class TMledit : public TWidget {
   uint32_t GetMaxChars() const;
 
   /**
-   * 是否自动折行。
-   *
-   */
-  bool GetWrapWord() const;
-
-  /**
    * 鼠标一次滚动行数。
    *
    */
   uint32_t GetScrollLine() const;
+
+  /**
+   * 是否启用覆盖行。
+   *
+   */
+  bool GetOverwrite() const;
+
+  /**
+   * 是否自动折行。
+   *
+   */
+  bool GetWrapWord() const;
 
   /**
    * 编辑器是否为只读。
@@ -8836,13 +9022,8 @@ class TRichText : public TWidget {
  *
  *hscroll\_label\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于hscroll\_label\_t控件。
  *
- *在xml中使用"hscroll\_label"标签创建行号控件，一般配合mledit使用。如：
- *
- *```xml
- *```
- *
- *> 更多用法请参考：[mledit.xml](
- *https://github.com/zlgopen/awtk/blob/master/design/default/ui/mledit.xml)
+ *> 更多用法请参考：[hscroll_label.xml](
+ *https://github.com/zlgopen/awtk/blob/master/design/default/ui/hscroll_label.xml)
  *
  *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
  *
@@ -8916,6 +9097,15 @@ class THscrollLabel : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetDuration(int32_t duration);
+
+  /**
+   * 设置speed（设置后 duration 不生效）。
+   * 
+   * @param speed 滚动速度(px/ms)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSpeed(float_t speed);
 
   /**
    * 设置only_focus。
@@ -9028,6 +9218,12 @@ class THscrollLabel : public TWidget {
    *
    */
   int32_t GetDuration() const;
+
+  /**
+   * 滚动速度(px/ms)（设置后 duration 不生效）。
+   *
+   */
+  float_t GetSpeed() const;
 
   /**
    * 偏移量。
@@ -9577,6 +9773,15 @@ class TScrollBar : public TWidget {
   bool IsMobile();
 
   /**
+   * 设置翻页滚动动画时间。
+   * 
+   * @param animator_time 时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAnimatorTime(uint32_t animator_time);
+
+  /**
    * 虚拟宽度或高度。
    *
    */
@@ -9593,6 +9798,12 @@ class TScrollBar : public TWidget {
    *
    */
   int32_t GetRow() const;
+
+  /**
+   * 翻页滚动动画时间。
+   *
+   */
+  uint32_t GetAnimatorTime() const;
 
   /**
    * 滚动时是否启用动画。
@@ -10177,6 +10388,15 @@ class TSlideIndicator : public TWidget {
   ret_t SetIndicatedTarget(const char* target_name);
 
   /**
+   * 设置是否启用过渡效果。
+   * 
+   * @param transition 是否启用过渡效果
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTransition(bool transition);
+
+  /**
    * 值(缺省为0)。
    *
    */
@@ -10235,6 +10455,12 @@ class TSlideIndicator : public TWidget {
    *
    */
   char* GetIndicatedTarget() const;
+
+  /**
+   * 是否启用过渡效果。
+   *
+   */
+  bool GetTransition() const;
 };
 
 /**
@@ -14560,6 +14786,15 @@ class TNativeWindow : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetCursor(const char* name, TBitmap& img);
+
+  /**
+   * 设置程序窗口的名称。
+   * 
+   * @param app_name 程序窗口的名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTitle(const char* app_name);
 };
 
 /**
@@ -14822,6 +15057,21 @@ class TGifImage : public TImageBase {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Pause();
+
+  /**
+   * 设置循环播放次数。
+   * 
+   * @param loop 循环播放次数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetLoop(uint32_t loop);
+
+  /**
+   * 循环播放的次数。
+   *
+   */
+  uint32_t GetLoop() const;
 };
 
 /**
@@ -15350,6 +15600,15 @@ class TObjectDefault : public TObject {
    * @return 返回object对象。
    */
   static TObject Create();
+
+  /**
+   * 创建对象。
+   * 
+   * @param enable_path 是否支持按路径访问属性。
+   *
+   * @return 返回object对象。
+   */
+  static TObject CreateEx(bool enable_path);
 
   /**
    * for script gc

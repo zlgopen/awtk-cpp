@@ -34,7 +34,7 @@ ret_t WindowMain::OnEvent(TWidget& target, TEvent& e) {
     } else if (strstr(name, "basic") != NULL) {
       TRequestPtr req(new TRequest([](TAppWindow* target) -> void {
         TWidget bar1 = target->Lookup("bar1");
-        log_debug("value=%d\n", bar1.GetValue());
+        log_debug("value=%d\n", (int)(bar1.GetValue()));
       }));
 
       req->Set("value", 66);
