@@ -10885,7 +10885,7 @@ class TTextSelector : public TWidget {
    *
    * @return 返回值。
    */
-  int32_t GetValue();
+  int32_t GetValueInt();
 
   /**
    * 设置text_selector的值。
@@ -15992,7 +15992,7 @@ class TComboBox : public TEdit {
    *
    * @return 返回值。
    */
-  int32_t GetValue();
+  int32_t GetValueInt();
 
   /**
    * 获取combo_box的文本。
