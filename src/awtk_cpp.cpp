@@ -949,9 +949,8 @@ ret_t TVgcanvas::ClipRect(float_t x, float_t y, float_t w, float_t h) {
   return vgcanvas_clip_rect(((vgcanvas_t*)(this->nativeObj)), x, y, w, h);
 }
 
-bool TVgcanvas::IsRectfIntClipRect(float_t left, float_t top, float_t right, float_t bottom) {
-  return vgcanvas_is_rectf_int_clip_rect(((vgcanvas_t*)(this->nativeObj)), left, top, right,
-                                         bottom);
+bool TVgcanvas::IsRectfInClipRect(float_t left, float_t top, float_t right, float_t bottom) {
+  return vgcanvas_is_rectf_in_clip_rect(((vgcanvas_t*)(this->nativeObj)), left, top, right, bottom);
 }
 
 ret_t TVgcanvas::IntersectClipRect(float_t x, float_t y, float_t w, float_t h) {
