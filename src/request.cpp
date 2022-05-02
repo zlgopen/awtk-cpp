@@ -38,6 +38,18 @@ bool TRequest::Set(const char* name, const char* value) {
   return object_set_prop_str(mArgs, name, value) == RET_OK;
 }
 
+bool TRequest::Set(const char* name, const wchar_t* value) {
+  value_t v;
+  value_set_wstr(&v, value);
+
+  return object_set_prop(mArgs, name, &v) == RET_OK;
+}
+
+bool TRequest::Exists(const char* name) const {
+  value_t v;
+  return object_get_prop(mArgs, name, &v) == RET_OK;
+}
+
 int TRequest::GetInt(const char* name, int defval) const {
   return object_get_prop_int(mArgs, name, defval);
 }
@@ -48,4 +60,13 @@ double TRequest::GetDouble(const char* name, double defval) const {
 
 const char* TRequest::GetString(const char* name) const {
   return object_get_prop_str(mArgs, name);
+}
+
+const wchar_t* TRequest::GetWString(const char* name) const {
+  value_t v;
+  if (object_get_prop(mArgs, name, &v) == RET_OK) {
+    return value_wstr(&v);
+  } else {
+    return NULL;
+  }
 }

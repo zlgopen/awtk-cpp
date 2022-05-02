@@ -48,10 +48,14 @@ class TRequest {
   bool Set(const char* name, int value);
   bool Set(const char* name, double value);
   bool Set(const char* name, const char* value);
+  bool Set(const char* name, const wchar_t* value);
+  
+  bool Exists(const char* name) const;
 
   int GetInt(const char* name, int defval) const;
   double GetDouble(const char* name, double defval) const;
   const char* GetString(const char* name) const;
+  const wchar_t* GetWString(const char* name) const;
 
  private:
   TRequest(const TRequest& other);
