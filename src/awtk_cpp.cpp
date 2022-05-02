@@ -220,6 +220,10 @@ ret_t TObject::CopyProp(TObject& src, const char* name) {
   return object_copy_prop(((object_t*)(this->nativeObj)), ((object_t*)(src.nativeObj)), name);
 }
 
+ret_t TObject::CopyProps(TObject& src, bool overwrite) {
+  return object_copy_props(((object_t*)(this->nativeObj)), ((object_t*)(src.nativeObj)), overwrite);
+}
+
 bool TObject::HasProp(const char* name) {
   return object_has_prop(((object_t*)(this->nativeObj)), name);
 }
@@ -508,6 +512,18 @@ ret_t TValue::Reset() {
   return value_reset(((value_t*)(this->nativeObj)));
 }
 
+const char* TValue::Id() {
+  return value_id(((value_t*)(this->nativeObj)));
+}
+
+void* TValue::Func() {
+  return value_func(((value_t*)(this->nativeObj)));
+}
+
+void* TValue::FuncDef() {
+  return value_func_def(((value_t*)(this->nativeObj)));
+}
+
 ret_t TGlobal::Init(wh_t w, wh_t h, app_type_t app_type, const char* app_name,
                     const char* app_root) {
   return tk_init(w, h, app_type, app_name, app_root);
@@ -539,6 +555,10 @@ wh_t TCanvas::GetWidth() {
 
 wh_t TCanvas::GetHeight() {
   return canvas_get_height(((canvas_t*)(this->nativeObj)));
+}
+
+ret_t TCanvas::GetClipRect(TRect& r) {
+  return canvas_get_clip_rect(((canvas_t*)(this->nativeObj)), ((rect_t*)(r.nativeObj)));
 }
 
 ret_t TCanvas::SetClipRect(TRect& r) {
@@ -596,6 +616,10 @@ ret_t TCanvas::StrokeRect(xy_t x, xy_t y, wh_t w, wh_t h) {
 
 ret_t TCanvas::SetFont(const char* name, font_size_t size) {
   return canvas_set_font(((canvas_t*)(this->nativeObj)), name, size);
+}
+
+ret_t TCanvas::ResetFont() {
+  return canvas_reset_font(((canvas_t*)(this->nativeObj)));
 }
 
 float_t TCanvas::MeasureText(const char* str) {
@@ -1116,6 +1140,14 @@ TWidget TWidget::GetChild(int32_t index) {
   return TWidget((widget_t*)(widget_get_child(((widget_t*)(this->nativeObj)), index)));
 }
 
+TWidget TWidget::FindParentByName(const char* name) {
+  return TWidget((widget_t*)(widget_find_parent_by_name(((widget_t*)(this->nativeObj)), name)));
+}
+
+TWidget TWidget::FindParentByType(const char* type) {
+  return TWidget((widget_t*)(widget_find_parent_by_type(((widget_t*)(this->nativeObj)), type)));
+}
+
 TWidget TWidget::GetFocusedWidget() {
   return TWidget((widget_t*)(widget_get_focused_widget(((widget_t*)(this->nativeObj)))));
 }
@@ -1146,6 +1178,10 @@ ret_t TWidget::BackToHome() {
 
 ret_t TWidget::Move(xy_t x, xy_t y) {
   return widget_move(((widget_t*)(this->nativeObj)), x, y);
+}
+
+ret_t TWidget::MoveToCenter() {
+  return widget_move_to_center(((widget_t*)(this->nativeObj)));
 }
 
 ret_t TWidget::Resize(wh_t w, wh_t h) {
@@ -2389,6 +2425,10 @@ ret_t TDraggable::SetDragWindow(bool drag_window) {
   return draggable_set_drag_window(((widget_t*)(this->nativeObj)), drag_window);
 }
 
+ret_t TDraggable::SetDragNativeWindow(bool drag_native_window) {
+  return draggable_set_drag_native_window(((widget_t*)(this->nativeObj)), drag_native_window);
+}
+
 ret_t TDraggable::SetDragParent(uint32_t drag_parent) {
   return draggable_set_drag_parent(((widget_t*)(this->nativeObj)), drag_parent);
 }
@@ -2419,6 +2459,10 @@ bool TDraggable::GetHorizontalOnly() const {
 
 bool TDraggable::GetDragWindow() const {
   return ((draggable_t*)(this->nativeObj))->drag_window;
+}
+
+bool TDraggable::GetDragNativeWindow() const {
+  return ((draggable_t*)(this->nativeObj))->drag_native_window;
 }
 
 uint32_t TDraggable::GetDragParent() const {
@@ -2832,6 +2876,22 @@ ret_t TLineNumber::SetLineHeight(int32_t line_height) {
 
 ret_t TLineNumber::SetYoffset(int32_t yoffset) {
   return line_number_set_yoffset(((widget_t*)(this->nativeObj)), yoffset);
+}
+
+ret_t TLineNumber::AddHighlightLine(int32_t line) {
+  return line_number_add_highlight_line(((widget_t*)(this->nativeObj)), line);
+}
+
+ret_t TLineNumber::SetActiveLine(int32_t line) {
+  return line_number_set_active_line(((widget_t*)(this->nativeObj)), line);
+}
+
+ret_t TLineNumber::ClearHighlight() {
+  return line_number_clear_highlight(((widget_t*)(this->nativeObj)));
+}
+
+bool TLineNumber::IsHighlightLine(int32_t line) {
+  return line_number_is_highlight_line(((widget_t*)(this->nativeObj)), line);
 }
 
 TWidget TMledit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3491,11 +3551,11 @@ uint32_t TSlideIndicator::GetSize() const {
   return ((slide_indicator_t*)(this->nativeObj))->size;
 }
 
-float_t TSlideIndicator::GetAnchorX() const {
+char* TSlideIndicator::GetAnchorX() const {
   return ((slide_indicator_t*)(this->nativeObj))->anchor_x;
 }
 
-float_t TSlideIndicator::GetAnchorY() const {
+char* TSlideIndicator::GetAnchorY() const {
   return ((slide_indicator_t*)(this->nativeObj))->anchor_y;
 }
 
@@ -4017,6 +4077,10 @@ ret_t TEdit::SetDouble(double value) {
   return edit_set_double(((widget_t*)(this->nativeObj)), value);
 }
 
+ret_t TEdit::SetDoubleEx(const char* format, double value) {
+  return edit_set_double_ex(((widget_t*)(this->nativeObj)), format, value);
+}
+
 ret_t TEdit::SetTextLimit(uint32_t min, uint32_t max) {
   return edit_set_text_limit(((widget_t*)(this->nativeObj)), min, max);
 }
@@ -4303,6 +4367,10 @@ ret_t TSlider::SetMax(double max) {
   return slider_set_max(((widget_t*)(this->nativeObj)), max);
 }
 
+ret_t TSlider::SetLineCap(const char* line_cap) {
+  return slider_set_line_cap(((widget_t*)(this->nativeObj)), line_cap);
+}
+
 ret_t TSlider::SetStep(double step) {
   return slider_set_step(((widget_t*)(this->nativeObj)), step);
 }
@@ -4331,16 +4399,20 @@ double TSlider::GetStep() const {
   return ((slider_t*)(this->nativeObj))->step;
 }
 
-bool TSlider::GetVertical() const {
-  return ((slider_t*)(this->nativeObj))->vertical;
-}
-
 uint32_t TSlider::GetBarSize() const {
   return ((slider_t*)(this->nativeObj))->bar_size;
 }
 
 uint32_t TSlider::GetDraggerSize() const {
   return ((slider_t*)(this->nativeObj))->dragger_size;
+}
+
+char* TSlider::GetLineCap() const {
+  return ((slider_t*)(this->nativeObj))->line_cap;
+}
+
+bool TSlider::GetVertical() const {
+  return ((slider_t*)(this->nativeObj))->vertical;
 }
 
 bool TSlider::GetDraggerAdaptToIcon() const {
@@ -4746,6 +4818,10 @@ ret_t TComboBox::SetOptions(const char* options) {
 
 int32_t TComboBox::GetValueInt() {
   return combo_box_get_value(((widget_t*)(this->nativeObj)));
+}
+
+bool TComboBox::HasOptionText(const char* text) {
+  return combo_box_has_option_text(((widget_t*)(this->nativeObj)), text);
 }
 
 const char* TComboBox::GetTextValue() {

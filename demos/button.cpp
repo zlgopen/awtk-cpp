@@ -32,7 +32,7 @@ bool Application::Init(void) {
   TWidget win = TWindow::CreateDefault();
   TWidget ok = TButton::Create(win, 0, 0, 0, 0);
 
-  ok.SetText("quit");
+  ok.SetTextW(L"quit");
   ok.SetSelfLayoutParams("center", "middle", "50%", "30");
 
   ok.On(EVT_CLICK, ClickToQuit, NULL);

@@ -704,6 +704,16 @@ class TObject : public TEmitter {
   ret_t CopyProp(TObject& src, const char* name);
 
   /**
+   * 拷贝全部的属性。
+   * 
+   * @param src 源对象。
+   * @param overwrite 如果属性存在是否覆盖。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t CopyProps(TObject& src, bool overwrite);
+
+  /**
    * 检查是否存在指定的属性。
    * 
    * @param name 属性的名称。
@@ -1385,6 +1395,30 @@ class TValue {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Reset();
+
+  /**
+   * 获取类型为ID的值。
+   * 
+   *
+   * @return 值。
+   */
+  const char* Id();
+
+  /**
+   * 获取类型为func的值。
+   * 
+   *
+   * @return 值。
+   */
+  void* Func();
+
+  /**
+   * 获取类型为func_def的值。
+   * 
+   *
+   * @return 值。
+   */
+  void* FuncDef();
 };
 
 /**
@@ -1522,6 +1556,15 @@ class TCanvas {
    * @return 返回画布的高度。
    */
   wh_t GetHeight();
+
+  /**
+   * 获取裁剪区。
+   * 
+   * @param r rect对象。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t GetClipRect(TRect& r);
 
   /**
    * 设置裁剪区。
@@ -1673,6 +1716,14 @@ class TCanvas {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetFont(const char* name, font_size_t size);
+
+  /**
+   * 释放canvas中字体相关的资源。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ResetFont();
 
   /**
    * 计算文本所占的宽度。
@@ -2422,8 +2473,6 @@ class TStyle {
 /**
  * 窗体样式。
  *
- *负责管理缺省的窗体样式数据，方便实现style\_const。
- *
  */
 class TTheme {
  public:
@@ -2640,7 +2689,7 @@ class TVgcanvas {
    * @param cp1x 控制点1x坐标。
    * @param cp1y 控制点1y坐标。
    * @param cp2x 控制点2x坐标。
-   * @param cp2y 控制点3y坐标。
+   * @param cp2y 控制点2y坐标。
    * @param x x坐标。
    * @param y y坐标。
    *
@@ -3197,6 +3246,17 @@ class TVgcanvas {
  */
 class TWidget {
  public:
+  /**
+   * 设置控件的文本。
+   * 只是对widget_set_prop的包装，文本的意义由子类控件决定。
+   * 
+   * @param text 文本。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTextW(const wchar_t* text) {
+    return widget_set_text(((widget_t*)(this->nativeObj)), text);
+  }
   //nativeObj is public for internal use only.
   widget_t* nativeObj;
 
@@ -3236,6 +3296,24 @@ class TWidget {
    * @return 子控件。
    */
   TWidget GetChild(int32_t index);
+
+  /**
+   * 通过名称查找父控件。
+   * 
+   * @param name 名称。
+   *
+   * @return 父控件。
+   */
+  TWidget FindParentByName(const char* name);
+
+  /**
+   * 通过类型查找父控件。
+   * 
+   * @param type 类型。
+   *
+   * @return 父控件。
+   */
+  TWidget FindParentByType(const char* type);
 
   /**
    * 获取当前窗口中的焦点控件。
@@ -3302,6 +3380,14 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Move(xy_t x, xy_t y);
+
+  /**
+   * 移动控件到父控件中间。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t MoveToCenter();
 
   /**
    * 调整控件的大小。
@@ -6910,11 +6996,20 @@ class TDraggable : public TWidget {
    * 设置drag_window。
    *拖动窗口而不是父控件。比如放在对话框的titlebar上，拖动titlebar其实是希望拖动对话框。
    * 
-   * @param drag_window drag_window
+   * @param drag_window 是否拖动窗口。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetDragWindow(bool drag_window);
+
+  /**
+   * 设置drag_native_window。
+   * 
+   * @param drag_native_window 是否拖动原生窗口。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDragNativeWindow(bool drag_native_window);
 
   /**
    * 设置drag_parent。
@@ -6967,6 +7062,12 @@ class TDraggable : public TWidget {
    *
    */
   bool GetDragWindow() const;
+
+  /**
+   * 拖动原生窗口。
+   *
+   */
+  bool GetDragNativeWindow() const;
 
   /**
    * 拖动父控件。0表示直系父控件，1表示父控件的父控件，依次类推。
@@ -8322,6 +8423,41 @@ class TLineNumber : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetYoffset(int32_t yoffset);
+
+  /**
+   * 增加高亮行。
+   * 
+   * @param line 行号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AddHighlightLine(int32_t line);
+
+  /**
+   * 设置active行。
+   * 
+   * @param line 行号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetActiveLine(int32_t line);
+
+  /**
+   * 清除高亮行。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ClearHighlight();
+
+  /**
+   * 判断指定行是否是高亮行。
+   * 
+   * @param line 行号。
+   *
+   * @return 返回TRUE表示是，否则不是。
+   */
+  bool IsHighlightLine(int32_t line);
 };
 
 /**
@@ -10439,16 +10575,16 @@ class TSlideIndicator : public TWidget {
   uint32_t GetSize() const;
 
   /**
-   * 锚点x坐标。
+   * 锚点x坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
    *
    */
-  float_t GetAnchorX() const;
+  char* GetAnchorX() const;
 
   /**
-   * 锚点y坐标。
+   * 锚点y坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
    *
    */
-  float_t GetAnchorY() const;
+  char* GetAnchorY() const;
 
   /**
    * 指示器指示的目标控件的名称。
@@ -12784,6 +12920,16 @@ class TEdit : public TWidget {
   ret_t SetDouble(double value);
 
   /**
+   * 设置double类型的值。
+   * 
+   * @param format 格式(缺省为"%2.2lf")。
+   * @param value 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDoubleEx(const char* format, double value);
+
+  /**
    * 设置为文本输入及其长度限制，不允许输入超过max个字符，少于min个字符时进入error状态。
    * 
    * @param min 最小长度。
@@ -13540,7 +13686,7 @@ class TPages : public TWidget {
   ret_t SetActiveByName(char* name);
 
   /**
-   * 当前活跃的page。
+   * 当前活跃的page。(需要用到 MVVM 数据绑定请设置 value 属性)
    *
    */
   uint32_t GetActive() const;
@@ -13901,6 +14047,15 @@ class TSlider : public TWidget {
   ret_t SetMax(double max);
 
   /**
+   * 设置前景色的线帽形状。（默认为跟随风格的圆角设置，但是在没有设置圆角的时候无法使用 "round" 来设置圆角）
+   * 
+   * @param line_cap 前景色的线帽形状，取值为：butt|round
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetLineCap(const char* line_cap);
+
+  /**
    * 设置滑块的拖动的最小单位。
    * 
    * @param step 拖动的最小单位。
@@ -13952,22 +14107,28 @@ class TSlider : public TWidget {
   double GetStep() const;
 
   /**
-   * 滑块的是否为垂直方向。
-   *
-   */
-  bool GetVertical() const;
-
-  /**
    * 轴的宽度或高度（单位：像素），为0表示为控件的宽度或高度的一半，缺省为0。
    *
    */
   uint32_t GetBarSize() const;
 
   /**
-   * 滑块的宽度或高度（单位：像素），缺省为10。
+   * 滑块的宽度或高度（单位：像素），缺省为 bar_size * 1.5。
    *
    */
   uint32_t GetDraggerSize() const;
+
+  /**
+   * 前景色的线帽形状。（取值：butt|round，默认为跟随风格的圆角设置, 但是在没有设置圆角的时候无法使用 "round" 来设置圆角）
+   *
+   */
+  char* GetLineCap() const;
+
+  /**
+   * 滑块的是否为垂直方向。
+   *
+   */
+  bool GetVertical() const;
 
   /**
    * 滑块的宽度或高度是否与icon适应，缺省为true。
@@ -15993,6 +16154,15 @@ class TComboBox : public TEdit {
    * @return 返回值。
    */
   int32_t GetValueInt();
+
+  /**
+   * 检查选项中是否存在指定的文本。
+   * 
+   * @param text option text
+   *
+   * @return 返回TRUE表示存在，否则表示不存在。
+   */
+  bool HasOptionText(const char* text);
 
   /**
    * 获取combo_box的文本。
