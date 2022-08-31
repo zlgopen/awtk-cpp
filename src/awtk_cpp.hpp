@@ -1314,7 +1314,7 @@ class TValue {
   /**
    * 获取类型为字符串的值。
    * 
-   * @param buff 用于格式转换的缓冲区。
+   * @param buff 用于格式转换的缓冲区（如果 v 对象为 string 类型的话，不会把字符串数据拷贝到 buff 中）。
    * @param size 缓冲区大小。
    *
    * @return 值。
@@ -1419,6 +1419,14 @@ class TValue {
    * @return 值。
    */
   void* FuncDef();
+
+  /**
+   * 获取类型为位图对象。
+   * 
+   *
+   * @return 位图对象。
+   */
+  TBitmap Bitmap();
 };
 
 /**
@@ -1427,6 +1435,16 @@ class TValue {
  */
 class TGlobal {
  public:
+  /**
+   * 初始化基本功能。
+   *> 在tk_init之前，应用程序可能需要加载配置文件，
+   *> 为了保证这些功能正常工作，可以先调用tk_pre_init来初始化平台、内存和data reader等等。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t PreInit();
+
   /**
    * 初始化TK。
    * 
@@ -1823,6 +1841,15 @@ class TCanvas {
   ret_t Reset();
 
   /**
+   * 清除canvas中缓存。
+   *> 备注：主要用于窗口动画的离线画布绘制完成后重置在线画布，使下一帧中lcd对象的数据保持一致。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ResetCache();
+
+  /**
    * x坐标偏移。
    *
    */
@@ -1980,7 +2007,7 @@ class TEvent {
   int32_t GetSize() const;
 
   /**
-   * 事件发生的时间。
+   * 事件发生的时间点（该时间点并非真实时间）。
    *
    */
   uint64_t GetTime() const;
@@ -3498,14 +3525,23 @@ class TWidget {
   ret_t UseStyle(const char* style);
 
   /**
-   * 设置控件的文本。
-   *只是对widget\_set\_prop的包装，文本的意义由子类控件决定。
+   * 设置控件的文本。（如果字符串相同，则不会重复设置以及触发事件）
    * 
    * @param text 文本。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetText(const char* text);
+
+  /**
+   * 设置控件的文本。
+   * 
+   * @param text 文本。
+   * @param check_diff 是否检查设置的文本是否和控件中的文本一样。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetTextEx(const char* text, bool check_diff);
 
   /**
    * 设置子控件的文本。
@@ -3645,6 +3681,14 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetTheme(const char* name);
+
+  /**
+   * 获取 theme 的名称
+   * 
+   *
+   * @return 成功返回主题名称，失败否则 NULL。
+   */
+  const char* GetThemeName();
 
   /**
    * 设置鼠标指针的图片名。
@@ -3965,6 +4009,16 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t InvalidateForce(TRect& r);
+
+  /**
+   * 设置多个参数。
+   *>参数之间用&分隔，名称和值之间用=分隔。如: name=awtk&min=10&max=100
+   * 
+   * @param params 参数列表。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetProps(const char* params);
 
   /**
    * 设置字符串格式的属性。
@@ -4456,6 +4510,15 @@ class TWidget {
   ret_t SetStyleColor(const char* state_and_name, uint32_t value);
 
   /**
+   * 加入一个子控件默认实现(供子类调用)。
+   * 
+   * @param child 子控件对象。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AddChildDefault(TWidget& child);
+
+  /**
    * x坐标(相对于父控件的x坐标)。
    *
    */
@@ -4549,7 +4612,7 @@ class TWidget {
   /**
    * 是否根据子控件和文本自动调整控件自身大小。
    *
-   *> 为true时，最好不要使用child_layout，否则可能有冲突。
+   *> 为true时，最好不要使用 layout 的相关东西，否则可能有冲突。
    *> 注意：只是调整控件的本身的宽高，不会修改控件本身的位置。
    *
    */
@@ -4560,6 +4623,12 @@ class TWidget {
    *
    */
   bool GetFloating() const;
+
+  /**
+   * 不透明度(0-255)，0完全透明，255完全不透明。
+   *
+   */
+  uint8_t GetOpacity() const;
 
   /**
    * 脏矩形超出控件本身大小的最大范围(一般不用指定)。
@@ -5346,6 +5415,8 @@ class TTimeNow {
  public:
   /**
    * 获取当前时间(秒)。
+   *
+   *备注: 时间本身并不代表任何时间系，一般用来计算时间间隔。
    * 
    *
    * @return 返回当前时间(秒)。
@@ -5354,6 +5425,8 @@ class TTimeNow {
 
   /**
    * 获取当前时间(毫秒)。
+   *
+   *备注: 时间本身并不代表任何时间系，一般用来计算时间间隔。
    * 
    *
    * @return 返回当前时间(毫秒)。
@@ -5362,6 +5435,8 @@ class TTimeNow {
 
   /**
    * 获取当前时间(微秒)。
+   *
+   *备注: 时间本身并不代表任何时间系，一般用来计算时间间隔。
    * 
    *
    * @return 返回当前时间(微秒)。
@@ -5505,6 +5580,57 @@ class TAssetsManager : public TEmitter {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Unref(TAssetInfo& info);
+};
+
+/**
+ * model变化事件。
+ *
+ */
+class TModelEvent : public TEvent {
+ public:
+  TModelEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TModelEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TModelEvent(const model_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TModelEvent Cast(event_t* nativeObj) {
+    return TModelEvent(nativeObj);
+  }
+
+  static TModelEvent Cast(const event_t* nativeObj) {
+    return TModelEvent((event_t*)nativeObj);
+  }
+
+  static TModelEvent Cast(TEvent& obj) {
+    return TModelEvent(obj.nativeObj);
+  }
+
+  static TModelEvent Cast(const TEvent& obj) {
+    return TModelEvent(obj.nativeObj);
+  }
+
+  /**
+   * 模型名称。
+   *
+   */
+  const char* GetName() const;
+
+  /**
+   * 变化类型(update/add/remove)。
+   *
+   */
+  const char* GetChangeType() const;
+
+  /**
+   * 模型。
+   *
+   */
+  TObject GetModel() const;
 };
 
 /**
@@ -5721,6 +5847,9 @@ class TPointerEvent : public TEvent {
 
   /**
    * button。
+   *在不同的平台，该属性会发生变化，
+   *PC ：左键为 1，中键为 2，右键为 3
+   *嵌入式：默认为 1
    *
    */
   uint8_t GetButton() const;
@@ -6453,6 +6582,14 @@ class TWindowBase : public TWidget {
    *
    */
   char* GetMoveFocusRightKey() const;
+
+  /**
+   * 小应用程序(applet)的名称。
+   *
+   *> 如果该窗口属于某个独立的小程序应用(applet)，需要指定它的名称，以便到对应的资源目录查找资源。
+   *
+   */
+  char* GetAppletName() const;
 
   /**
    * 单例。如果窗口存在，先关闭再打开。
@@ -10210,6 +10347,176 @@ class TScrollView : public TWidget {
 };
 
 /**
+ * 用于串口通信的控件
+ *在xml中使用"serial"标签创建控件。如：
+ *
+ *```xml
+ *<!-- ui -->
+ *<serial device="COM1" baudrate="115200"/>
+ *```
+ *
+ *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
+ *> 本控件默认不可见，无需指定style。
+ *
+ *```xml
+ *<!-- style -->
+ *<serial>
+ *<style name="default" font_size="32">
+ *<normal text_color="black" />
+ *</style>
+ *</serial>
+ *```
+ *
+ */
+class TSerialWidget : public TWidget {
+ public:
+  TSerialWidget(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TSerialWidget() {
+    this->nativeObj = (widget_t*)NULL;
+  }
+
+  TSerialWidget(const serial_widget_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TSerialWidget Cast(widget_t* nativeObj) {
+    return TSerialWidget(nativeObj);
+  }
+
+  static TSerialWidget Cast(const widget_t* nativeObj) {
+    return TSerialWidget((widget_t*)nativeObj);
+  }
+
+  static TSerialWidget Cast(TWidget& obj) {
+    return TSerialWidget(obj.nativeObj);
+  }
+
+  static TSerialWidget Cast(const TWidget& obj) {
+    return TSerialWidget(obj.nativeObj);
+  }
+
+  /**
+   * 创建serial_widget对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return serial_widget对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置 波特率。
+   * 
+   * @param baudrate 波特率。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetBaudrate(uint32_t baudrate);
+
+  /**
+   * 设置 设备。
+   * 
+   * @param device 设备。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDevice(const char* device);
+
+  /**
+   * 设置 字节位数。
+   * 
+   * @param bytesize 字节位数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetBytesize(uint32_t bytesize);
+
+  /**
+   * 设置 奇偶校验。
+   * 
+   * @param parity 奇偶校验。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetParity(uint32_t parity);
+
+  /**
+   * 设置 停止位。
+   * 
+   * @param stopbits 停止位。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetStopbits(uint32_t stopbits);
+
+  /**
+   * 设置 流控。
+   * 
+   * @param flowcontrol 流控。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFlowcontrol(uint32_t flowcontrol);
+
+  /**
+   * 设置 轮询时间。
+   * 
+   * @param check_interval 轮询时间（单位：ms）。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetCheckInterval(uint32_t check_interval);
+
+  /**
+   * 设备(文件)名。
+   *
+   */
+  char* GetDevice() const;
+
+  /**
+   * 波特率。
+   *
+   */
+  uint32_t GetBaudrate() const;
+
+  /**
+   * 字节位数。
+   *
+   */
+  uint32_t GetBytesize() const;
+
+  /**
+   * 奇偶校验。
+   *
+   */
+  uint32_t GetParity() const;
+
+  /**
+   * 停止位。
+   *
+   */
+  uint32_t GetStopbits() const;
+
+  /**
+   * 流控。
+   *
+   */
+  uint32_t GetFlowcontrol() const;
+
+  /**
+   * 轮询时间（单位：ms）。
+   *> 仅在不支持用select等待串口数据的嵌入式设备上有效。
+   *
+   */
+  uint32_t GetCheckInterval() const;
+};
+
+/**
  * 左右滑动菜单控件。
  *
  *一般用一组按钮作为子控件，通过左右滑动改变当前的项。除了当菜单使用外，也可以用来切换页面。
@@ -10751,6 +11058,24 @@ class TSlideView : public TWidget {
   ret_t SetLoop(bool loop);
 
   /**
+   * 设置拖拽临界值。
+   * 
+   * @param drag_threshold 拖动临界值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDragThreshold(uint32_t drag_threshold);
+
+  /**
+   * 设置动画时间。
+   * 
+   * @param animating_time 动画时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAnimatingTime(uint32_t animating_time);
+
+  /**
    * 删除指定序号页面。
    * 
    * @param index 删除页面的序号。
@@ -10785,6 +11110,18 @@ class TSlideView : public TWidget {
    *
    */
   char* GetAnimHint() const;
+
+  /**
+   * 拖动临界值。
+   *
+   */
+  uint32_t GetDragThreshold() const;
+
+  /**
+   * 动画时间（单位：毫秒）。
+   *
+   */
+  uint32_t GetAnimatingTime() const;
 };
 
 /**
@@ -11125,9 +11462,13 @@ class TTextSelector : public TWidget {
   int32_t GetSelectedIndex() const;
 
   /**
-   * 设置可选项(冒号分隔值和文本，分号分隔选项，如:1:red;2:green;3:blue)。
-   *对于数值选项，也可以指定一个范围，用『-』分隔起始值、结束值和格式。
+   * 设置可选项(英文冒号(:)分隔值和文本，英文分号(;)分隔选项，如:1:red;2:green;3:blue)。
+   *对于数值选项，也可以指定一个范围，用英文负号(-)分隔起始值、结束值和格式。
    *如："1-7-%02d"表示1到7，格式为『02d』，格式为可选，缺省为『%d』。
+   *> 如果数据本身中有英文冒号(:)、英文分号(;)和英文负号(-)。请用16进制转义。
+   *> * 英文冒号(:)写为\\x3a
+   *> * 英文冒号(;)写为\\x3b
+   *> * 英文冒号(-)写为\\x2d
    *
    */
   char* GetOptions() const;
@@ -11416,6 +11757,86 @@ class TTimeClock : public TWidget {
    *
    */
   char* GetSecondAnchorY() const;
+};
+
+/**
+ * 定时器。
+ *> 主要目的是方便以拖拽的方式创建定时器，并用AWBlock编写简单的事件处理程序。
+ *在xml中使用"timer"标签创建控件。如：
+ *
+ *```xml
+ *<!-- ui -->
+ *<timer x="c" y="50" w="100" h="100" duration="1000"/>
+ *```
+ *
+ *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
+ *> 本控件默认不可见，无需指定style。
+ *
+ *```xml
+ *<!-- style -->
+ *<timer>
+ *<style name="default" font_size="32">
+ *<normal text_color="black" />
+ *</style>
+ *</timer>
+ *```
+ *
+ */
+class TTimerWidget : public TWidget {
+ public:
+  TTimerWidget(widget_t* nativeObj) : TWidget(nativeObj) {
+  }
+
+  TTimerWidget() {
+    this->nativeObj = (widget_t*)NULL;
+  }
+
+  TTimerWidget(const timer_widget_t* nativeObj) : TWidget((widget_t*)nativeObj) {
+  }
+
+  static TTimerWidget Cast(widget_t* nativeObj) {
+    return TTimerWidget(nativeObj);
+  }
+
+  static TTimerWidget Cast(const widget_t* nativeObj) {
+    return TTimerWidget((widget_t*)nativeObj);
+  }
+
+  static TTimerWidget Cast(TWidget& obj) {
+    return TTimerWidget(obj.nativeObj);
+  }
+
+  static TTimerWidget Cast(const TWidget& obj) {
+    return TTimerWidget(obj.nativeObj);
+  }
+
+  /**
+   * 创建timer_widget对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return timer_widget对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置 时长(ms)。
+   * 
+   * @param duration 时长(ms)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDuration(uint32_t duration);
+
+  /**
+   * 时长(ms)。
+   *
+   */
+  uint32_t GetDuration() const;
 };
 
 /**
@@ -12022,6 +12443,12 @@ class TButton : public TWidget {
    *
    */
   uint32_t GetLongPressTime() const;
+
+  /**
+   * 当前是否按下。
+   *
+   */
+  bool GetPressed() const;
 };
 
 /**
@@ -12133,6 +12560,22 @@ class TCheckButton : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetValue(bool value);
+
+  /**
+   * 创建check button对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   * @param type 类型。
+   * @param radio 是否单选。
+   *
+   * @return widget对象。
+   */
+  static TWidget CreateEx(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h, const char* type,
+                          bool radio);
 
   /**
    * 值(勾选为TRUE，非勾选为FALSE)。
@@ -12685,14 +13128,17 @@ class TDigitClock : public TWidget {
    ** M 代表月(1-12)
    ** D 代表日(1-31)
    ** h 代表时(0-23)
+   ** H 代表时(0-11)
    ** m 代表分(0-59)
    ** s 代表秒(0-59)
    ** w 代表星期(0-6)
    ** W 代表星期的英文缩写(支持翻译)
+   ** T 代表时段AM/PM(支持翻译)
    ** YY 代表年(只显示末两位)
    ** MM 代表月(01-12)
    ** DD 代表日(01-31)
    ** hh 代表时(00-23)
+   ** HH 代表时(00-11)
    ** mm 代表分(00-59)
    ** ss 代表秒(00-59)
    ** MMM 代表月的英文缩写(支持翻译)
@@ -13302,31 +13748,23 @@ class TGridItem : public TWidget {
 };
 
 /**
- * grid控件。一个简单的容器控件，用于网格排列一组控件。
- *
- *它本身不提供布局功能，仅提供具有语义的标签，让xml更具有可读性。
- *子控件的布局可用layout\_children属性指定。
- *请参考[布局参数](https://github.com/zlgopen/awtk/blob/master/docs/layout.md)。
- *
- *grid\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于grid\_t控件。
- *
- *在xml中使用"grid"标签创建grid。如：
+ * 网格。
+ *在xml中使用"grid"标签创建控件。如：
  *
  *```xml
- *<grid x="0" y="0" w="100%" h="100%" children_layout="default(c=2,r=2,m=5,s=5)">
- *<button name="open:basic" text="Basic"/>
- *<button name="open:button" text="Buttons"/>
- *<button name="open:edit" text="Edits"/>
- *<button name="open:keyboard" text="KeyBoard"/>
- *</grid>
+ *<!-- ui -->
+ *<grid x="c" y="50" w="100" h="100"/>
  *```
  *
- *可用通过style来设置控件的显示风格，如背景颜色等。如：
+ *可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
  *
  *```xml
- *<style name="default" border_color="#a0a0a0">
- *<normal     bg_color="#f0f0f0" />
+ *<!-- style -->
+ *<grid>
+ *<style name="default" grid_color="gray" border_color="black" odd_bg_color="#f5f5f5" even_bg_color="#eeeeee">
+ *<normal />
  *</style>
+ *</grid>
  *```
  *
  */
@@ -13367,9 +13805,66 @@ class TGrid : public TWidget {
    * @param w 宽度
    * @param h 高度
    *
-   * @return 对象。
+   * @return grid对象。
    */
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置 行数。
+   * 
+   * @param rows 行数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetRows(uint32_t rows);
+
+  /**
+   * 设置 各列的参数。
+   * 
+   * @param columns_definition 各列的参数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetColumnsDefinition(const char* columns_definition);
+
+  /**
+   * 设置 是否显示网格。
+   * 
+   * @param show_grid 是否显示网格。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetShowGrid(bool show_grid);
+
+  /**
+   * 行数。
+   *
+   */
+  uint32_t GetRows() const;
+
+  /**
+   * 各列的参数。
+   *各列的参数之间用英文的分号(;)分隔，每列参数的格式为：
+   *
+   *col(w=?,left_margin=?,right_margin=?,top_maorgin=?,bottom_margin=?)
+   *
+   ** w 为列的宽度(必须存在)。取值在(0-1]区间时，视为grid控件宽度的比例，否则为像素宽度。
+   *(如果为负数，将计算结果加上控件的宽度)
+   ** left_margin(可选，可缩写为l) 该列左边的边距。
+   ** right_margin(可选，可缩写为r) 该列右边的边距。
+   ** top_margin(可选，可缩写为t) 该列顶部的边距。
+   ** bottom_margin(可选，可缩写为b) 该列底部的边距。
+   ** margin(可选，可缩写为m) 同时指定上面4个边距。
+   ** fill_available(可选，可缩写为f) 填充剩余宽度(只有一列可以指定)。
+   *
+   */
+  char* GetColumnsDefinition() const;
+
+  /**
+   * 是否显示网格。
+   *
+   */
+  bool GetShowGrid() const;
 };
 
 /**
@@ -15455,6 +15950,96 @@ class TMutableImage : public TImageBase {
 };
 
 /**
+ * list_item_seperator。
+ *用来模拟实现风琴控件(accordion)和属性页分组控件。
+ *> 当前控件被点击时，显示/隐藏当前控件到下一个分隔符控件之间的控件。
+ *list_item_seperator\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于list_item_seperator\_t控件。
+ *
+ *在xml中使用"list_item_seperator"标签创建list_item_seperator。如：
+ *
+ *```xml
+ *<list_item_seperator radio="true" text="Group2" h="32"/>
+ *<list_item style="empty" children_layout="default(r=1,c=0,ym=1)">
+ *<label w="30%" text="ASCII"/>
+ *<edit w="70%" text="" tips="ascii" input_type="ascii" focused="true" action_text="next"/>
+ *</list_item>
+ *<list_item style="empty" children_layout="default(r=1,c=0,ym=1)">
+ *<label w="30%" text="Int"/>
+ *<edit w="70%" text="" tips="int" input_type="int"/>
+ *</list_item>
+ *
+ *<list_item_seperator radio="true" text="Group3" h="32"/>
+ *<list_item style="empty" children_layout="default(r=1,c=0,ym=1)">
+ *<label w="30%" text="Float"/>
+ *<edit w="70%" text="" tips="float" input_type="float"/>
+ *</list_item>
+ *<list_item style="empty" children_layout="default(r=1,c=0,ym=1)">
+ *<label w="30%" text="UFloat"/>
+ *<edit w="70%" text="" tips="unsigned float" input_type="ufloat"/>
+ *</list_item>
+ *```
+ *
+ *可用通过style来设置控件的显示风格，如背景颜色等。如：
+ *
+ *```xml
+ *<list_item_seperator text_color="black" bg_color="#e0e0e0">
+ *<style name="default" icon_at="left">
+ *<normal  icon="collapse" />
+ *<pressed icon="collapse" />
+ *<over    icon="collapse" text_color="green"/>
+ *<focused icon="collapse" text_color="green"/>
+ *<normal_of_checked icon="expand" text_color="blue"/>
+ *<pressed_of_checked icon="expand" text_color="blue"/>
+ *<over_of_checked icon="expand" text_color="green"/>
+ *<focused_of_checked icon="expand" text_color="green"/>
+ *</style>
+ *</list_item_seperator>
+ *```
+ *
+ */
+class TListItemSeperator : public TCheckButton {
+ public:
+  TListItemSeperator(widget_t* nativeObj) : TCheckButton(nativeObj) {
+  }
+
+  TListItemSeperator() {
+    this->nativeObj = (widget_t*)NULL;
+  }
+
+  TListItemSeperator(const list_item_seperator_t* nativeObj) : TCheckButton((widget_t*)nativeObj) {
+  }
+
+  static TListItemSeperator Cast(widget_t* nativeObj) {
+    return TListItemSeperator(nativeObj);
+  }
+
+  static TListItemSeperator Cast(const widget_t* nativeObj) {
+    return TListItemSeperator((widget_t*)nativeObj);
+  }
+
+  static TListItemSeperator Cast(TWidget& obj) {
+    return TListItemSeperator(obj.nativeObj);
+  }
+
+  static TListItemSeperator Cast(const TWidget& obj) {
+    return TListItemSeperator(obj.nativeObj);
+  }
+
+  /**
+   * 创建list_item_seperator对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+};
+
+/**
  * SVG图片控件。
  *
  *svg\_image\_t是[image\_base\_t](image_base_t.md)的子类控件，image\_base\_t的函数均适用于svg\_image\_t控件。
@@ -15702,6 +16287,15 @@ class TObjectArray : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Remove(uint32_t index);
+
+  /**
+   * 删除指定的值。
+   * 
+   * @param v 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t RemoveValue(TValue& v);
 
   /**
    * 在指定位置删除一个元素，并返回它。
@@ -16012,6 +16606,22 @@ class TCalibrationWin : public TWindowBase {
  *</style>
  *</popup>
  *```
+ ** 3.combobox的下拉框中的列表项的样式，可以设置combo_box_item的style来改变。
+ *
+ *```xml
+ *<combo_box_item>
+ *<style name="default" icon_at="left" text_color="black" bg_color="#f0f0f0">
+ *<normal  icon="empty"/>
+ *<focused icon="empty" bg_color="#1296db" text_color="gold" />
+ *<pressed icon="empty" bg_color="#1296db" text_color="white" />
+ *<over    icon="empty" bg_color="#1296db" text_color="white" />
+ *<normal_of_checked  icon="check"/>
+ *<focused_of_checked  icon="check" bg_color="#1296db" text_color="gold"/>
+ *<pressed_of_checked icon="check" bg_color="#1296db" text_color="white" />
+ *<over_of_checked    icon="check" bg_color="#1296db" text_color="white" />
+ *</style>
+ *</combo_box_item>
+ *```
  *
  *> 更多用法请参考：[theme
  *default](https://github.com/zlgopen/awtk/blob/master/design/default/styles/default.xml#L422)
@@ -16066,6 +16676,15 @@ class TComboBox : public TEdit {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetOpenWindow(const char* open_window);
+
+  /**
+   * 设置弹出窗口的主题。
+   * 
+   * @param theme_of_popup 弹出的窗口主题。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetThemeOfPopup(const char* theme_of_popup);
 
   /**
    * 重置所有选项。
@@ -16179,6 +16798,12 @@ class TComboBox : public TEdit {
   char* GetOpenWindow() const;
 
   /**
+   * 弹出窗口的主题(对应的style文件必须存在)，方便为不同combo box的弹出窗口指定不同的样式。
+   *
+   */
+  char* GetThemeOfPopup() const;
+
+  /**
    * 当前选中的选项。
    *
    */
@@ -16198,6 +16823,9 @@ class TComboBox : public TEdit {
 
   /**
    * 设置可选项(冒号分隔值和文本，分号分隔选项，如:1:red;2:green;3:blue)。
+   *> 如果数据本身中有英文冒号(:)和英文分号(;)，请用16进制转义。
+   *> * 英文冒号(:)写为\\x3a
+   *> * 英文冒号(;)写为\\x3b
    *
    */
   char* GetOptions() const;
@@ -16305,6 +16933,19 @@ class TImage : public TImageBase {
    * @return 对象。
    */
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 创建icon对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget IconCreate(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
    * 设置图片的绘制方式。
@@ -16655,6 +17296,36 @@ class TSpinBox : public TEdit {
    * @return 对象。
    */
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置是否启用易点击模式。
+   * 
+   * @param easy_touch_mode 易点击模式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEasyTouchMode(bool easy_touch_mode);
+
+  /**
+   * 设置连击的时间间隔。
+   *备注：时间间隔越低，速度越快。
+   * 
+   * @param repeat 连击的时间间隔。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SpinSetRepeat(int32_t repeat);
+
+  /**
+   * 是否启用易点击模式(在电容屏设备上建议启用)。
+   *> 在该模式下：
+   *> * 1.当高度大于font size的3倍时，inc按钮在顶部(style名为spinbox_top)，dec按钮在底部(style名为spinbox_bottom)。
+   *> * 2.当高度正常时，dec按钮在左边(style名为spinbox_left)，inc按钮在右边(style名为spinbox_right)。
+   *> 不在该模式下：
+   *> inc按钮在右上角(style名为spinbox_up)，dec按钮在右下角(style名为spinbox_down)。
+   *
+   */
+  bool GetEasyTouchMode() const;
 };
 
 /**
