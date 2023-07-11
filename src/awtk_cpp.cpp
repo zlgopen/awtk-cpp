@@ -840,10 +840,6 @@ ret_t TLocaleInfos::ReloadAll() {
   return locale_infos_reload_all();
 }
 
-int TLocaleInfos::GetUnused() const {
-  return ((locale_infos_t*)(this->nativeObj))->unused;
-}
-
 ret_t TStyle::NotifyWidgetStateChanged(TWidget& widget) {
   return style_notify_widget_state_changed(((style_t*)(this->nativeObj)),
                                            ((widget_t*)(widget.nativeObj)));
