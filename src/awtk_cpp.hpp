@@ -83,7 +83,7 @@ class TEmitter {
    *
    * @return 返回id，用于emitter_off。
    */
-  uint32_t On(event_type_t etype, event_func_t handler, void* ctx);
+  uint32_t On(uint32_t etype, event_func_t handler, void* ctx);
 
   /**
    * 注销指定事件的处理函数。
@@ -1164,7 +1164,7 @@ class TValue {
    *
    * @return 值。
    */
-  int8_t Uint8();
+  uint8_t Uint8();
 
   /**
    * 设置类型为int16的值。
@@ -1426,7 +1426,15 @@ class TValue {
    *
    * @return 位图对象。
    */
-  TBitmap Bitmap();
+  void* Bitmap();
+
+  /**
+   * 获取类型为矩形区域数据。
+   * 
+   *
+   * @return 返回矩形区域数据。
+   */
+  TRect Rect();
 };
 
 /**
@@ -1871,7 +1879,7 @@ class TCanvas {
    * 当前字体大小。
    *
    */
-  uint16_t GetFontSize() const;
+  font_size_t GetFontSize() const;
 
   /**
    * 当前全局alpha。
@@ -1998,13 +2006,13 @@ class TEvent {
    * 类型。
    *
    */
-  int32_t GetType() const;
+  uint32_t GetType() const;
 
   /**
    * 结构体的大小。
    *
    */
-  int32_t GetSize() const;
+  uint32_t GetSize() const;
 
   /**
    * 事件发生的时间点（该时间点并非真实时间）。
@@ -2017,64 +2025,6 @@ class TEvent {
    *
    */
   void* GetTarget() const;
-};
-
-/**
- * 字体管理器，负责字体的加载和缓存管理。
- *(如果使用nanovg，字体由nanovg内部管理)
- *
- */
-class TFontManager {
- public:
-  //nativeObj is public for internal use only.
-  font_manager_t* nativeObj;
-
-  TFontManager(font_manager_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TFontManager() {
-    this->nativeObj = (font_manager_t*)NULL;
-  }
-
-  TFontManager(const font_manager_t* nativeObj) {
-    this->nativeObj = (font_manager_t*)nativeObj;
-  }
-
-  static TFontManager Cast(font_manager_t* nativeObj) {
-    return TFontManager(nativeObj);
-  }
-
-  static TFontManager Cast(const font_manager_t* nativeObj) {
-    return TFontManager((font_manager_t*)nativeObj);
-  }
-
-  /**
-   * 卸载指定的字体。
-   * 
-   * @param name 字体名，为NULL时使用缺省字体。
-   * @param size 字体的大小(矢量字体指定为0即可)。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t UnloadFont(char* name, font_size_t size);
-
-  /**
-   * 清除最久没有被使用的缓冲字模。
-   * 
-   * @param cache_size 每种字体保留缓存字模的个数。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t ShrinkCache(uint32_t cache_size);
-
-  /**
-   * 卸载全部字体。
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t UnloadAll();
 };
 
 /**
@@ -2165,7 +2115,7 @@ class TImageManager {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t GetBitmap(char* name, TBitmap& image);
+  ret_t GetBitmap(const char* name, TBitmap& image);
 
   /**
    * 预加载指定的图片。
@@ -2174,7 +2124,7 @@ class TImageManager {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t Preload(char* name);
+  ret_t Preload(const char* name);
 };
 
 /**
@@ -2261,11 +2211,11 @@ class TInputMethod {
   /**
    * 提交按键。
    * 
-   * @param key 键值。
+   * @param keys 键值。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t DispatchKeys(const char* key);
+  ret_t DispatchKeys(const char* keys);
 
   /**
    * 分发进入预编辑状态的事件。
@@ -2354,7 +2304,7 @@ class TLocaleInfo {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t Change(char* language, char* country);
+  ret_t Change(const char* language, const char* country);
 
   /**
    * 注销指定事件的处理函数。
@@ -2364,6 +2314,99 @@ class TLocaleInfo {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Off(uint32_t id);
+};
+
+/**
+ * 在某些情况下，需要多个资源管理器。比如在手表系统里，每个应用或表盘，可能放在独立的资源包中，
+ *此时优先加载应用自己的资源，如果没有就加载系统的资源。
+ *
+ */
+class TLocaleInfos {
+ public:
+  //nativeObj is public for internal use only.
+  locale_infos_t* nativeObj;
+
+  TLocaleInfos(locale_infos_t* nativeObj) {
+    this->nativeObj = nativeObj;
+  }
+
+  TLocaleInfos() {
+    this->nativeObj = (locale_infos_t*)NULL;
+  }
+
+  TLocaleInfos(const locale_infos_t* nativeObj) {
+    this->nativeObj = (locale_infos_t*)nativeObj;
+  }
+
+  static TLocaleInfos Cast(locale_infos_t* nativeObj) {
+    return TLocaleInfos(nativeObj);
+  }
+
+  static TLocaleInfos Cast(const locale_infos_t* nativeObj) {
+    return TLocaleInfos((locale_infos_t*)nativeObj);
+  }
+
+  /**
+   * 获取指定小应用程序(applet)的locale_info。
+   * 
+   * @param name 小应用程序(applet)的名称。
+   *
+   * @return 返回locale_info对象。
+   */
+  static TLocaleInfo Ref(const char* name);
+
+  /**
+   * 释放指定小应用程序(applet)的locale_info。
+   * 
+   * @param locale_info locale_info对象。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t Unref(TLocaleInfo& locale_info);
+
+  /**
+   * 设置全部locale_info的当前国家和语言。
+   * 
+   * @param language 语言。
+   * @param country 国家或地区。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t Change(const char* language, const char* country);
+
+  /**
+   * 注册指定事件的处理函数。
+   * 
+   * @param type 事件类型，目前有EVT_LOCALE_INFOS_LOAD_INFO、EVT_LOCALE_INFOS_UNLOAD_INFO。
+   * @param on_event 事件处理函数。
+   * @param ctx 事件处理函数上下文。
+   *
+   * @return 返回id，用于locale_infos_off。
+   */
+  static uint32_t On(event_type_t type, event_func_t on_event, void* ctx);
+
+  /**
+   * 注销指定事件的处理函数。
+   * 
+   * @param id locale_infos_on返回的ID。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t Off(uint32_t id);
+
+  /**
+   * 重新加载全部字符串资源。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t ReloadAll();
+
+  /**
+   * for go binding.
+   *
+   */
+  int GetUnused() const;
 };
 
 /**
@@ -2446,6 +2489,17 @@ class TStyle {
    * @return 返回字符串格式的值。
    */
   const char* GetStr(const char* name, const char* defval);
+
+  /**
+   * 获取指定状态的指定属性的值。
+   * 
+   * @param state 状态。
+   * @param name 属性名。
+   * @param value 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Get(const char* state, const char* name, TValue& value);
 
   /**
    * 设置指定状态的指定属性的值(仅仅对mutable的style有效)。
@@ -2822,7 +2876,7 @@ class TVgcanvas {
   /**
    * 旋转。
    * 
-   * @param rad 角度
+   * @param rad 旋转角度(单位弧度)
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -2968,16 +3022,16 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetFont(char* font);
+  ret_t SetFont(const char* font);
 
   /**
    * 设置字体的大小。
    * 
-   * @param font 字体大小。
+   * @param size 字体大小。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetFontSize(float_t font);
+  ret_t SetFontSize(float_t size);
 
   /**
    * 设置文本水平对齐的方式。
@@ -2986,7 +3040,7 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTextAlign(char* value);
+  ret_t SetTextAlign(const char* value);
 
   /**
    * 设置文本垂直对齐的方式。
@@ -2995,7 +3049,7 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTextBaseline(char* value);
+  ret_t SetTextBaseline(const char* value);
 
   /**
    * 绘制文本。
@@ -3007,7 +3061,7 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t FillText(char* text, float_t x, float_t y, float_t max_width);
+  ret_t FillText(const char* text, float_t x, float_t y, float_t max_width);
 
   /**
    * 测量文本的宽度。
@@ -3016,7 +3070,7 @@ class TVgcanvas {
    *
    * @return 返回text的宽度。
    */
-  float_t MeasureText(char* text);
+  float_t MeasureText(const char* text);
 
   /**
    * 绘制图片。
@@ -3119,11 +3173,11 @@ class TVgcanvas {
   /**
    * 设置线条颜色。
    * 
-   * @param color 颜色。
+   * @param str 颜色。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetStrokeColor(const char* color);
+  ret_t SetStrokeColor(const char* str);
 
   /**
    * 设置line cap。
@@ -3132,7 +3186,7 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetLineCap(char* value);
+  ret_t SetLineCap(const char* value);
 
   /**
    * 设置line join。
@@ -3141,7 +3195,7 @@ class TVgcanvas {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetLineJoin(char* value);
+  ret_t SetLineJoin(const char* value);
 
   /**
    * 设置miter limit。
@@ -3176,13 +3230,13 @@ class TVgcanvas {
    * canvas的宽度
    *
    */
-  wh_t GetW() const;
+  uint32_t GetW() const;
 
   /**
    * canvas的高度
    *
    */
-  wh_t GetH() const;
+  uint32_t GetH() const;
 
   /**
    * 一行占的字节
@@ -3253,7 +3307,7 @@ class TVgcanvas {
    *@see http://www.w3school.com.cn/tags/canvas_textalign.asp
    *
    */
-  const char* GetTextAlign() const;
+  char* GetTextAlign() const;
 
   /**
    * 文本基线。
@@ -3261,7 +3315,7 @@ class TVgcanvas {
    *@see http://www.w3school.com.cn/tags/canvas_textbaseline.asp
    *
    */
-  const char* GetTextBaseline() const;
+  char* GetTextBaseline() const;
 };
 
 /**
@@ -3439,6 +3493,19 @@ class TWidget {
   ret_t MoveResize(xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
+   * 移动控件并调整控件的大小。
+   * 
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   * @param update_layout 是否更新布局
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t MoveResizeEx(xy_t x, xy_t y, wh_t w, wh_t h, bool update_layout);
+
+  /**
    * 获取控件的值。只是对widget\_get\_prop的包装，值的意义由子类控件决定。
    * 
    *
@@ -3514,6 +3581,14 @@ class TWidget {
    * @return 存在返回 TRUE，不存在返回 FALSE。
    */
   bool IsStyleExist(const char* style_name, const char* state_name);
+
+  /**
+   * 判断widget是否支持高亮。
+   * 
+   *
+   * @return 支持返回 TRUE，不支持返回 FALSE。
+   */
+  bool IsSupportHighlighter();
 
   /**
    * 启用指定的style。
@@ -3990,7 +4065,7 @@ class TWidget {
    *
    * @return 返回id，用于widget_off。
    */
-  uint32_t On(event_type_t type, event_func_t on_event, void* ctx);
+  uint32_t On(uint32_t type, event_func_t on_event, void* ctx);
 
   /**
    * 注销指定事件的处理函数。
@@ -4178,6 +4253,14 @@ class TWidget {
   bool IsNormalWindow();
 
   /**
+   * 检查控件是否是全屏窗口。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsFullscreenWindow();
+
+  /**
    * 检查控件是否是对话框类型。
    * 
    *
@@ -4200,6 +4283,14 @@ class TWidget {
    * @return 返回FALSE表示不是，否则表示是。
    */
   bool IsOverlay();
+
+  /**
+   * 检查控件是否总在最上层。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsAlwaysOnTop();
 
   /**
    * 检查控件弹出对话框控件是否已经打开了（而非挂起状态）。
@@ -4856,6 +4947,23 @@ class TAssetInfo {
   const char* GetName();
 
   /**
+   * 资源是否在ROM中。
+   * 
+   *
+   * @return 返回 TRUE 为在 ROM 中，返回 FALSE 则不在。
+   */
+  bool IsInRom();
+
+  /**
+   * 设置资源是否在ROM中的标记位。
+   * 
+   * @param is_in_rom 资源是否在ROM中。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetIsInRom(bool is_in_rom);
+
+  /**
    * 类型。
    *
    */
@@ -4868,10 +4976,10 @@ class TAssetInfo {
   uint8_t GetSubtype() const;
 
   /**
-   * 资源是否在ROM中。
+   * 资源标志。
    *
    */
-  uint8_t GetIsInRom() const;
+  uint8_t GetFlags() const;
 
   /**
    * 大小。
@@ -4885,12 +4993,6 @@ class TAssetInfo {
    *
    */
   uint32_t GetRefcount() const;
-
-  /**
-   * 名称。
-   *
-   */
-  char* GetName() const;
 };
 
 /**
@@ -4928,13 +5030,13 @@ class TColor {
    *> 主要供脚本语言使用。
    * 
    * @param r 红色通道。
-   * @param b 蓝色通道。
    * @param g 绿色通道。
+   * @param b 蓝色通道。
    * @param a alpha通道。
    *
    * @return color对象。
    */
-  static TColor Create(uint8_t r, uint8_t b, uint8_t g, uint8_t a);
+  static TColor Create(uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 
   /**
    * 创建color对象。
@@ -5115,21 +5217,21 @@ class TDateTime {
   ret_t Set();
 
   /**
-   * 从time转换而来。
+   * 从time转换而来(按GMT转换)。
    * 
    * @param time 时间。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t FromTime(uint64_t time);
+  ret_t FromTime(int64_t time);
 
   /**
-   * 转换成time。
+   * 转换成time(按GMT转换)。
    * 
    *
    * @return 返回time。
    */
-  uint64_t ToTime();
+  int64_t ToTime();
 
   /**
    * 加上一个偏移量(s)。
@@ -5153,31 +5255,31 @@ class TDateTime {
    * 获取指定年份月份的天数。
    * 
    * @param year 年份。
-   * @param montn 月份(1-12)。
+   * @param month 月份(1-12)。
    *
    * @return 返回大于0表示天数，否则表示失败。
    */
-  static int32_t GetDays(uint32_t year, uint32_t montn);
+  static int32_t GetDays(uint32_t year, uint32_t month);
 
   /**
    * 获取指定日期是周几(0-6, Sunday = 0)。。
    * 
    * @param year 年份。
-   * @param montn 月份(1-12)。
+   * @param month 月份(1-12)。
    * @param day 日(1-31)。
    *
    * @return 返回大于等于0表示周几(0-6)，否则表示失败。
    */
-  static int32_t GetWday(uint32_t year, uint32_t montn, uint32_t day);
+  static int32_t GetWday(uint32_t year, uint32_t month, uint32_t day);
 
   /**
    * 获取指定月份的英文名称(简写)。
    * 
-   * @param montn 月份(1-12)。
+   * @param month 月份(1-12)。
    *
    * @return 返回指定月份的英文名称(简写)。
    */
-  static const char* GetMonthName(uint32_t montn);
+  static const char* GetMonthName(uint32_t month);
 
   /**
    * 获取周几的英文名称(简写)。
@@ -5559,7 +5661,7 @@ class TAssetsManager : public TEmitter {
    *
    * @return 返回资源。
    */
-  TAssetInfo Ref(asset_type_t type, char* name);
+  TAssetInfo Ref(asset_type_t type, const char* name);
 
   /**
    * 在资源管理器的缓存中查找指定的资源并引用它，如果缓存中不存在，尝试加载该资源。
@@ -5570,7 +5672,7 @@ class TAssetsManager : public TEmitter {
    *
    * @return 返回资源。
    */
-  TAssetInfo RefEx(asset_type_t type, uint16_t subtype, char* name);
+  TAssetInfo RefEx(asset_type_t type, uint16_t subtype, const char* name);
 
   /**
    * 释放指定的资源。
@@ -5726,13 +5828,13 @@ class TOrientationEvent : public TEvent {
    * 屏幕方向。
    *
    */
-  int32_t GetOrientation() const;
+  lcd_orientation_t GetOrientation() const;
 
   /**
    * 旧的屏幕方向。
    *
    */
-  int32_t GetOldOrientation() const;
+  lcd_orientation_t GetOldOrientation() const;
 };
 
 /**
@@ -5852,7 +5954,7 @@ class TPointerEvent : public TEvent {
    *嵌入式：默认为 1
    *
    */
-  uint8_t GetButton() const;
+  xy_t GetButton() const;
 
   /**
    * 指针是否按下。
@@ -6002,6 +6104,12 @@ class TKeyEvent : public TEvent {
    *
    */
   bool GetCapslock() const;
+
+  /**
+   * numlock键是否按下。
+   *
+   */
+  bool GetNumlock() const;
 };
 
 /**
@@ -6130,13 +6238,13 @@ class TMultiGestureEvent : public TEvent {
    * 旋转角度(幅度)增量。（单位弧度）
    *
    */
-  float GetRotation() const;
+  float_t GetRotation() const;
 
   /**
    * 两点间的距离增量。(-1,0)表示缩小，(0-1)表示增加。
    *
    */
-  float GetDistance() const;
+  float_t GetDistance() const;
 };
 
 /**
@@ -6176,6 +6284,145 @@ class TThemeChangeEvent : public TEvent {
    *
    */
   const char* GetName() const;
+};
+
+/**
+ * 文件拖入事件。
+ *
+ */
+class TDropFileEvent : public TEvent {
+ public:
+  TDropFileEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TDropFileEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TDropFileEvent(const drop_file_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TDropFileEvent Cast(event_t* nativeObj) {
+    return TDropFileEvent(nativeObj);
+  }
+
+  static TDropFileEvent Cast(const event_t* nativeObj) {
+    return TDropFileEvent((event_t*)nativeObj);
+  }
+
+  static TDropFileEvent Cast(TEvent& obj) {
+    return TDropFileEvent(obj.nativeObj);
+  }
+
+  static TDropFileEvent Cast(const TEvent& obj) {
+    return TDropFileEvent(obj.nativeObj);
+  }
+
+  /**
+   * 文件名。
+   *
+   */
+  const char* GetFilename() const;
+};
+
+/**
+ * 系统事件。
+ *
+ */
+class TSystemEvent : public TEvent {
+ public:
+  TSystemEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TSystemEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TSystemEvent(const system_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TSystemEvent Cast(event_t* nativeObj) {
+    return TSystemEvent(nativeObj);
+  }
+
+  static TSystemEvent Cast(const event_t* nativeObj) {
+    return TSystemEvent((event_t*)nativeObj);
+  }
+
+  static TSystemEvent Cast(TEvent& obj) {
+    return TSystemEvent(obj.nativeObj);
+  }
+
+  static TSystemEvent Cast(const TEvent& obj) {
+    return TSystemEvent(obj.nativeObj);
+  }
+
+  /**
+   * SDL_Event。
+   *
+   */
+  void* GetSdlEvent() const;
+};
+
+/**
+ * 字体管理器，负责字体的加载和缓存管理。
+ *(如果使用nanovg，字体由nanovg内部管理)
+ *
+ */
+class TFontManager : public TEmitter {
+ public:
+  TFontManager(emitter_t* nativeObj) : TEmitter(nativeObj) {
+  }
+
+  TFontManager() {
+    this->nativeObj = (emitter_t*)NULL;
+  }
+
+  TFontManager(const font_manager_t* nativeObj) : TEmitter((emitter_t*)nativeObj) {
+  }
+
+  static TFontManager Cast(emitter_t* nativeObj) {
+    return TFontManager(nativeObj);
+  }
+
+  static TFontManager Cast(const emitter_t* nativeObj) {
+    return TFontManager((emitter_t*)nativeObj);
+  }
+
+  static TFontManager Cast(TEmitter& obj) {
+    return TFontManager(obj.nativeObj);
+  }
+
+  static TFontManager Cast(const TEmitter& obj) {
+    return TFontManager(obj.nativeObj);
+  }
+
+  /**
+   * 卸载指定的字体。
+   * 
+   * @param name 字体名，为NULL时使用缺省字体。
+   * @param size 字体的大小(矢量字体指定为0即可)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t UnloadFont(const char* name, font_size_t size);
+
+  /**
+   * 清除最久没有被使用的缓冲字模。
+   * 
+   * @param cache_size 每种字体保留缓存字模的个数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ShrinkCache(uint32_t cache_size);
+
+  /**
+   * 卸载全部字体。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t UnloadAll();
 };
 
 /**
@@ -6233,7 +6480,7 @@ class TImageBase : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetImage(char* name);
+  ret_t SetImage(const char* name);
 
   /**
    * 设置控件的旋转角度(仅在WITH_VGCANVAS定义时生效)。
@@ -7001,7 +7248,7 @@ class TColorPicker : public TWidget {
    * 颜色。
    *
    */
-  const char* GetValue() const;
+  char* GetValue() const;
 };
 
 /**
@@ -7130,6 +7377,16 @@ class TDraggable : public TWidget {
   ret_t SetHorizontalOnly(bool horizontal_only);
 
   /**
+   * 设置是否无范围限制拖动。
+   *备注：可以让窗口拖动到外面去。
+   * 
+   * @param allow_out_of_screen 是否无范围限制拖动。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAllowOutOfScreen(bool allow_out_of_screen);
+
+  /**
    * 设置drag_window。
    *拖动窗口而不是父控件。比如放在对话框的titlebar上，拖动titlebar其实是希望拖动对话框。
    * 
@@ -7181,6 +7438,12 @@ class TDraggable : public TWidget {
    *
    */
   int32_t GetRight() const;
+
+  /**
+   * 支持超出原生窗口边界拖动。（无法完全移出原生窗口，同时优先受到拖动范围限制的影响）
+   *
+   */
+  bool GetAllowOutOfScreen() const;
 
   /**
    * 只允许垂直拖动。
@@ -7365,6 +7628,24 @@ class TFileBrowserView : public TWidget {
   ret_t SetSortBy(const char* sort_by);
 
   /**
+   * 设置 奇数项样式。
+   * 
+   * @param odd_item_style 奇数项样式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetOddItemStyle(const char* odd_item_style);
+
+  /**
+   * 设置 偶数项样式。
+   * 
+   * @param even_item_style 奇数项样式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEvenItemStyle(const char* even_item_style);
+
+  /**
    * 获取当前路径。
    * 
    *
@@ -7433,6 +7714,18 @@ class TFileBrowserView : public TWidget {
    *
    */
   char* GetSortBy() const;
+
+  /**
+   * 奇数项样式。
+   *
+   */
+  char* GetOddItemStyle() const;
+
+  /**
+   * 偶数项样式。
+   *
+   */
+  char* GetEvenItemStyle() const;
 };
 
 /**
@@ -7754,7 +8047,7 @@ class TGauge : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetImage(char* name);
+  ret_t SetImage(const char* name);
 
   /**
    * 设置图片的显示方式。
@@ -8169,11 +8462,11 @@ class TImageValue : public TWidget {
   /**
    * 设置点击时加上的增量。
    * 
-   * @param delta 增量。
+   * @param click_add_delta 增量。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetClickAddDelta(double delta);
+  ret_t SetClickAddDelta(double click_add_delta);
 
   /**
    * 设置值。
@@ -8369,6 +8662,12 @@ class TCandidates : public TWidget {
    *
    */
   char* GetButtonStyle() const;
+
+  /**
+   * 是否启用候选字预览。
+   *
+   */
+  bool GetEnablePreview() const;
 };
 
 /**
@@ -8731,7 +9030,7 @@ class TMledit : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTips(char* tips);
+  ret_t SetTips(const char* tips);
 
   /**
    * 获取翻译之后的文本，然后调用mledit_set_tips。
@@ -8749,7 +9048,7 @@ class TMledit : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetKeyboard(char* keyboard);
+  ret_t SetKeyboard(const char* keyboard);
 
   /**
    * 设置编辑器光标位置。
@@ -9092,7 +9391,7 @@ class TProgressCircle : public TWidget {
   uint32_t GetLineWidth() const;
 
   /**
-   * 线帽类型(round:圆头，square:方头)。
+   * 线帽类型(round:圆头，square:方头，butt:平头)。
    *
    */
   char* GetLineCap() const;
@@ -9265,7 +9564,7 @@ class TRichText : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetText(char* text);
+  ret_t SetText(const char* text);
 
   /**
    * 设置是否允许y方向滑动。
@@ -9426,6 +9725,15 @@ class THscrollLabel : public TWidget {
   ret_t SetEllipses(bool ellipses);
 
   /**
+   * 设置stop_at_begin。
+   * 
+   * @param stop_at_begin 是否在滚动完毕后停在文本结尾。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetStopAtBegin(bool stop_at_begin);
+
+  /**
    * 设置x偏移(一般无需用户调用)。。
    * 
    * @param xoffset x偏移。
@@ -9509,6 +9817,13 @@ class THscrollLabel : public TWidget {
    *
    */
   int32_t GetTextW() const;
+
+  /**
+   * 滚动完毕后停在文本开头(缺省FALSE)。
+   *> 注：loop为FALSE时才可用。
+   *
+   */
+  bool GetStopAtBegin() const;
 };
 
 /**
@@ -10055,6 +10370,26 @@ class TScrollBar : public TWidget {
   ret_t SetAnimatorTime(uint32_t animator_time);
 
   /**
+   * 通过动画隐藏滚动条。
+   * 
+   * @param duration 动画持续时间。
+   * @param delay 动画执行时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t HideByOpacityAnimation(int32_t duration, int32_t delay);
+
+  /**
+   * 通过动画显示滚动条。
+   * 
+   * @param duration 动画持续时间。
+   * @param delay 动画执行时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ShowByOpacityAnimation(int32_t duration, int32_t delay);
+
+  /**
    * 虚拟宽度或高度。
    *
    */
@@ -10258,6 +10593,15 @@ class TScrollView : public TWidget {
   ret_t SetSpeedScale(float_t xspeed_scale, float_t yspeed_scale);
 
   /**
+   * 设置滑动到极限时可继续滑动区域的占比。
+   * 
+   * @param slide_limit_ratio 滑动到极限时可继续滑动区域的占比。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSlideLimitRatio(float_t slide_limit_ratio);
+
+  /**
    * 滚动到指定的偏移量。
    * 
    * @param xoffset_end x偏移量。
@@ -10344,6 +10688,12 @@ class TScrollView : public TWidget {
    *
    */
   bool GetRecursive() const;
+
+  /**
+   * 滑动到极限时可继续滑动区域的占比。
+   *
+   */
+  float_t GetSlideLimitRatio() const;
 };
 
 /**
@@ -10631,6 +10981,49 @@ class TSlideMenu : public TWidget {
   ret_t SetMinScale(float_t min_scale);
 
   /**
+   * 设置菜单项之间的间距。
+   * 
+   * @param spacer 菜单项之间的间距。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSpacer(int32_t spacer);
+
+  /**
+   * 设置菜单项的宽度。
+   * 
+   * @param menu_w 菜单项的宽度。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)(空字符串则使用控件高度)
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMenuW(const char* menu_w);
+
+  /**
+   * 设置是否动态裁剪菜单项。
+   * 
+   * @param clip 是否动态裁剪菜单项。(关闭后，如果显示偶数项，左边会多一项)
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetClip(bool clip);
+
+  /**
+   * 切换至上一项。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ScrollToPrev();
+
+  /**
+   * 切换至下一项。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ScrollToNext();
+
+  /**
    * 值。代表当前选中项的索引。
    *
    */
@@ -10647,6 +11040,24 @@ class TSlideMenu : public TWidget {
    *
    */
   float_t GetMinScale() const;
+
+  /**
+   * 菜单项之间的间距。
+   *
+   */
+  int32_t GetSpacer() const;
+
+  /**
+   * 菜单项的宽度(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)(空字符串则使用控件高度)。
+   *
+   */
+  char* GetMenuW() const;
+
+  /**
+   * 是否动态裁剪菜单项(默认裁剪，不裁剪时，如果显示偶数项，左边会多一项)。
+   *
+   */
+  bool GetClip() const;
 };
 
 /**
@@ -11318,7 +11729,7 @@ class TTextSelector : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t AppendOption(int32_t value, char* text);
+  ret_t AppendOption(int32_t value, const char* text);
 
   /**
    * 设置选项。
@@ -11327,7 +11738,7 @@ class TTextSelector : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetOptions(char* options);
+  ret_t SetOptions(const char* options);
 
   /**
    * 设置一系列的整数选项。
@@ -11450,6 +11861,24 @@ class TTextSelector : public TWidget {
   ret_t SetEnableValueAnimator(bool enable_value_animator);
 
   /**
+   * 设置绘制蒙版的变化趋势。
+   * 
+   * @param mask_easing 绘制蒙版的变化趋势。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaskEasing(easing_type_t mask_easing);
+
+  /**
+   * 设置绘制蒙版的区域占比（范围0~1）。
+   * 
+   * @param mask_area_scale 绘制蒙版的区域占比（范围0~1）。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaskAreaScale(float_t mask_area_scale);
+
+  /**
    * 可见的选项数量(只能是1或者3或者5，缺省为5)。
    *
    */
@@ -11502,6 +11931,18 @@ class TTextSelector : public TWidget {
    *
    */
   bool GetEnableValueAnimator() const;
+
+  /**
+   * 绘制蒙版的变化趋势。
+   *
+   */
+  easing_type_t GetMaskEasing() const;
+
+  /**
+   * 绘制蒙版的区域占比（范围0~1）。
+   *
+   */
+  float_t GetMaskAreaScale() const;
 };
 
 /**
@@ -12422,6 +12863,15 @@ class TButton : public TWidget {
   ret_t SetEnableLongPress(bool enable_long_press);
 
   /**
+   * 设置是否启用预览。
+   * 
+   * @param enable_preview 是否启用预览。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEnablePreview(bool enable_preview);
+
+  /**
    * 重复触发EVT\_CLICK事件的时间间隔。
    *
    *为0则不重复触发EVT\_CLICK事件。
@@ -12437,6 +12887,12 @@ class TButton : public TWidget {
    *
    */
   bool GetEnableLongPress() const;
+
+  /**
+   * 是否启用预览(主要用于软键盘)。
+   *
+   */
+  bool GetEnablePreview() const;
 
   /**
    * 触发长按事件的时间(ms)
@@ -12747,13 +13203,13 @@ class TColorTile : public TWidget {
    * 背景颜色。
    *
    */
-  const char* GetBgColor() const;
+  char* GetBgColor() const;
 
   /**
    * 边框颜色。
    *
    */
-  const char* GetBorderColor() const;
+  char* GetBorderColor() const;
 };
 
 /**
@@ -13480,7 +13936,7 @@ class TEdit : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetActionText(char* action_text);
+  ret_t SetActionText(const char* action_text);
 
   /**
    * 设置编辑器的输入提示。
@@ -13489,7 +13945,7 @@ class TEdit : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTips(char* tips);
+  ret_t SetTips(const char* tips);
 
   /**
    * 获取翻译之后的文本，然后调用edit_set_tips。
@@ -13507,7 +13963,7 @@ class TEdit : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetKeyboard(char* keyboard);
+  ret_t SetKeyboard(const char* keyboard);
 
   /**
    * 当编辑器输入类型为密码时，设置密码是否可见。
@@ -14172,19 +14628,34 @@ class TPages : public TWidget {
   ret_t SetActive(uint32_t index);
 
   /**
+   * 设置切换界面时是否自动聚焦。
+   * 
+   * @param auto_focused 切换界面时是否自动聚焦。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetAutoFocused(bool auto_focused);
+
+  /**
    * 通过页面的名字设置当前的Page。
    * 
    * @param name 当前Page的名字。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetActiveByName(char* name);
+  ret_t SetActiveByName(const char* name);
 
   /**
    * 当前活跃的page。(需要用到 MVVM 数据绑定请设置 value 属性)
    *
    */
   uint32_t GetActive() const;
+
+  /**
+   * 选择切换界面时是否自动聚焦上一次保存的焦点。（默认为TRUE）
+   *
+   */
+  bool GetAutoFocused() const;
 };
 
 /**
@@ -14862,7 +15333,7 @@ class TTabButton : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetIcon(char* name);
+  ret_t SetIcon(const char* name);
 
   /**
    * 设置控件的active图标。
@@ -14871,7 +15342,7 @@ class TTabButton : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetActiveIcon(char* name);
+  ret_t SetActiveIcon(const char* name);
 
   /**
    * 设置控件动态加载显示UI。
@@ -14880,7 +15351,7 @@ class TTabButton : public TWidget {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetLoadUi(char* name);
+  ret_t SetLoadUi(const char* name);
 
   /**
    * 值。
@@ -15223,15 +15694,16 @@ class TDialog : public TWindowBase {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetTitle(char* title);
+  ret_t SetTitle(const char* title);
 
   /**
    * 模态显示对话框。
    *dialog_modal返回后，dialog对象将在下一个idle函数中回收。
    *也就是在dialog_modal调用完成后仍然可以访问dialog中控件，直到本次事件结束。
+   *调用该函数会使线程进入阻塞状态，需要调用dialog_quit来解除阻塞。
    * 
    *
-   * @return 返回退出码。
+   * @return 返回退出码，值为dialog_quit函数中传入的参数。
    */
   dialog_quit_code_t Modal();
 
@@ -15316,7 +15788,7 @@ class TDialog : public TWindowBase {
    *> 请参考 [对话框高亮策略](https://github.com/zlgopen/awtk/blob/master/docs/dialog_highlight.md)
    *
    */
-  const char* GetHighlight() const;
+  char* GetHighlight() const;
 };
 
 /**
@@ -15699,7 +16171,7 @@ class TGifImage : public TImageBase {
   ret_t Play();
 
   /**
-   * 停止(并重置index为-1)。
+   * 停止(并重置index为0)。
    * 
    *
    * @return 返回RET_OK表示成功，否则表示失败。
@@ -16125,7 +16597,39 @@ class TSvgImage : public TImageBase {
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t SetImage(char* name);
+  ret_t SetImage(const char* name);
+
+  /**
+   * 控件设置是否开启离线缓存渲染模式。
+   *
+   *> 在确保svg图片不经常变化大小及状态的情况下，开启离线缓存渲染能够减少解析bsvg的开销，提高效率。
+   * 
+   * @param is_cache_mode 是否开启缓存模式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetCacheMode(bool is_cache_mode);
+
+  /**
+   * 控件设置svg图片绘制模式。
+   * 
+   * @param draw_type 绘制模式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDrawType(image_draw_type_t draw_type);
+
+  /**
+   * 离线缓存渲染模式。
+   *
+   */
+  bool GetIsCacheMode() const;
+
+  /**
+   * svg图片的绘制方式(支持旋转缩放, 目前仅支持scale、scale_auto模式)。
+   *
+   */
+  image_draw_type_t GetDrawType() const;
 };
 
 /**
@@ -16712,6 +17216,15 @@ class TComboBox : public TEdit {
   ret_t SetSelectedIndex(uint32_t index);
 
   /**
+   * 根据文本设置当前选中的选项。
+   * 
+   * @param text 原生(非翻译的文本)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSelectedIndexByText(const char* text);
+
+  /**
    * 设置是否本地化(翻译)选项。
    * 
    * @param localize_options 是否本地化(翻译)选项。
@@ -16749,13 +17262,22 @@ class TComboBox : public TEdit {
   ret_t AppendOption(int32_t value, const char* text);
 
   /**
-   * 删除选项。
+   * 删除第一个值为value的选项。
    * 
-   * @param value 值。
+   * @param value 选项的值。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t RemoveOption(int32_t value);
+
+  /**
+   * 删除指定序数的选项。
+   * 
+   * @param index 选项的序数(0表示第一个)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t RemoveOptionByIndex(uint32_t index);
 
   /**
    * 设置选项。
@@ -16784,12 +17306,20 @@ class TComboBox : public TEdit {
   bool HasOptionText(const char* text);
 
   /**
-   * 获取combo_box的文本。
+   * 获取combo_box的文本(可能是翻译后的文本)。
    * 
    *
    * @return 返回文本。
    */
   const char* GetTextValue();
+
+  /**
+   * 获取combo_box当前选中项目的文本(原生非翻译的文本)。
+   * 
+   *
+   * @return 返回文本。
+   */
+  const char* GetTextOfSelected();
 
   /**
    * 为点击按钮时，要打开窗口的名称。
@@ -17061,6 +17591,15 @@ class TOverlay : public TWindowBase {
   ret_t SetAlwaysOnTop(bool always_on_top);
 
   /**
+   * 设置是否非模态窗口模式。
+   * 
+   * @param modeless 是否非模态窗口模式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetModeless(bool modeless);
+
+  /**
    * 点击穿透。点击没有子控件的位置，是否穿透到底层窗口。
    *
    *缺省不启用。
@@ -17075,6 +17614,14 @@ class TOverlay : public TWindowBase {
    *
    */
   bool GetAlwaysOnTop() const;
+
+  /**
+   * 非模态窗口。
+   *
+   *缺省不启用。
+   *
+   */
+  bool GetModeless() const;
 };
 
 /**
@@ -17307,6 +17854,15 @@ class TSpinBox : public TEdit {
   ret_t SetEasyTouchMode(bool easy_touch_mode);
 
   /**
+   * 设置按钮位置样式。
+   * 
+   * @param button_position 按钮位置样式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetButtonPosition(const char* button_position);
+
+  /**
    * 设置连击的时间间隔。
    *备注：时间间隔越低，速度越快。
    * 
@@ -17326,6 +17882,16 @@ class TSpinBox : public TEdit {
    *
    */
   bool GetEasyTouchMode() const;
+
+  /**
+   * 按钮位置样式选择，优先级高于easy_touch_mode，各模式对应样式如下,默认为none。
+   *none：按照easy_touch_mode选择样式
+   *default：inc按钮在右上角，dec按钮在右下角。
+   *left_right：dec按钮在左边，inc按钮在右边。
+   *top_bottom：inc按钮在顶部，dec按钮在底部。
+   *
+   */
+  char* GetButtonPosition() const;
 };
 
 /**
@@ -17420,7 +17986,10 @@ class TSystemBar : public TWindowBase {
 };
 
 /**
- * 可滚动的combo_box控件。
+ * 扩展combo_box控件。支持以下功能：
+ ** 支持滚动。项目比较多时显示滚动条。
+ ** 自动调整弹出窗口的宽度。根据最长文本自动调整弹出窗口的宽度。
+ ** 支持分组显示。如果item的文本以"seperator."开头，视为一个分组开始，其后的文本为分组的标题。比如: "seperator.basic"，会创建一个basic为标题的分组。
  *
  */
 class TComboBoxEx : public TComboBox {

@@ -22,6 +22,7 @@
 #ifndef TK_REQUEST_H
 #define TK_REQUEST_H
 
+#include <memory>
 #include <functional>
 #include "awtk_cpp.hpp"
 
