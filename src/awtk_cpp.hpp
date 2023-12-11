@@ -1330,6 +1330,23 @@ class TValue {
   bool IsNull();
 
   /**
+   * 判断两个value是否相同。
+   * 
+   * @param other value对象。
+   *
+   * @return 为空值返回TRUE，否则返回FALSE。
+   */
+  bool Equal(TValue& other);
+
+  /**
+   * 转换为int的值。
+   * 
+   *
+   * @return 值。
+   */
+  int Int();
+
+  /**
    * 设置类型为int的值。
    * 
    * @param value 待设置的值。
@@ -1482,6 +1499,15 @@ class TGlobal {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Quit();
+
+  /**
+   * 退出TK事件主循环。
+   * 
+   * @param delay_ms 延迟退出的时间。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t QuitEx(uint32_t delay_ms);
 
   /**
    * 获取全局指针的X坐标。
@@ -3562,6 +3588,14 @@ class TWidget {
   bool IsSupportHighlighter();
 
   /**
+   * 判断widget拥有高亮属性。
+   * 
+   *
+   * @return 拥有返回 TRUE，没有返回 FALSE。
+   */
+  bool HasHighlighter();
+
+  /**
    * 启用指定的style。
    * 
    * @param style style的名称。
@@ -4057,6 +4091,26 @@ class TWidget {
   ret_t InvalidateForce(TRect& r);
 
   /**
+   * 获取控件指定属性的值。
+   * 
+   * @param name 属性的名称。
+   * @param v 返回属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t GetProp(const char* name, TValue& v);
+
+  /**
+   * 设置控件指定属性的值。
+   * 
+   * @param name 属性的名称。
+   * @param v 属性的值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetProp(const char* name, TValue& v);
+
+  /**
    * 设置多个参数。
    *>参数之间用&分隔，名称和值之间用=分隔。如: name=awtk&min=10&max=100
    * 
@@ -4506,6 +4560,7 @@ class TWidget {
 
   /**
    * 设置控件自己的布局参数。
+   *备注：下一帧才会生效数据
    * 
    * @param params 布局参数。
    *
@@ -4515,6 +4570,7 @@ class TWidget {
 
   /**
    * 设置子控件的布局参数。
+   *备注：下一帧才会生效数据
    * 
    * @param params 布局参数。
    *
@@ -4524,6 +4580,7 @@ class TWidget {
 
   /**
    * 设置控件自己的布局(缺省布局器)参数(过时，请用widget\_set\_self\_layout)。
+   *备注：下一帧才会生效数据
    * 
    * @param x x参数。
    * @param y y参数。
@@ -5656,6 +5713,51 @@ class TAssetsManager : public TEmitter {
 };
 
 /**
+ * 控件动画事件。
+ *
+ */
+class TWidgetAnimatorEvent : public TEvent {
+ public:
+  TWidgetAnimatorEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TWidgetAnimatorEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TWidgetAnimatorEvent(const widget_animator_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TWidgetAnimatorEvent Cast(event_t* nativeObj) {
+    return TWidgetAnimatorEvent(nativeObj);
+  }
+
+  static TWidgetAnimatorEvent Cast(const event_t* nativeObj) {
+    return TWidgetAnimatorEvent((event_t*)nativeObj);
+  }
+
+  static TWidgetAnimatorEvent Cast(TEvent& obj) {
+    return TWidgetAnimatorEvent(obj.nativeObj);
+  }
+
+  static TWidgetAnimatorEvent Cast(const TEvent& obj) {
+    return TWidgetAnimatorEvent(obj.nativeObj);
+  }
+
+  /**
+   * 控件对象。
+   *
+   */
+  TWidget GetWidget() const;
+
+  /**
+   * 控件动画句柄。
+   *
+   */
+  void* GetAnimator() const;
+};
+
+/**
  * model变化事件。
  *
  */
@@ -5809,40 +5911,7 @@ class TOrientationEvent : public TEvent {
 };
 
 /**
- * 值变化事件。
- *
- */
-class TValueChangeEvent : public TEvent {
- public:
-  TValueChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
-  }
-
-  TValueChangeEvent() {
-    this->nativeObj = (event_t*)NULL;
-  }
-
-  TValueChangeEvent(const value_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
-  }
-
-  static TValueChangeEvent Cast(event_t* nativeObj) {
-    return TValueChangeEvent(nativeObj);
-  }
-
-  static TValueChangeEvent Cast(const event_t* nativeObj) {
-    return TValueChangeEvent((event_t*)nativeObj);
-  }
-
-  static TValueChangeEvent Cast(TEvent& obj) {
-    return TValueChangeEvent(obj.nativeObj);
-  }
-
-  static TValueChangeEvent Cast(const TEvent& obj) {
-    return TValueChangeEvent(obj.nativeObj);
-  }
-};
-
-/**
- * 值变化事件。
+ * offset变化事件。
  *
  */
 class TOffsetChangeEvent : public TEvent {
@@ -6997,6 +7066,15 @@ class TWindowManager : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t Resize(wh_t w, wh_t h);
+
+  /**
+   * 设置原生窗口是否全屏。
+   * 
+   * @param fullscreen 是否全屏
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetFullscreen(bool fullscreen);
 
   /**
    * 关闭全部窗口。
@@ -11850,6 +11928,15 @@ class TTextSelector : public TWidget {
   ret_t SetMaskAreaScale(float_t mask_area_scale);
 
   /**
+   * 是否开启缩写，开启后，当文字长度操作控件长度后，自动变为...
+   * 
+   * @param ellipses 是否开启缩写。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEllipses(bool ellipses);
+
+  /**
    * 可见的选项数量(只能是1或者3或者5，缺省为5)。
    *
    */
@@ -11902,6 +11989,12 @@ class TTextSelector : public TWidget {
    *
    */
   bool GetEnableValueAnimator() const;
+
+  /**
+   * 是否开启缩写，开启后，当文字长度操作控件长度后，自动变为...
+   *
+   */
+  bool GetEllipses() const;
 
   /**
    * 绘制蒙版的变化趋势。
@@ -12577,6 +12670,72 @@ class TCmdExecEvent : public TEvent {
    *
    */
   bool GetCanExec() const;
+};
+
+/**
+ * 值变化事件。
+ *
+ */
+class TValueChangeEvent : public TEvent {
+ public:
+  TValueChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TValueChangeEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TValueChangeEvent(const value_change_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TValueChangeEvent Cast(event_t* nativeObj) {
+    return TValueChangeEvent(nativeObj);
+  }
+
+  static TValueChangeEvent Cast(const event_t* nativeObj) {
+    return TValueChangeEvent((event_t*)nativeObj);
+  }
+
+  static TValueChangeEvent Cast(TEvent& obj) {
+    return TValueChangeEvent(obj.nativeObj);
+  }
+
+  static TValueChangeEvent Cast(const TEvent& obj) {
+    return TValueChangeEvent(obj.nativeObj);
+  }
+};
+
+/**
+ * 日志事件。
+ *
+ */
+class TLogMessageEvent : public TEvent {
+ public:
+  TLogMessageEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TLogMessageEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TLogMessageEvent(const log_message_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TLogMessageEvent Cast(event_t* nativeObj) {
+    return TLogMessageEvent(nativeObj);
+  }
+
+  static TLogMessageEvent Cast(const event_t* nativeObj) {
+    return TLogMessageEvent((event_t*)nativeObj);
+  }
+
+  static TLogMessageEvent Cast(TEvent& obj) {
+    return TLogMessageEvent(obj.nativeObj);
+  }
+
+  static TLogMessageEvent Cast(const TEvent& obj) {
+    return TLogMessageEvent(obj.nativeObj);
+  }
 };
 
 /**
@@ -14014,6 +14173,14 @@ class TEdit : public TWidget {
   char* GetActionText() const;
 
   /**
+   * fscript脚本，用输入校验，如：(len(text) 3) && (len(text) < 10)。
+   *
+   *> 用于校验输入的文本是否合法。
+   *
+   */
+  char* GetValidator() const;
+
+  /**
    * 自定义软键盘名称。AWTK优先查找keyboard属性设置的键盘文件名（该键盘的XML文件需要在default\raw\ui目录下存在），如果没有指定keyboard，就找input_type设置的键盘类型。如果指定为空字符串，则表示不需要软键盘。
    *
    */
@@ -14364,6 +14531,21 @@ class TGroupBox : public TWidget {
    * @return 对象。
    */
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置选中的单选按钮的索引。
+   * 
+   * @param value 选中的单选按钮的索引。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetValue(uint32_t value);
+
+  /**
+   * 选中的单选按钮的索引。
+   *
+   */
+  uint32_t GetValue() const;
 };
 
 /**
@@ -14483,6 +14665,15 @@ class TLabel : public TWidget {
   ret_t SetWordWrap(bool word_wrap);
 
   /**
+   * 是否开启缩写，开启后，当文字长度操作控件长度后，自动变为...
+   * 
+   * @param ellipses 是否开启缩写。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetEllipses(bool ellipses);
+
+  /**
    * 根据文本内容调节控件大小。
    * 
    * @param min_w 最小宽度。
@@ -14513,6 +14704,13 @@ class TLabel : public TWidget {
    *
    */
   bool GetWordWrap() const;
+
+  /**
+   * 是否开启缩写，开启后，当文字长度操作控件长度后，自动变为...
+   *> 和换行是冲突的，换行后，该属性不生效
+   *
+   */
+  bool GetEllipses() const;
 
   /**
    * 当auto_adjust_size为TRUE时，用于控制控件的最大宽度，超出该宽度后才自动换行。
@@ -16789,12 +16987,6 @@ class TObjectArray : public TObject {
   uint32_t GetSize() const;
 };
 
-/**
- * 对象接口的缺省实现。
- *
- *内部使用有序数组保存所有属性，可以快速查找指定名称的属性。
- *
- */
 class TObjectDefault : public TObject {
  public:
   TObjectDefault(emitter_t* nativeObj) : TObject(nativeObj) {
@@ -16855,6 +17047,15 @@ class TObjectDefault : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t ClearProps();
+
+  /**
+   * 设置属性值时不改变属性的类型。
+   * 
+   * @param keep_prop_type 不改变属性的类型。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetKeepPropType(bool keep_prop_type);
 };
 
 /**

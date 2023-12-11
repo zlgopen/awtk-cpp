@@ -479,6 +479,14 @@ bool TValue::IsNull() {
   return value_is_null(((value_t*)(this->nativeObj)));
 }
 
+bool TValue::Equal(TValue& other) {
+  return value_equal(((const value_t*)(this->nativeObj)), ((const value_t*)(other.nativeObj)));
+}
+
+int TValue::Int() {
+  return value_int(((const value_t*)(this->nativeObj)));
+}
+
 TValue TValue::SetInt(int32_t value) {
   return TValue((value_t*)(value_set_int(((value_t*)(this->nativeObj)), value)));
 }
@@ -547,6 +555,10 @@ ret_t TGlobal::Run() {
 
 ret_t TGlobal::Quit() {
   return tk_quit();
+}
+
+ret_t TGlobal::QuitEx(uint32_t delay_ms) {
+  return tk_quit_ex(delay_ms);
 }
 
 int32_t TGlobal::GetPointerX() {
@@ -1264,6 +1276,10 @@ bool TWidget::IsSupportHighlighter() {
   return widget_is_support_highlighter(((widget_t*)(this->nativeObj)));
 }
 
+bool TWidget::HasHighlighter() {
+  return widget_has_highlighter(((widget_t*)(this->nativeObj)));
+}
+
 ret_t TWidget::UseStyle(const char* style) {
   return widget_use_style(((widget_t*)(this->nativeObj)), style);
 }
@@ -1463,6 +1479,14 @@ ret_t TWidget::Off(uint32_t id) {
 
 ret_t TWidget::InvalidateForce(TRect& r) {
   return widget_invalidate_force(((widget_t*)(this->nativeObj)), ((const rect_t*)(r.nativeObj)));
+}
+
+ret_t TWidget::GetProp(const char* name, TValue& v) {
+  return widget_get_prop(((widget_t*)(this->nativeObj)), name, ((value_t*)(v.nativeObj)));
+}
+
+ret_t TWidget::SetProp(const char* name, TValue& v) {
+  return widget_set_prop(((widget_t*)(this->nativeObj)), name, ((const value_t*)(v.nativeObj)));
 }
 
 ret_t TWidget::SetProps(const char* params) {
@@ -2077,6 +2101,14 @@ ret_t TAssetsManager::Unref(TAssetInfo& info) {
                               ((const asset_info_t*)(info.nativeObj)));
 }
 
+TWidget TWidgetAnimatorEvent::GetWidget() const {
+  return TWidget(((widget_animator_event_t*)(this->nativeObj))->widget);
+}
+
+void* TWidgetAnimatorEvent::GetAnimator() const {
+  return ((widget_animator_event_t*)(this->nativeObj))->animator;
+}
+
 const char* TModelEvent::GetName() const {
   return ((model_event_t*)(this->nativeObj))->name;
 }
@@ -2476,6 +2508,10 @@ ret_t TWindowManager::BackTo(const char* target) {
 
 ret_t TWindowManager::Resize(wh_t w, wh_t h) {
   return window_manager_resize(((widget_t*)(this->nativeObj)), w, h);
+}
+
+ret_t TWindowManager::SetFullscreen(bool fullscreen) {
+  return window_manager_set_fullscreen(((widget_t*)(this->nativeObj)), fullscreen);
 }
 
 ret_t TWindowManager::CloseAll() {
@@ -3988,6 +4024,10 @@ ret_t TTextSelector::SetMaskAreaScale(float_t mask_area_scale) {
   return text_selector_set_mask_area_scale(((widget_t*)(this->nativeObj)), mask_area_scale);
 }
 
+ret_t TTextSelector::SetEllipses(bool ellipses) {
+  return text_selector_set_ellipses(((widget_t*)(this->nativeObj)), ellipses);
+}
+
 uint32_t TTextSelector::GetVisibleNr() const {
   return ((text_selector_t*)(this->nativeObj))->visible_nr;
 }
@@ -4018,6 +4058,10 @@ bool TTextSelector::GetLoopOptions() const {
 
 bool TTextSelector::GetEnableValueAnimator() const {
   return ((text_selector_t*)(this->nativeObj))->enable_value_animator;
+}
+
+bool TTextSelector::GetEllipses() const {
+  return ((text_selector_t*)(this->nativeObj))->ellipses;
 }
 
 easing_type_t TTextSelector::GetMaskEasing() const {
@@ -4494,6 +4538,10 @@ char* TEdit::GetActionText() const {
   return ((edit_t*)(this->nativeObj))->action_text;
 }
 
+char* TEdit::GetValidator() const {
+  return ((edit_t*)(this->nativeObj))->validator;
+}
+
 char* TEdit::GetKeyboard() const {
   return ((edit_t*)(this->nativeObj))->keyboard;
 }
@@ -4578,6 +4626,14 @@ TWidget TGroupBox::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TGroupBox((widget_t*)(group_box_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
+ret_t TGroupBox::SetValue(uint32_t value) {
+  return group_box_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+uint32_t TGroupBox::GetValue() const {
+  return ((group_box_t*)(this->nativeObj))->value;
+}
+
 TWidget TLabel::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TLabel((widget_t*)(label_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -4598,6 +4654,10 @@ ret_t TLabel::SetWordWrap(bool word_wrap) {
   return label_set_word_wrap(((widget_t*)(this->nativeObj)), word_wrap);
 }
 
+ret_t TLabel::SetEllipses(bool ellipses) {
+  return label_set_ellipses(((widget_t*)(this->nativeObj)), ellipses);
+}
+
 ret_t TLabel::ResizeToContent(uint32_t min_w, uint32_t max_w, uint32_t min_h, uint32_t max_h) {
   return label_resize_to_content(((widget_t*)(this->nativeObj)), min_w, max_w, min_h, max_h);
 }
@@ -4612,6 +4672,10 @@ bool TLabel::GetLineWrap() const {
 
 bool TLabel::GetWordWrap() const {
   return ((label_t*)(this->nativeObj))->word_wrap;
+}
+
+bool TLabel::GetEllipses() const {
+  return ((label_t*)(this->nativeObj))->ellipses;
 }
 
 int32_t TLabel::GetMaxW() const {
@@ -5126,6 +5190,10 @@ ret_t TObjectDefault::Unref() {
 
 ret_t TObjectDefault::ClearProps() {
   return object_default_clear_props(((object_t*)(this->nativeObj)));
+}
+
+ret_t TObjectDefault::SetKeepPropType(bool keep_prop_type) {
+  return object_default_set_keep_prop_type(((object_t*)(this->nativeObj)), keep_prop_type);
 }
 
 void* TTimerInfo::GetCtx() const {
