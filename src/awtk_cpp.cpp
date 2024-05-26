@@ -557,8 +557,8 @@ ret_t TGlobal::Quit() {
   return tk_quit();
 }
 
-ret_t TGlobal::QuitEx(uint32_t delay_ms) {
-  return tk_quit_ex(delay_ms);
+ret_t TGlobal::QuitEx(uint32_t delay) {
+  return tk_quit_ex(delay);
 }
 
 int32_t TGlobal::GetPointerX() {
@@ -2121,6 +2121,14 @@ TObject TModelEvent::GetModel() const {
   return TObject(((model_event_t*)(this->nativeObj))->model);
 }
 
+xy_t TWheelEvent::GetX() const {
+  return ((wheel_event_t*)(this->nativeObj))->x;
+}
+
+xy_t TWheelEvent::GetY() const {
+  return ((wheel_event_t*)(this->nativeObj))->y;
+}
+
 int32_t TWheelEvent::GetDy() const {
   return ((wheel_event_t*)(this->nativeObj))->dy;
 }
@@ -2271,6 +2279,14 @@ const char* TDropFileEvent::GetFilename() const {
 
 void* TSystemEvent::GetSdlEvent() const {
   return ((system_event_t*)(this->nativeObj))->sdl_event;
+}
+
+TWidget TUiLoadEvent::GetRoot() const {
+  return TWidget(((ui_load_event_t*)(this->nativeObj))->root);
+}
+
+const char* TUiLoadEvent::GetName() const {
+  return ((ui_load_event_t*)(this->nativeObj))->name;
 }
 
 ret_t TFontManager::UnloadFont(const char* name, font_size_t size) {
@@ -2475,6 +2491,10 @@ bool TWindowManager::IsAnimating() {
 
 ret_t TWindowManager::SetShowFps(bool show_fps) {
   return window_manager_set_show_fps(((widget_t*)(this->nativeObj)), show_fps);
+}
+
+ret_t TWindowManager::SetShowFpsPosition(xy_t x, xy_t y) {
+  return window_manager_set_show_fps_position(((widget_t*)(this->nativeObj)), x, y);
 }
 
 ret_t TWindowManager::SetMaxFps(uint32_t max_fps) {
@@ -3333,6 +3353,15 @@ ret_t THscrollLabel::SetStopAtBegin(bool stop_at_begin) {
   return hscroll_label_set_stop_at_begin(((widget_t*)(this->nativeObj)), stop_at_begin);
 }
 
+ret_t THscrollLabel::SetDelay(uint32_t delay) {
+  return hscroll_label_set_delay(((widget_t*)(this->nativeObj)), delay);
+}
+
+ret_t THscrollLabel::SetLoopIntervalDistance(int32_t loop_interval_distance) {
+  return hscroll_label_set_loop_interval_distance(((widget_t*)(this->nativeObj)),
+                                                  loop_interval_distance);
+}
+
 ret_t THscrollLabel::SetXoffset(int32_t xoffset) {
   return hscroll_label_set_xoffset(((widget_t*)(this->nativeObj)), xoffset);
 }
@@ -3373,6 +3402,10 @@ int32_t THscrollLabel::GetDuration() const {
   return ((hscroll_label_t*)(this->nativeObj))->duration;
 }
 
+uint32_t THscrollLabel::GetDelay() const {
+  return ((hscroll_label_t*)(this->nativeObj))->delay;
+}
+
 float_t THscrollLabel::GetSpeed() const {
   return ((hscroll_label_t*)(this->nativeObj))->speed;
 }
@@ -3387,6 +3420,10 @@ int32_t THscrollLabel::GetTextW() const {
 
 bool THscrollLabel::GetStopAtBegin() const {
   return ((hscroll_label_t*)(this->nativeObj))->stop_at_begin;
+}
+
+int32_t THscrollLabel::GetLoopIntervalDistance() const {
+  return ((hscroll_label_t*)(this->nativeObj))->loop_interval_distance;
 }
 
 TWidget TListItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3483,10 +3520,6 @@ ret_t TScrollBar::AddDelta(int32_t delta) {
   return scroll_bar_add_delta(((widget_t*)(this->nativeObj)), delta);
 }
 
-ret_t TScrollBar::ScrollDelta(int32_t delta) {
-  return scroll_bar_scroll_delta(((widget_t*)(this->nativeObj)), delta);
-}
-
 ret_t TScrollBar::SetValueOnly(int32_t value) {
   return scroll_bar_set_value_only(((widget_t*)(this->nativeObj)), value);
 }
@@ -3511,6 +3544,14 @@ ret_t TScrollBar::ShowByOpacityAnimation(int32_t duration, int32_t delay) {
   return scroll_bar_show_by_opacity_animation(((widget_t*)(this->nativeObj)), duration, delay);
 }
 
+ret_t TScrollBar::SetWheelScroll(bool scroll) {
+  return scroll_bar_set_wheel_scroll(((widget_t*)(this->nativeObj)), scroll);
+}
+
+ret_t TScrollBar::SetScrollDelta(uint32_t scroll_delta) {
+  return scroll_bar_set_scroll_delta(((widget_t*)(this->nativeObj)), scroll_delta);
+}
+
 int32_t TScrollBar::GetVirtualSize() const {
   return ((scroll_bar_t*)(this->nativeObj))->virtual_size;
 }
@@ -3527,12 +3568,20 @@ uint32_t TScrollBar::GetAnimatorTime() const {
   return ((scroll_bar_t*)(this->nativeObj))->animator_time;
 }
 
+uint32_t TScrollBar::GetScrollDelta() const {
+  return ((scroll_bar_t*)(this->nativeObj))->scroll_delta;
+}
+
 bool TScrollBar::GetAnimatable() const {
   return ((scroll_bar_t*)(this->nativeObj))->animatable;
 }
 
 bool TScrollBar::GetAutoHide() const {
   return ((scroll_bar_t*)(this->nativeObj))->auto_hide;
+}
+
+bool TScrollBar::GetWheelScroll() const {
+  return ((scroll_bar_t*)(this->nativeObj))->wheel_scroll;
 }
 
 TWidget TScrollView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -4526,6 +4575,10 @@ char* TEdit::GetSelectedText() {
   return edit_get_selected_text(((widget_t*)(this->nativeObj)));
 }
 
+ret_t TEdit::SetFocusNextWhenEnter(bool focus_next_when_enter) {
+  return edit_set_focus_next_when_enter(((widget_t*)(this->nativeObj)), focus_next_when_enter);
+}
+
 char* TEdit::GetTips() const {
   return ((edit_t*)(this->nativeObj))->tips;
 }
@@ -4588,6 +4641,10 @@ bool TEdit::GetCloseImWhenBlured() const {
 
 bool TEdit::GetCancelable() const {
   return ((edit_t*)(this->nativeObj))->cancelable;
+}
+
+bool TEdit::GetFocusNextWhenEnter() const {
+  return ((edit_t*)(this->nativeObj))->focus_next_when_enter;
 }
 
 TWidget TGridItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
