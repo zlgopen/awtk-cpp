@@ -371,6 +371,10 @@ ret_t TObject::SetPropUint64(const char* name, uint64_t value) {
   return object_set_prop_uint64(((object_t*)(this->nativeObj)), name, value);
 }
 
+ret_t TObject::ClearProps() {
+  return object_clear_props(((object_t*)(this->nativeObj)));
+}
+
 int32_t TObject::GetRefCount() const {
   return ((object_t*)(this->nativeObj))->ref_count;
 }
@@ -481,10 +485,6 @@ bool TValue::IsNull() {
 
 bool TValue::Equal(TValue& other) {
   return value_equal(((const value_t*)(this->nativeObj)), ((const value_t*)(other.nativeObj)));
-}
-
-int TValue::Int() {
-  return value_int(((const value_t*)(this->nativeObj)));
 }
 
 TValue TValue::SetInt(int32_t value) {
@@ -721,6 +721,14 @@ const char* TClipBoard::GetText() {
 
 int32_t TEvent::FromName(const char* name) {
   return event_from_name(name);
+}
+
+ret_t TEvent::RegisterCustomName(int32_t event_type, const char* name) {
+  return event_register_custom_name(event_type, name);
+}
+
+ret_t TEvent::UnregisterCustomName(const char* name) {
+  return event_unregister_custom_name(name);
 }
 
 uint32_t TEvent::GetType() {
@@ -2289,6 +2297,14 @@ const char* TUiLoadEvent::GetName() const {
   return ((ui_load_event_t*)(this->nativeObj))->name;
 }
 
+ret_t TFontManager::SetStandardFontSize(bool is_standard) {
+  return font_manager_set_standard_font_size(((font_manager_t*)(this->nativeObj)), is_standard);
+}
+
+bool TFontManager::GetStandardFontSize() {
+  return font_manager_get_standard_font_size(((font_manager_t*)(this->nativeObj)));
+}
+
 ret_t TFontManager::UnloadFont(const char* name, font_size_t size) {
   return font_manager_unload_font(((font_manager_t*)(this->nativeObj)), name, size);
 }
@@ -2467,6 +2483,10 @@ TWidget TWindowManager::GetTopMainWindow() {
 
 TWidget TWindowManager::GetTopWindow() {
   return TWidget((widget_t*)(window_manager_get_top_window(((widget_t*)(this->nativeObj)))));
+}
+
+TWidget TWindowManager::GetForegroundWindow() {
+  return TWidget((widget_t*)(window_manager_get_foreground_window(((widget_t*)(this->nativeObj)))));
 }
 
 TWidget TWindowManager::GetPrevWindow() {
@@ -3164,6 +3184,14 @@ ret_t TMledit::SetSelect(uint32_t start, uint32_t end) {
 
 char* TMledit::GetSelectedText() {
   return mledit_get_selected_text(((widget_t*)(this->nativeObj)));
+}
+
+uint32_t TMledit::GetCurrentLineIndex() {
+  return mledit_get_current_line_index(((widget_t*)(this->nativeObj)));
+}
+
+uint32_t TMledit::GetCurrentRowIndex() {
+  return mledit_get_current_row_index(((widget_t*)(this->nativeObj)));
 }
 
 ret_t TMledit::InsertText(uint32_t offset, const char* text) {
@@ -4298,6 +4326,27 @@ bool TCmdExecEvent::GetCanExec() const {
   return ((cmd_exec_event_t*)(this->nativeObj))->can_exec;
 }
 
+TNamedValueHash TNamedValueHash::Create() {
+  return TNamedValueHash((named_value_t*)(named_value_hash_create()));
+}
+
+ret_t TNamedValueHash::SetName(const char* name) {
+  return named_value_hash_set_name(((named_value_hash_t*)(this->nativeObj)), name);
+}
+
+ret_t TNamedValueHash::Destroy() {
+  return named_value_hash_destroy(((named_value_hash_t*)(this->nativeObj)));
+}
+
+TNamedValueHash TNamedValueHash::Clone() {
+  return TNamedValueHash(
+      (named_value_t*)(named_value_hash_clone(((named_value_hash_t*)(this->nativeObj)))));
+}
+
+uint64_t TNamedValueHash::GetHashFromStr(const char* str) {
+  return named_value_hash_get_hash_from_str(str);
+}
+
 TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -4359,6 +4408,14 @@ TWidget TCheckButton::CreateRadio(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t 
 
 ret_t TCheckButton::SetValue(bool value) {
   return check_button_set_value(((widget_t*)(this->nativeObj)), value);
+}
+
+ret_t TCheckButton::SetIndeterminate(bool indeterminate) {
+  return check_button_set_indeterminate(((widget_t*)(this->nativeObj)), indeterminate);
+}
+
+bool TCheckButton::GetIndeterminate() {
+  return check_button_get_indeterminate(((widget_t*)(this->nativeObj)));
 }
 
 TWidget TCheckButton::CreateEx(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h, const char* type,
@@ -4856,6 +4913,10 @@ ret_t TSlider::SetVertical(bool vertical) {
   return slider_set_vertical(((widget_t*)(this->nativeObj)), vertical);
 }
 
+ret_t TSlider::SetDragThreshold(uint32_t drag_threshold) {
+  return slider_set_drag_threshold(((widget_t*)(this->nativeObj)), drag_threshold);
+}
+
 double TSlider::GetValue() const {
   return ((slider_t*)(this->nativeObj))->value;
 }
@@ -4896,6 +4957,10 @@ bool TSlider::GetSlideWithBar() const {
   return ((slider_t*)(this->nativeObj))->slide_with_bar;
 }
 
+uint32_t TSlider::GetDragThreshold() const {
+  return ((slider_t*)(this->nativeObj))->drag_threshold;
+}
+
 TWidget TTabButtonGroup::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TTabButtonGroup(
       (widget_t*)(tab_button_group_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
@@ -4909,12 +4974,20 @@ ret_t TTabButtonGroup::SetScrollable(bool scrollable) {
   return tab_button_group_set_scrollable(((widget_t*)(this->nativeObj)), scrollable);
 }
 
+ret_t TTabButtonGroup::SetDragChild(bool drag_child) {
+  return tab_button_group_set_drag_child(((widget_t*)(this->nativeObj)), drag_child);
+}
+
 bool TTabButtonGroup::GetCompact() const {
   return ((tab_button_group_t*)(this->nativeObj))->compact;
 }
 
 bool TTabButtonGroup::GetScrollable() const {
   return ((tab_button_group_t*)(this->nativeObj))->scrollable;
+}
+
+bool TTabButtonGroup::GetDragChild() const {
+  return ((tab_button_group_t*)(this->nativeObj))->drag_child;
 }
 
 TWidget TTabButton::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -4931,6 +5004,14 @@ ret_t TTabButton::SetIcon(const char* name) {
 
 ret_t TTabButton::SetActiveIcon(const char* name) {
   return tab_button_set_active_icon(((widget_t*)(this->nativeObj)), name);
+}
+
+ret_t TTabButton::SetMaxW(int32_t max_w) {
+  return tab_button_set_max_w(((widget_t*)(this->nativeObj)), max_w);
+}
+
+ret_t TTabButton::Restack(uint32_t index) {
+  return tab_button_restack(((widget_t*)(this->nativeObj)), index);
 }
 
 ret_t TTabButton::SetLoadUi(const char* name) {
@@ -4951,6 +5032,10 @@ char* TTabButton::GetActiveIcon() const {
 
 char* TTabButton::GetIcon() const {
   return ((tab_button_t*)(this->nativeObj))->icon;
+}
+
+int32_t TTabButton::GetMaxW() const {
+  return ((tab_button_t*)(this->nativeObj))->max_w;
 }
 
 TWidget TTabControl::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -5251,6 +5336,23 @@ ret_t TObjectDefault::ClearProps() {
 
 ret_t TObjectDefault::SetKeepPropType(bool keep_prop_type) {
   return object_default_set_keep_prop_type(((object_t*)(this->nativeObj)), keep_prop_type);
+}
+
+ret_t TObjectDefault::SetNameCaseInsensitive(bool name_case_insensitive) {
+  return object_default_set_name_case_insensitive(((object_t*)(this->nativeObj)),
+                                                  name_case_insensitive);
+}
+
+TObject TObjectHash::Create() {
+  return TObjectHash((emitter_t*)(object_hash_create()));
+}
+
+TObject TObjectHash::CreateEx(bool enable_path) {
+  return TObjectHash((emitter_t*)(object_hash_create_ex(enable_path)));
+}
+
+ret_t TObjectHash::SetKeepPropType(bool keep_prop_type) {
+  return object_hash_set_keep_prop_type(((object_t*)(this->nativeObj)), keep_prop_type);
 }
 
 void* TTimerInfo::GetCtx() const {

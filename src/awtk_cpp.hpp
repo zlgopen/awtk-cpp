@@ -1069,6 +1069,14 @@ class TObject : public TEmitter {
   ret_t SetPropUint64(const char* name, uint64_t value);
 
   /**
+   * 清除全部属性。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t ClearProps();
+
+  /**
    * 引用计数。
    *
    */
@@ -1338,14 +1346,6 @@ class TValue {
    * @return 为空值返回TRUE，否则返回FALSE。
    */
   bool Equal(TValue& other);
-
-  /**
-   * 转换为int的值。
-   * 
-   *
-   * @return 值。
-   */
-  int Int();
 
   /**
    * 设置类型为int的值。
@@ -1992,13 +1992,32 @@ class TEvent {
   }
 
   /**
-   * 将事件名转换成事件的值。
+   * 将事件名转换成事件的类型。
    * 
    * @param name 事件名。
    *
-   * @return 返回事件的值。
+   * @return 返回事件的类型。
    */
   static int32_t FromName(const char* name);
+
+  /**
+   * 给事件注册名称。
+   * 
+   * @param event_type 事件类型。
+   * @param name 事件名。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t RegisterCustomName(int32_t event_type, const char* name);
+
+  /**
+   * 注销事件名称。
+   * 
+   * @param name 事件名。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t UnregisterCustomName(const char* name);
 
   /**
    * 获取event类型。
@@ -2799,8 +2818,8 @@ class TVgcanvas {
    * @param x 原点x坐标。
    * @param y 原点y坐标。
    * @param r 半径。
-   * @param start_angle 起始角度。
-   * @param end_angle 结束角度。
+   * @param start_angle 起始角度（单位：弧度）。
+   * @param end_angle 结束角度（单位：弧度）。
    * @param ccw 是否逆时针。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
@@ -2878,7 +2897,7 @@ class TVgcanvas {
   /**
    * 旋转。
    * 
-   * @param rad 旋转角度(单位弧度)
+   * @param rad 旋转角度(单位：弧度)
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -6548,6 +6567,23 @@ class TFontManager : public TEmitter {
   }
 
   /**
+   * 设置是否使用标准字号
+   * 
+   * @param is_standard 是否使用标准字号
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetStandardFontSize(bool is_standard);
+
+  /**
+   * 获取是否使用标准字号
+   * 
+   *
+   * @return 返回TRUE表示使用标准字号，否则表示不是。
+   */
+  bool GetStandardFontSize();
+
+  /**
    * 卸载指定的字体。
    * 
    * @param name 字体名，为NULL时使用缺省字体。
@@ -7048,6 +7084,14 @@ class TWindowManager : public TWidget {
    * @return 返回窗口对象。
    */
   TWidget GetTopWindow();
+
+  /**
+   * 获取前景窗口。
+   * 
+   *
+   * @return 返回窗口对象。
+   */
+  TWidget GetForegroundWindow();
 
   /**
    * 获取前一个的窗口。
@@ -9304,6 +9348,22 @@ class TMledit : public TWidget {
   char* GetSelectedText();
 
   /**
+   * 获取光标所在视觉行号(一行文本可能分多行显示)。
+   * 
+   *
+   * @return 返回光标所在行号。
+   */
+  uint32_t GetCurrentLineIndex();
+
+  /**
+   * 获取光标所在物理行号。
+   * 
+   *
+   * @return 返回光标所在行号。
+   */
+  uint32_t GetCurrentRowIndex();
+
+  /**
    * 插入一段文本。
    * 
    * @param offset 插入的偏移位置。
@@ -10277,10 +10337,10 @@ class TListViewH : public TWidget {
  *备注：list_view 下的 scroll_view 控件不支持遍历所有子控件的效果。
  *
  *下面是针对 scroll_bar_d （桌面版）有效果，scroll_bar_m（移动版）没有效果。
- *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 TRUE，scroll_view 宽默认为 list_view 的 100% 宽，鼠标在 list_view 上滚动条才显示，不在的就自动隐藏，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽不会变。
- *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 FALSE ，scroll_view 宽默认为 list_view 的 100% 宽，滚动条不隐藏，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽不会变。
- *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 FALSE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可用，scroll_view 宽不会变。
- *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 TRUE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽会合并原来滚动条的宽。
+ *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 TRUE， 如果 scroll_view 的高比虚拟高要小的话，鼠标在 list_view 上滚动条才显示，鼠标移开的就自动隐藏，scroll_view 宽为控件宽度。
+ *如果 floating_scroll_bar 属性为 TRUE 和 auto_hide_scroll_bar 属性为 FALSE ，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，如果 scroll_view 的高比虚拟高要小的话，滚动条固定显示（不管鼠标是否悬停），scroll_view 宽为控件宽度。
+ *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 FALSE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可用（滚动条固定显示，不管鼠标是否悬停），scroll_view 宽不会变。
+ *如果 floating_scroll_bar 属性为 FALSE 和 auto_hide_scroll_bar 属性为 TRUE，如果 scroll_view 的高比虚拟高要大的话，滚动条变成不可见，scroll_view 宽会合并原来滚动条的宽，如果 scroll_view 的高比虚拟高要小的话，滚动条固定显示（不管鼠标是否悬停），scroll_view 宽会变为 list_view 宽度减去滚动条宽度。
  *
  */
 class TListView : public TWidget {
@@ -12934,6 +12994,81 @@ class TLogMessageEvent : public TEvent {
 };
 
 /**
+ * 带有散列值的命名的值。
+ *
+ */
+class TNamedValueHash : public TNamedValue {
+ public:
+  TNamedValueHash(named_value_t* nativeObj) : TNamedValue(nativeObj) {
+  }
+
+  TNamedValueHash() {
+    this->nativeObj = (named_value_t*)NULL;
+  }
+
+  TNamedValueHash(const named_value_hash_t* nativeObj) : TNamedValue((named_value_t*)nativeObj) {
+  }
+
+  static TNamedValueHash Cast(named_value_t* nativeObj) {
+    return TNamedValueHash(nativeObj);
+  }
+
+  static TNamedValueHash Cast(const named_value_t* nativeObj) {
+    return TNamedValueHash((named_value_t*)nativeObj);
+  }
+
+  static TNamedValueHash Cast(TNamedValue& obj) {
+    return TNamedValueHash(obj.nativeObj);
+  }
+
+  static TNamedValueHash Cast(const TNamedValue& obj) {
+    return TNamedValueHash(obj.nativeObj);
+  }
+
+  /**
+   * 创建named_value_hash对象。
+   * 
+   *
+   * @return 返回named_value_hash对象。
+   */
+  static TNamedValueHash Create();
+
+  /**
+   * 设置散列值。
+   * 
+   * @param name 名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetName(const char* name);
+
+  /**
+   * 销毁named_value_hash对象。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Destroy();
+
+  /**
+   * 克隆named_value_hash对象。
+   * 
+   *
+   * @return 返回named_value_hash对象。
+   */
+  TNamedValueHash Clone();
+
+  /**
+   * 获取字符串散列值。
+   * 
+   * @param str 字符串。
+   *
+   * @return 返回散列值。
+   */
+  static uint64_t GetHashFromStr(const char* str);
+};
+
+/**
  * app_bar控件。
  *
  *一个简单的容器控件，一般在窗口的顶部，用于显示本窗口的状态和信息。
@@ -13345,6 +13480,23 @@ class TCheckButton : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetValue(bool value);
+
+  /**
+   * 设置控件的不确定状态。
+   * 
+   * @param indeterminate 不确定状态。（该值为TRUE的话，value 值存于不确定状态，该值为FALSE的话，value 值存于确定状态）
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetIndeterminate(bool indeterminate);
+
+  /**
+   * 获取控件的是否存于不确定状态。
+   * 
+   *
+   * @return 返回控件的是否存于不确定状态。
+   */
+  bool GetIndeterminate();
 
   /**
    * 创建check button对象
@@ -15438,6 +15590,15 @@ class TSlider : public TWidget {
   ret_t SetVertical(bool vertical);
 
   /**
+   * 设置拖拽临界值。
+   * 
+   * @param drag_threshold 拖拽临界值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDragThreshold(uint32_t drag_threshold);
+
+  /**
    * 值。
    *
    */
@@ -15496,6 +15657,12 @@ class TSlider : public TWidget {
    *
    */
   bool GetSlideWithBar() const;
+
+  /**
+   * 拖动临界值。
+   *
+   */
+  uint32_t GetDragThreshold() const;
 };
 
 /**
@@ -15590,6 +15757,15 @@ class TTabButtonGroup : public TWidget {
   ret_t SetScrollable(bool scrollable);
 
   /**
+   * 设置拖拽 tab_button 控件位置。
+   * 
+   * @param drag_child 是否拖拽(缺省FALSE)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetDragChild(bool drag_child);
+
+  /**
    * 紧凑型排版子控件(缺省FALSE)。
    *
    */
@@ -15602,6 +15778,14 @@ class TTabButtonGroup : public TWidget {
    *
    */
   bool GetScrollable() const;
+
+  /**
+   * 是否支持拖拽并且修改 tab_button 控件的位置(缺省FALSE)。
+   *
+   *> 紧凑型排版子控件时才支持滚动，开启该功能后，就不能拖拽滚动了，只能鼠标滚轮滚动了。
+   *
+   */
+  bool GetDragChild() const;
 };
 
 /**
@@ -15734,6 +15918,24 @@ class TTabButton : public TWidget {
   ret_t SetActiveIcon(const char* name);
 
   /**
+   * 设置控件的最大宽度。
+   * 
+   * @param max_w 最大宽度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMaxW(int32_t max_w);
+
+  /**
+   * 调整控件在父控件中的位置序数。
+   * 
+   * @param index 位置序数(大于等于总个数，则放到最后)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Restack(uint32_t index);
+
+  /**
    * 设置控件动态加载显示UI。
    * 
    * @param name 动态加载UI的资源名称。
@@ -15765,6 +15967,12 @@ class TTabButton : public TWidget {
    *
    */
   char* GetIcon() const;
+
+  /**
+   * 最大宽度。（缺省值为-1，小于 0 则最大宽度无效）
+   *
+   */
+  int32_t GetMaxW() const;
 };
 
 /**
@@ -17284,6 +17492,80 @@ class TObjectDefault : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t ClearProps();
+
+  /**
+   * 设置属性值时不改变属性的类型。
+   * 
+   * @param keep_prop_type 不改变属性的类型。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetKeepPropType(bool keep_prop_type);
+
+  /**
+   * 设置属性名是否大小写不敏感。
+   * 
+   * @param name_case_insensitive 属性名是否大小写不敏感。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetNameCaseInsensitive(bool name_case_insensitive);
+};
+
+/**
+ * 对象接口的散列值查询属性的object实现。
+ *
+ *通用当作 map 数据结构使用，内部用有序数组保存所有属性，因此可以快速查找指定名称的属性。
+ *
+ *示例
+ *
+ *
+ *
+ */
+class TObjectHash : public TObject {
+ public:
+  TObjectHash(emitter_t* nativeObj) : TObject(nativeObj) {
+  }
+
+  TObjectHash() {
+    this->nativeObj = (emitter_t*)NULL;
+  }
+
+  TObjectHash(const object_hash_t* nativeObj) : TObject((emitter_t*)nativeObj) {
+  }
+
+  static TObjectHash Cast(emitter_t* nativeObj) {
+    return TObjectHash(nativeObj);
+  }
+
+  static TObjectHash Cast(const emitter_t* nativeObj) {
+    return TObjectHash((emitter_t*)nativeObj);
+  }
+
+  static TObjectHash Cast(TEmitter& obj) {
+    return TObjectHash(obj.nativeObj);
+  }
+
+  static TObjectHash Cast(const TEmitter& obj) {
+    return TObjectHash(obj.nativeObj);
+  }
+
+  /**
+   * 创建对象。
+   * 
+   *
+   * @return 返回object对象。
+   */
+  static TObject Create();
+
+  /**
+   * 创建对象。
+   * 
+   * @param enable_path 是否支持按路径访问属性。
+   *
+   * @return 返回object对象。
+   */
+  static TObject CreateEx(bool enable_path);
 
   /**
    * 设置属性值时不改变属性的类型。
