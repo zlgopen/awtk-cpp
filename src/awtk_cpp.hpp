@@ -535,7 +535,7 @@ class TObject : public TEmitter {
    *
    * @return 返回比较结果。
    */
-  int Compare(TObject& other);
+  int32_t Compare(TObject& other);
 
   /**
    * 获取指定属性的值。
@@ -2105,15 +2105,6 @@ class TIdle {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Remove(uint32_t idle_id);
-
-  /**
-   * 根据上下文删除所有对应的idle。
-   * 
-   * @param ctx idle回调函数的上下文
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  static ret_t RemoveAllByCtx(void* ctx);
 };
 
 /**
@@ -2642,15 +2633,6 @@ class TTimer {
   static ret_t Remove(uint32_t timer_id);
 
   /**
-   * 根据上下文删除所有对应的timer。
-   * 
-   * @param ctx timer回调函数的上下文。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  static ret_t RemoveAllByCtx(void* ctx);
-
-  /**
    * 重置指定的timer，重置之后定时器重新开始计时。
    * 
    * @param timer_id timerID。
@@ -2884,15 +2866,13 @@ class TVgcanvas {
   ret_t ClosePath();
 
   /**
-   * 设置路径填充实心与否。
-   *
-   *>CCW(1)为实心，CW(2)为镂空，设置其他则默认根据非零环绕规则判断(nonzero)。
+   * 设置填充规则。
    * 
-   * @param dir 填充方法。
+   * @param fill_mode 填充规则。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
-  ret_t PathWinding(bool dir);
+  ret_t SetFillMode(vgcanvas_fill_mode_t fill_mode);
 
   /**
    * 旋转。
@@ -2962,6 +2942,18 @@ class TVgcanvas {
 
   /**
    * 矩形裁剪。
+   *备注：
+   *1. 在绘图的时候脏矩形和裁剪区是一样的。
+   *2. 该函数是不合并裁剪区的，所有可能出现裁剪区被扩大导致绘图在脏矩形以外的情况，导致残影的情况。
+   *3. 该函数不支持旋转后调用，会导致裁剪区异常。
+   *........
+   *rect_t r;
+   *rect_t r_save;
+   *r = rectf_init(c->ox, c->oy, widget->w, widget->h);
+   *r_save = *vgcanvas_get_clip_rect(vg);
+   *r = rectf_intersect(&r, &r_save);
+   *vgcanvas_clip_rect(vg, (float_t)r.x, (float_t)r.y, (float_t)r.w, (float_t)r.h);
+   *........
    * 
    * @param x x坐标。
    * @param y y坐标。
@@ -2986,9 +2978,11 @@ class TVgcanvas {
 
   /**
    * 设置一个与前一个裁剪区做交集的矩形裁剪区。
-   *如果下面这种情况，则不能直接调用 rect_intersect 函数来做矩形交集和 vgcanvas_clip_rect 函数设置裁剪区，而采用本函数做交集。
+   *备注：
+   *1. 如果下面这种情况，则不能直接调用 rect_intersect 函数来做矩形交集和 vgcanvas_clip_rect 函数设置裁剪区，而采用本函数做交集。
    *由于缩放和旋转以及平移会导致 vg 的坐标系和上一个裁剪区的坐标系不同，
    *导致直接使用做交集的话，裁剪区会出错。
+   *2. 该函数不支持旋转后调用，会导致裁剪区异常。
    *
    *```
    *vgcanvas_clip_rect(vg, old_r.x, old_r.y, old_r.w, old_r.h);
@@ -3097,14 +3091,14 @@ class TVgcanvas {
    * 绘制图片。
    * 
    * @param img 图片。
-   * @param sx sx
-   * @param sy sy
-   * @param sw sw
-   * @param sh sh
-   * @param dx dx
-   * @param dy dy
-   * @param dw dw
-   * @param dh dh
+   * @param sx 原图区域的 x
+   * @param sy 原图区域的 y
+   * @param sw 原图区域的 w
+   * @param sh 原图区域的 h
+   * @param dx 绘制区域的 x
+   * @param dy 绘制区域的 y
+   * @param dw 绘制区域的 w
+   * @param dh 绘制区域的 h
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -3141,14 +3135,14 @@ class TVgcanvas {
    *绘制图标时会根据屏幕密度进行自动缩放，而绘制普通图片时不会。
    * 
    * @param img 图片。
-   * @param sx sx
-   * @param sy sy
-   * @param sw sw
-   * @param sh sh
-   * @param dx dx
-   * @param dy dy
-   * @param dw dw
-   * @param dh dh
+   * @param sx 原图区域的 x
+   * @param sy 原图区域的 y
+   * @param sw 原图区域的 w
+   * @param sh 原图区域的 h
+   * @param dx 绘制区域的 x
+   * @param dy 绘制区域的 y
+   * @param dw 绘制区域的 w
+   * @param dh 绘制区域的 h
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -3994,6 +3988,24 @@ class TWidget {
   ret_t SetState(const char* state);
 
   /**
+   * 标识是否将当前控件状态同步到子控件中。
+   * 
+   * @param sync_state_to_children 是否将当前控件状态同步到子控件中。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSyncStateToChildren(bool sync_state_to_children);
+
+  /**
+   * 标识是否接收父控件的状态同步。
+   * 
+   * @param state_from_parent_sync 是否接收父控件的状态同步。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetStateFromParentSync(bool state_from_parent_sync);
+
+  /**
    * 设置控件的不透明度。
    *
    *>在嵌入式平台，半透明效果会使性能大幅下降，请谨慎使用。
@@ -4640,7 +4652,7 @@ class TWidget {
   ret_t SetChildrenLayout(const char* params);
 
   /**
-   * 设置控件自己的布局(缺省布局器)参数(过时，请用widget\_set\_self\_layout)。
+   * 设置控件自己的布局(缺省布局器)参数(建议用widget\_set\_self\_layout)。
    *备注：下一帧才会生效数据
    * 
    * @param x x参数。
@@ -4800,7 +4812,7 @@ class TWidget {
    * 是否根据子控件和文本自动调整控件自身大小。
    *
    *> 为true时，最好不要使用 layout 的相关东西，否则可能有冲突。
-   *> 注意：只是调整控件的本身的宽高，不会修改控件本身的位置。
+   *> 注意：只是调整控件的本身的宽高，不会修改控件本身的位置，仅部分控件实现该效果。
    *
    */
   bool GetAutoAdjustSize() const;
@@ -4810,6 +4822,18 @@ class TWidget {
    *
    */
   bool GetFloating() const;
+
+  /**
+   * 标识是否将当前控件状态同步到子控件中。
+   *
+   */
+  bool GetSyncStateToChildren() const;
+
+  /**
+   * 标识是否接收父控件的状态同步。
+   *
+   */
+  bool GetStateFromParentSync() const;
 
   /**
    * 不透明度(0-255)，0完全透明，255完全不透明。
@@ -5475,84 +5499,6 @@ class TIdleManager {
 };
 
 /**
- * 命名的值。
- *
- */
-class TNamedValue {
- public:
-  //nativeObj is public for internal use only.
-  named_value_t* nativeObj;
-
-  TNamedValue(named_value_t* nativeObj) {
-    this->nativeObj = nativeObj;
-  }
-
-  TNamedValue() {
-    this->nativeObj = (named_value_t*)NULL;
-  }
-
-  TNamedValue(const named_value_t* nativeObj) {
-    this->nativeObj = (named_value_t*)nativeObj;
-  }
-
-  static TNamedValue Cast(named_value_t* nativeObj) {
-    return TNamedValue(nativeObj);
-  }
-
-  static TNamedValue Cast(const named_value_t* nativeObj) {
-    return TNamedValue((named_value_t*)nativeObj);
-  }
-
-  /**
-   * 创建named_value对象。
-   * 
-   *
-   * @return 返回named_value对象。
-   */
-  static TNamedValue Create();
-
-  /**
-   * 设置名称。
-   * 
-   * @param name 名称。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetName(const char* name);
-
-  /**
-   * 设置值。
-   * 
-   * @param value 值。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetValue(TValue& value);
-
-  /**
-   * 获取值对象(主要给脚本语言使用)。
-   * 
-   *
-   * @return 返回值对象。
-   */
-  TValue GetValue();
-
-  /**
-   * 销毁named_value对象。
-   * 
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t Destroy();
-
-  /**
-   * 名称。
-   *
-   */
-  char* GetName() const;
-};
-
-/**
  * 循环记录日志(支持多线程访问)。
  *如果我们把日志写入文件中，随着时间的推移，日志文件会越来越大，最终占满这个磁盘，出现不可预料的错误。
  *rlog提供一个循环记录日志的功能，让日志文件始终不会超出指定的大小，达到指定大小后再从头开始写。
@@ -6117,6 +6063,12 @@ class TPointerEvent : public TEvent {
    *
    */
   bool GetShift() const;
+
+  /**
+   * 触摸ID。
+   *
+   */
+  int32_t GetFingerId() const;
 };
 
 /**
@@ -6489,6 +6441,69 @@ class TSystemEvent : public TEvent {
 };
 
 /**
+ * 多点触摸事件(目前主要对接 SDL_TouchFingerEvent(SDL_FINGERMOTION/SDL_FINGERDOWN/SDL_FINGERUP))。
+ *
+ */
+class TTouchEvent : public TEvent {
+ public:
+  TTouchEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TTouchEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TTouchEvent(const touch_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TTouchEvent Cast(event_t* nativeObj) {
+    return TTouchEvent(nativeObj);
+  }
+
+  static TTouchEvent Cast(const event_t* nativeObj) {
+    return TTouchEvent((event_t*)nativeObj);
+  }
+
+  static TTouchEvent Cast(TEvent& obj) {
+    return TTouchEvent(obj.nativeObj);
+  }
+
+  static TTouchEvent Cast(const TEvent& obj) {
+    return TTouchEvent(obj.nativeObj);
+  }
+
+  /**
+   * 触摸ID。
+   *
+   */
+  int64_t GetTouchId() const;
+
+  /**
+   * 手指ID。
+   *
+   */
+  int64_t GetFingerId() const;
+
+  /**
+   * x坐标(在 0-1 之间，表示与屏幕宽度的比例）。
+   *
+   */
+  float GetX() const;
+
+  /**
+   * y坐标(在 0-1 之间，表示与屏幕高度的比例）。
+   *
+   */
+  float GetY() const;
+
+  /**
+   * 压力。
+   *
+   */
+  float GetPressure() const;
+};
+
+/**
  * UI加载完成事件。
  *
  */
@@ -6780,6 +6795,43 @@ class TImageBase : public TWidget {
 };
 
 /**
+ * 本地化信息。
+ *locale_info_t 的子类。
+ *提供从 xml 文件中获取本地化信息的功能。
+ *
+ *注意：fallback_tr2 回调已被设置用于从xml文件中获取本地化信息，不可再重复设置，否则将导致功能失效！
+ *
+ */
+class TLocaleInfoXml : public TLocaleInfo {
+ public:
+  TLocaleInfoXml(locale_info_t* nativeObj) : TLocaleInfo(nativeObj) {
+  }
+
+  TLocaleInfoXml() {
+    this->nativeObj = (locale_info_t*)NULL;
+  }
+
+  TLocaleInfoXml(const locale_info_xml_t* nativeObj) : TLocaleInfo((locale_info_t*)nativeObj) {
+  }
+
+  static TLocaleInfoXml Cast(locale_info_t* nativeObj) {
+    return TLocaleInfoXml(nativeObj);
+  }
+
+  static TLocaleInfoXml Cast(const locale_info_t* nativeObj) {
+    return TLocaleInfoXml((locale_info_t*)nativeObj);
+  }
+
+  static TLocaleInfoXml Cast(TLocaleInfo& obj) {
+    return TLocaleInfoXml(obj.nativeObj);
+  }
+
+  static TLocaleInfoXml Cast(const TLocaleInfo& obj) {
+    return TLocaleInfoXml(obj.nativeObj);
+  }
+};
+
+/**
  * 可变的style(可实时修改并生效，主要用于在designer中被编辑的控件，或者一些特殊控件)。
  *
  *style\_mutable也对style\_const进行了包装，当用户没修改某个值时，便从style\_const中获取。
@@ -7015,6 +7067,18 @@ class TWindowBase : public TWidget {
    *
    */
   char* GetMoveFocusRightKey() const;
+
+  /**
+   * 窗口中按下 Enter 按钮默认触发单击 button 控件名字
+   *
+   */
+  char* GetAcceptButton() const;
+
+  /**
+   * 窗口中按下 Esc 按钮默认触发单击 button 控件名字
+   *
+   */
+  char* GetCancelButton() const;
 
   /**
    * 小应用程序(applet)的名称。
@@ -8849,6 +8913,15 @@ class TCandidates : public TWidget {
   ret_t SetAutoHide(bool auto_hide);
 
   /**
+   * 设置可见候选词个数。
+   * 
+   * @param visible_num 可见个数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetVisibleNum(uint32_t visible_num);
+
+  /**
    * 设置按钮的style名称。
    * 
    * @param button_style 按钮的style名称。
@@ -8867,7 +8940,7 @@ class TCandidates : public TWidget {
   bool GetPre() const;
 
   /**
-   * 是否启用用数字选择候选字。比如按下1选择第1个候选字，按下2选择第2个候选字。
+   * 是否启用用数字选择候选字。比如按下1选择第1个候选字，按下2选择第2个候选字。(需在keyboard中设置grab_keys="true"方可生效)
    *
    */
   bool GetSelectByNum() const;
@@ -8889,6 +8962,12 @@ class TCandidates : public TWidget {
    *
    */
   bool GetEnablePreview() const;
+
+  /**
+   * 候选字可见个数。
+   *
+   */
+  uint32_t GetVisibleNum() const;
 };
 
 /**
@@ -9290,15 +9369,6 @@ class TMledit : public TWidget {
   uint32_t GetCursor();
 
   /**
-   * 设置编辑器滚动速度。
-   * 
-   * @param scroll_line 滚动行数。
-   *
-   * @return 返回RET_OK表示成功，否则表示失败。
-   */
-  ret_t SetScrollLine(uint32_t scroll_line);
-
-  /**
    * 设置编辑器滚动到指定偏移位置。
    * 
    * @param offset 偏移位置。
@@ -9404,12 +9474,6 @@ class TMledit : public TWidget {
   uint32_t GetMaxChars() const;
 
   /**
-   * 鼠标一次滚动行数。
-   *
-   */
-  uint32_t GetScrollLine() const;
-
-  /**
    * 是否启用覆盖行。
    *
    */
@@ -9449,6 +9513,18 @@ class TMledit : public TWidget {
    *
    */
   bool GetCloseImWhenBlured() const;
+
+  /**
+   * 是否支持 Enter 按钮输入。
+   *
+   */
+  bool GetAcceptReturn() const;
+
+  /**
+   * 是否支持 Tab 按钮输入。
+   *
+   */
+  bool GetAcceptTab() const;
 };
 
 /**
@@ -9822,7 +9898,7 @@ class TRichText : public TWidget {
   uint32_t GetLineGap() const;
 
   /**
-   * 标识控件是否允许上下拖动。
+   * 标识控件是否允许上下拖动。(需满足文字的高度大于控件的高度)
    *
    */
   bool GetYslidable() const;
@@ -10451,12 +10527,16 @@ class TListView : public TWidget {
    *
    */
   bool GetFloatingScrollBar() const;
+
+  /**
+   * 列表项的宽度。如果 item_width 0，所有列表项使用该宽度，否则使用让列表项的宽度等于scroll_view的宽度。
+   *
+   */
+  int32_t GetItemWidth() const;
 };
 
 /**
  * 滚动条控件。
- *
- *> 目前只支持垂直滚动。
  *
  *scroll\_bar\_t是[widget\_t](widget_t.md)的子类控件，widget\_t的函数均适用于scroll\_bar\_t控件。
  *
@@ -10814,6 +10894,14 @@ class TScrollView : public TWidget {
   ret_t SetVirtualH(wh_t h);
 
   /**
+   * 修复偏移量。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t FixOffset();
+
+  /**
    * 设置是否允许x方向滑动。
    * 
    * @param xslidable 是否允许滑动。
@@ -10980,7 +11068,7 @@ class TScrollView : public TWidget {
   bool GetMoveToPage() const;
 
   /**
-   * 是否递归查找全部子控件。
+   * 是否递归查找全部子控件。(当scroll_view的父控件是list_view_h或list_view时无效)
    *
    */
   bool GetRecursive() const;
@@ -11557,7 +11645,7 @@ class TSlideIndicator : public TWidget {
   uint32_t GetValue() const;
 
   /**
-   * 最大值(缺省为100)。
+   * 最大值(缺省为3)。
    *
    */
   uint32_t GetMax() const;
@@ -11593,13 +11681,13 @@ class TSlideIndicator : public TWidget {
   uint32_t GetSize() const;
 
   /**
-   * 锚点x坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
+   * 锚点x坐标。(后面加上px为像素点，不加px为相对百分取值范围为0.0f到1.0f)
    *
    */
   char* GetAnchorX() const;
 
   /**
-   * 锚点y坐标。(后面加上px为像素点，不加px为相对百分比坐标0.0f到1.0f)
+   * 锚点y坐标。(后面加上px为像素点，不加px为相对百分取值范围为0.0f到1.0f)
    *
    */
   char* GetAnchorY() const;
@@ -11926,7 +12014,7 @@ class TSwitch : public TWidget {
   bool GetValue() const;
 
   /**
-   * 当开关处于关闭时，图片偏移相对于图片宽度的比例(缺省为1/3)。
+   * 主要用于当开关处于关闭时，图片偏移相对于图片宽度的比例(缺省为1/3)。
    *
    */
   float_t GetMaxXoffsetRatio() const;
@@ -12994,47 +13082,47 @@ class TLogMessageEvent : public TEvent {
 };
 
 /**
- * 带有散列值的命名的值。
+ * 命名的值。
  *
  */
-class TNamedValueHash : public TNamedValue {
+class TNamedValue : public TValue {
  public:
-  TNamedValueHash(named_value_t* nativeObj) : TNamedValue(nativeObj) {
+  TNamedValue(value_t* nativeObj) : TValue(nativeObj) {
   }
 
-  TNamedValueHash() {
-    this->nativeObj = (named_value_t*)NULL;
+  TNamedValue() {
+    this->nativeObj = (value_t*)NULL;
   }
 
-  TNamedValueHash(const named_value_hash_t* nativeObj) : TNamedValue((named_value_t*)nativeObj) {
+  TNamedValue(const named_value_t* nativeObj) : TValue((value_t*)nativeObj) {
   }
 
-  static TNamedValueHash Cast(named_value_t* nativeObj) {
-    return TNamedValueHash(nativeObj);
+  static TNamedValue Cast(value_t* nativeObj) {
+    return TNamedValue(nativeObj);
   }
 
-  static TNamedValueHash Cast(const named_value_t* nativeObj) {
-    return TNamedValueHash((named_value_t*)nativeObj);
+  static TNamedValue Cast(const value_t* nativeObj) {
+    return TNamedValue((value_t*)nativeObj);
   }
 
-  static TNamedValueHash Cast(TNamedValue& obj) {
-    return TNamedValueHash(obj.nativeObj);
+  static TNamedValue Cast(TValue& obj) {
+    return TNamedValue(obj.nativeObj);
   }
 
-  static TNamedValueHash Cast(const TNamedValue& obj) {
-    return TNamedValueHash(obj.nativeObj);
+  static TNamedValue Cast(const TValue& obj) {
+    return TNamedValue(obj.nativeObj);
   }
 
   /**
-   * 创建named_value_hash对象。
+   * 创建named_value对象。
    * 
    *
-   * @return 返回named_value_hash对象。
+   * @return 返回named_value对象。
    */
-  static TNamedValueHash Create();
+  static TNamedValue Create();
 
   /**
-   * 设置散列值。
+   * 设置名称。
    * 
    * @param name 名称。
    *
@@ -13043,7 +13131,24 @@ class TNamedValueHash : public TNamedValue {
   ret_t SetName(const char* name);
 
   /**
-   * 销毁named_value_hash对象。
+   * 设置值。
+   * 
+   * @param value 值。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetValue(TValue& value);
+
+  /**
+   * 获取值对象(主要给脚本语言使用)。
+   * 
+   *
+   * @return 返回值对象。
+   */
+  TValue GetValue();
+
+  /**
+   * 销毁named_value对象。
    * 
    *
    * @return 返回RET_OK表示成功，否则表示失败。
@@ -13051,21 +13156,10 @@ class TNamedValueHash : public TNamedValue {
   ret_t Destroy();
 
   /**
-   * 克隆named_value_hash对象。
-   * 
+   * 名称。
    *
-   * @return 返回named_value_hash对象。
    */
-  TNamedValueHash Clone();
-
-  /**
-   * 获取字符串散列值。
-   * 
-   * @param str 字符串。
-   *
-   * @return 返回散列值。
-   */
-  static uint64_t GetHashFromStr(const char* str);
+  char* GetName() const;
 };
 
 /**
@@ -13357,16 +13451,22 @@ class TButton : public TWidget {
   bool GetEnablePreview() const;
 
   /**
-   * 触发长按事件的时间(毫秒)
+   * 是否为 accept 状态
    *
    */
-  uint32_t GetLongPressTime() const;
+  bool GetIsAcceptStatus() const;
 
   /**
    * 当前是否按下。
    *
    */
   bool GetPressed() const;
+
+  /**
+   * 触发长按事件的时间(毫秒)
+   *
+   */
+  uint32_t GetLongPressTime() const;
 };
 
 /**
@@ -14809,16 +14909,16 @@ class TGrid : public TWidget {
    * 各列的参数。
    *各列的参数之间用英文的分号(;)分隔，每列参数的格式为：
    *
-   *col(w=?,left_margin=?,right_margin=?,top_maorgin=?,bottom_margin=?)
+   *col(w=?,left_margin=?,right_margin=?,top_margin=?,bottom_margin=?)
    *
-   ** w 为列的宽度(必须存在)。取值在(0-1]区间时，视为grid控件宽度的比例，否则为像素宽度。
-   *(如果为负数，将计算结果加上控件的宽度)
-   ** left_margin(可选，可缩写为l) 该列左边的边距。
-   ** right_margin(可选，可缩写为r) 该列右边的边距。
-   ** top_margin(可选，可缩写为t) 该列顶部的边距。
-   ** bottom_margin(可选，可缩写为b) 该列底部的边距。
-   ** margin(可选，可缩写为m) 同时指定上面4个边距。
-   ** fill_available(可选，可缩写为f) 填充剩余宽度(只有一列可以指定)。
+   ** w 为列的宽度（必须存在）。取值在 (0-1] 区间时，视为 grid 控件宽度的比例，否则为像素宽度。
+   *（如果为负数，将计算结果加上控件的宽度）
+   ** left_margin（可选，可缩写为 l）该列左边的边距。
+   ** right_margin（可选，可缩写为 r）该列右边的边距。
+   ** top_margin（可选，可缩写为 t）该列顶部的边距。
+   ** bottom_margin（可选，可缩写为 b）该列底部的边距。
+   ** margin（可选，可缩写为 m）同时指定上面 4 个边距。
+   ** fill_available（可选，可缩写为f）填充剩余宽度（只有一列可以指定）。
    *
    */
   char* GetColumnsDefinition() const;
@@ -15058,6 +15158,7 @@ class TLabel : public TWidget {
   /**
    * 显示字符的个数(小于0时全部显示)。
    *主要用于动态改变显示字符的个数，来实现类似[拨号中...]的动画效果。
+   *> 和换行是冲突的，换行后，该属性不生效
    *
    */
   int32_t GetLength() const;
@@ -15185,7 +15286,7 @@ class TPages : public TWidget {
   ret_t SetActiveByName(const char* name);
 
   /**
-   * 当前活跃的page。(需要用到 MVVM 数据绑定请设置 value 属性)
+   * 当前活跃的page。(起始值从0开始。需要用到 MVVM 数据绑定请设置 value 属性)
    *
    */
   uint32_t GetActive() const;
@@ -15352,7 +15453,7 @@ class TProgressBar : public TWidget {
   double GetMax() const;
 
   /**
-   * 数值到字符串转换时的格式，缺省为"%d"。
+   * 数值到字符串转换时的格式，缺省为"%d%%"。
    *
    */
   char* GetFormat() const;
@@ -15659,7 +15760,7 @@ class TSlider : public TWidget {
   bool GetSlideWithBar() const;
 
   /**
-   * 拖动临界值。
+   * 进入拖动状态的拖动临界值。
    *
    */
   uint32_t GetDragThreshold() const;
@@ -15764,6 +15865,15 @@ class TTabButtonGroup : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetDragChild(bool drag_child);
+
+  /**
+   * 设置删除 tab_button_group 控件中的 tab_button 控件和对应页。
+   * 
+   * @param index tab_button 的序号。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t RemoveIndex(uint32_t index);
 
   /**
    * 紧凑型排版子控件(缺省FALSE)。
@@ -16122,7 +16232,7 @@ class TView : public TWidget {
   ret_t SetDefaultFocusedChild(const char* default_focused_child);
 
   /**
-   * 缺省获得焦点的子控件(可用控件名或类型)。
+   * 缺省获得焦点的子控件(可用控件名或类型)。(该属性废弃。)
    *
    *> view作为pages/slideview的直接子控件才需要设置。
    *> 正常情况下，一个窗口只能指定一个初始焦点。
@@ -16172,7 +16282,7 @@ class TView : public TWidget {
  *</dialog>
  *```
  *
- *打开非模态对话框时，其用法与普通窗口一样。打开非模态对话框时，还需要调用dialog\_modal。
+ *打开非模态对话框时，其用法与普通窗口一样。打开模态对话框时，还需要调用dialog\_modal。
  *
  *
  *
@@ -16497,6 +16607,18 @@ class TNativeWindow : public TObject {
   ret_t ShowBorder(bool show);
 
   /**
+   * 设置hitTest。
+   * 
+   * @param x x坐标。
+   * @param y y坐标。
+   * @param w w宽度。
+   * @param h h高度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetWindowHitTest(xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
    * 是否全屏。
    * 
    * @param fullscreen 是否全屏。
@@ -16678,6 +16800,101 @@ class TWindow : public TWindowBase {
    *
    */
   bool GetFullscreen() const;
+};
+
+/**
+ * 扩展edit控件。支持以下功能：
+ ** 支持搜索建议功能。
+ *
+ */
+class TEditEx : public TEdit {
+ public:
+  TEditEx(widget_t* nativeObj) : TEdit(nativeObj) {
+  }
+
+  TEditEx() {
+    this->nativeObj = (widget_t*)NULL;
+  }
+
+  TEditEx(const edit_ex_t* nativeObj) : TEdit((widget_t*)nativeObj) {
+  }
+
+  static TEditEx Cast(widget_t* nativeObj) {
+    return TEditEx(nativeObj);
+  }
+
+  static TEditEx Cast(const widget_t* nativeObj) {
+    return TEditEx((widget_t*)nativeObj);
+  }
+
+  static TEditEx Cast(TWidget& obj) {
+    return TEditEx(obj.nativeObj);
+  }
+
+  static TEditEx Cast(const TWidget& obj) {
+    return TEditEx(obj.nativeObj);
+  }
+
+  /**
+   * 创建edit_ex对象
+   * 
+   * @param parent 父控件
+   * @param x x坐标
+   * @param y y坐标
+   * @param w 宽度
+   * @param h 高度
+   *
+   * @return 对象。
+   */
+  static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
+
+  /**
+   * 设置输入建议词源。
+   *> EVT_VALUE_CHANGED 事件请求词源更新，new_value 为 edit 输入内容。
+   * 
+   * @param suggest_words 输入建议词源。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSuggestWords(TObject& suggest_words);
+
+  /**
+   * 设置输入建议词的项格式。
+   * 
+   * @param formats 输入建议词的项格式。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSuggestWordsItemFormats(const char* formats);
+
+  /**
+   * 最终输入到edit控件的文本的属性名。
+   *> 设置了 suggest_words_item_formats 才会被用到。
+   * 
+   * @param name 最终输入到edit控件的文本的属性名。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetSuggestWordsInputName(const char* name);
+
+  /**
+   * 输入建议词。
+   *
+   */
+  TObject GetSuggestWords() const;
+
+  /**
+   * 输入建议词的项格式。
+   *
+   */
+  char* GetSuggestWordsItemFormats() const;
+
+  /**
+   * 最终输入到edit控件的文本的属性名。
+   *> 设置了 suggest_words_item_formats 才会被用到。
+   *
+   */
+  char* GetSuggestWordsInputName() const;
 };
 
 /**
@@ -17290,6 +17507,81 @@ class TIdleInfo : public TObject {
 };
 
 /**
+ * 带有散列值的命名的值。
+ *
+ */
+class TNamedValueHash : public TNamedValue {
+ public:
+  TNamedValueHash(value_t* nativeObj) : TNamedValue(nativeObj) {
+  }
+
+  TNamedValueHash() {
+    this->nativeObj = (value_t*)NULL;
+  }
+
+  TNamedValueHash(const named_value_hash_t* nativeObj) : TNamedValue((value_t*)nativeObj) {
+  }
+
+  static TNamedValueHash Cast(value_t* nativeObj) {
+    return TNamedValueHash(nativeObj);
+  }
+
+  static TNamedValueHash Cast(const value_t* nativeObj) {
+    return TNamedValueHash((value_t*)nativeObj);
+  }
+
+  static TNamedValueHash Cast(TValue& obj) {
+    return TNamedValueHash(obj.nativeObj);
+  }
+
+  static TNamedValueHash Cast(const TValue& obj) {
+    return TNamedValueHash(obj.nativeObj);
+  }
+
+  /**
+   * 创建named_value_hash对象。
+   * 
+   *
+   * @return 返回named_value_hash对象。
+   */
+  static TNamedValueHash Create();
+
+  /**
+   * 设置散列值。
+   * 
+   * @param name 名称。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetName(const char* name);
+
+  /**
+   * 销毁named_value_hash对象。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t Destroy();
+
+  /**
+   * 克隆named_value_hash对象。
+   * 
+   *
+   * @return 返回named_value_hash对象。
+   */
+  TNamedValueHash Clone();
+
+  /**
+   * 获取字符串散列值。
+   * 
+   * @param str 字符串。
+   *
+   * @return 返回散列值。
+   */
+  static uint64_t GetHashFromStr(const char* str);
+};
+
+/**
  * 简单的动态数组，内部存放value对象。
  *
  *访问时属性名称为：
@@ -17575,6 +17867,15 @@ class TObjectHash : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetKeepPropType(bool keep_prop_type);
+
+  /**
+   * 设置是否保持属性间的顺序。
+   * 
+   * @param keep_props_order 保持属性间的顺序。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetKeepPropsOrder(bool keep_props_order);
 };
 
 /**
