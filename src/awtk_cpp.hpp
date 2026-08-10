@@ -3,6 +3,7 @@
 #include "awtk.h"
 #include "tkc/rlog.h"
 #include "conf_io/app_conf.h"
+#include "conf_io/conf_utils.h"
 class TValue;
 class TTheme;
 class TRect;
@@ -1077,16 +1078,16 @@ class TObject : public TEmitter {
   ret_t ClearProps();
 
   /**
-   * 引用计数。
-   *
-   */
-  int32_t GetRefCount() const;
-
-  /**
    * 对象的名称。
    *
    */
   char* GetName() const;
+
+  /**
+   * 引用计数。
+   *
+   */
+  int32_t GetRefCount() const;
 };
 
 /**
@@ -1346,6 +1347,15 @@ class TValue {
    * @return 为空值返回TRUE，否则返回FALSE。
    */
   bool Equal(TValue& other);
+
+  /**
+   * 比较两个value。
+   * 
+   * @param other value对象。
+   *
+   * @return 小于返回-1，等于返回0，大于返回1。
+   */
+  int Compare(TValue& other);
 
   /**
    * 设置类型为int的值。
@@ -2668,12 +2678,23 @@ class TTimer {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   static ret_t Modify(uint32_t timer_id, uint32_t duration);
+
+  /**
+   * 修改指定的timer的duration，修改之后定时器重新开始计时。
+   * 
+   * @param timer_id timerID。
+   * @param duration 新的时间(毫秒)。
+   * @param reset_timer 修改后是否重新计时。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t ModifyEx(uint32_t timer_id, uint32_t duration, bool reset_timer);
 };
 
 /**
  * 矢量图画布抽象基类。
  *
- *具体实现时可以使用agg，nanovg, cairo和skia等方式。
+ *具体实现时可以使用nanovg, cairo和skia等方式。
  *
  *cairo和skia体积太大，不适合嵌入式平台，但在PC平台也是一种选择。
  *
@@ -2681,9 +2702,7 @@ class TTimer {
  *
  *我们对nanovg进行了一些改进:
  *
- ** 可以用agg/agge实现软件渲染(暂时不支持文本绘制)。
- *
- ** 可以用bgfx使用DirectX(Windows平台)和Metal(iOS)平台硬件加速。
+ ** 可以用agge实现软件渲染(暂时不支持文本绘制)。
  *
  *
  *
@@ -3620,6 +3639,39 @@ class TWidget {
   ret_t AnimateValueTo(float_t value, uint32_t duration);
 
   /**
+   * 设置控件的属性(以动画形式变化到指定的值)。
+   * 
+   * @param name 属性名称。
+   * @param value 值。
+   * @param duration 动画持续时间(毫秒)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AnimatePropFloatTo(const char* name, float_t value, uint32_t duration);
+
+  /**
+   * 设置控件的位置(以动画形式变化到指定的位置)。
+   * 
+   * @param x x坐标。
+   * @param y y坐标。
+   * @param duration 动画持续时间(毫秒)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AnimatePositionTo(xy_t x, xy_t y, uint32_t duration);
+
+  /**
+   * 设置控件的大小(以动画形式变化到指定的大小)。
+   * 
+   * @param w 宽度。
+   * @param h 高度。
+   * @param duration 动画持续时间(毫秒)。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t AnimateSizeTo(wh_t w, wh_t h, uint32_t duration);
+
+  /**
    * 查询指定的style是否存在。
    * 
    * @param style_name style的名称（如果为 NULL，则默认为 default）。
@@ -4386,6 +4438,22 @@ class TWidget {
   bool IsAlwaysOnTop();
 
   /**
+   * 检查控件弹出对话框控件是否是挂起状态。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsSuspendDialog();
+
+  /**
+   * 检查控件弹出窗口控件是否是挂起状态。
+   * 
+   *
+   * @return 返回FALSE表示不是，否则表示是。
+   */
+  bool IsSuspendPopup();
+
+  /**
    * 检查控件弹出对话框控件是否已经打开了（而非挂起状态）。
    * 
    *
@@ -4502,6 +4570,14 @@ class TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t DestroyAsync();
+
+  /**
+   * 增加控件的引用计数。
+   * 
+   *
+   * @return 返回控件对象。
+   */
+  TWidget Ref();
 
   /**
    * 减少控件的引用计数。引用计数为0时销毁控件。
@@ -5014,6 +5090,24 @@ class TAppConf {
 };
 
 /**
+ * 工具类。
+ *
+ */
+class TConfUtils {
+ public:
+  /**
+   * 加载配置文件到对象中。
+   * 
+   * @param obj object对象。
+   * @param url 配置文件路径。
+   * @param type 配置文件类型, 如果为NULL，则自动检测。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t ObjectLoadConf(TObject& obj, const char* url, const char* type);
+};
+
+/**
  * 扩展控件。
  *
  */
@@ -5496,6 +5590,30 @@ class TIdleManager {
   static TIdleManager Cast(const idle_manager_t* nativeObj) {
     return TIdleManager((idle_manager_t*)nativeObj);
   }
+};
+
+/**
+ * log。
+ *
+ */
+class TLog {
+ public:
+  /**
+   * 获取log的级别。
+   * 
+   *
+   * @return 返回log的级别。
+   */
+  static tk_log_level_t GetLogLevel();
+
+  /**
+   * 设置log的级别。
+   * 
+   * @param log_level log的级别。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  static ret_t SetLogLevel(tk_log_level_t log_level);
 };
 
 /**
@@ -6026,7 +6144,7 @@ class TPointerEvent : public TEvent {
    *嵌入式：默认为 1
    *
    */
-  xy_t GetButton() const;
+  int32_t GetButton() const;
 
   /**
    * 指针是否按下。
@@ -9434,6 +9552,49 @@ class TMledit : public TWidget {
   uint32_t GetCurrentRowIndex();
 
   /**
+   * 获取当前显示部分的起始视觉行号(一行文本可能分多行显示)。
+   * 
+   *
+   * @return 返回行号。
+   */
+  int32_t GetStartLineIndex();
+
+  /**
+   * 获取当前显示部分的起始物理行号。
+   * 
+   *
+   * @return 返回行号。
+   */
+  int32_t GetStartRowIndex();
+
+  /**
+   * 获取指定偏移所在的视觉行号(一行文本可能分多行显示)。
+   * 
+   * @param offset 偏移。
+   *
+   * @return 返回行号，不在范围内则返回-1。
+   */
+  int32_t GetLineAt(uint32_t offset);
+
+  /**
+   * 获取指定偏移所在的物理行号。
+   * 
+   * @param offset 偏移。
+   *
+   * @return 返回行号，不在范围内则返回-1。
+   */
+  int32_t GetRowAt(uint32_t offset);
+
+  /**
+   * 获取指定视觉行号所在的物理行号。
+   * 
+   * @param line 视觉行号。
+   *
+   * @return 返回物理行号，不在范围内则返回-1。
+   */
+  int32_t GetRowOfLine(uint32_t line);
+
+  /**
    * 插入一段文本。
    * 
    * @param offset 插入的偏移位置。
@@ -9525,6 +9686,12 @@ class TMledit : public TWidget {
    *
    */
   bool GetAcceptTab() const;
+
+  /**
+   * 是否根据文本自动调整控件自身高度。
+   *
+   */
+  bool GetAutoAdjustHeight() const;
 };
 
 /**
@@ -9892,6 +10059,15 @@ class TRichText : public TWidget {
   ret_t SetYslidable(bool yslidable);
 
   /**
+   * 设置是否只允许在单词之间自动换行。
+   * 
+   * @param word_wrap 是否只允许在单词之间自动换行。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetWordWrap(bool word_wrap);
+
+  /**
    * 行间距。
    *
    */
@@ -9902,6 +10078,12 @@ class TRichText : public TWidget {
    *
    */
   bool GetYslidable() const;
+
+  /**
+   * 是否只允许在单词之间自动换行(默认TRUE)。
+   *
+   */
+  bool GetWordWrap() const;
 };
 
 /**
@@ -10753,6 +10935,15 @@ class TScrollBar : public TWidget {
   ret_t SetScrollDelta(uint32_t scroll_delta);
 
   /**
+   * 设置每次鼠标滚动行数(仅对desktop风格的滚动条有效)。
+   * 
+   * @param scroll_rows 每次鼠标滚动行数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetScrollRows(uint8_t scroll_rows);
+
+  /**
    * 虚拟宽度或高度。
    *
    */
@@ -10783,6 +10974,12 @@ class TScrollBar : public TWidget {
   uint32_t GetScrollDelta() const;
 
   /**
+   * 每次鼠标滚动行数。（与 scroll_delta 互斥，缺省值为0，0 则使用 scroll_delta）
+   *
+   */
+  uint8_t GetScrollRows() const;
+
+  /**
    * 滚动时是否启用动画。
    *
    */
@@ -10795,10 +10992,16 @@ class TScrollBar : public TWidget {
   bool GetAutoHide() const;
 
   /**
-   * 设置鼠标滚轮是否滚动(仅对desktop风格的滚动条有效)（垂直滚动条缺省值为TRUE，水平滚动条缺省值为FALSE）。
+   * 设置鼠标滚轮是否滚动。
    *
    */
   bool GetWheelScroll() const;
+
+  /**
+   * 滚轮辅助键(仅对desktop风格的滚动条有效)（垂直滚动条缺省值为空，水平滚动条缺省值为shift）。
+   *
+   */
+  char* GetWheelModifierKey() const;
 };
 
 /**
@@ -10997,7 +11200,7 @@ class TScrollView : public TWidget {
   ret_t ScrollTo(int32_t xoffset_end, int32_t yoffset_end, int32_t duration);
 
   /**
-   * 滚动到指定的偏移量。
+   * 在当前偏移量基础上滚动指定偏移量。
    * 
    * @param xoffset_delta x偏移量。
    * @param yoffset_delta y偏移量。
@@ -11006,6 +11209,30 @@ class TScrollView : public TWidget {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t ScrollDeltaTo(int32_t xoffset_delta, int32_t yoffset_delta, int32_t duration);
+
+  /**
+   * 是否使用虚拟宽度，默认否。
+   *
+   */
+  bool GetUseVirtualW() const;
+
+  /**
+   * 是否使用滚动视图宽度，默认否。
+   *
+   */
+  bool GetUseWidgetW() const;
+
+  /**
+   * 是否使用虚拟高度，默认否。
+   *
+   */
+  bool GetUseVirtualH() const;
+
+  /**
+   * 是否使用滚动视图高度，默认否。
+   *
+   */
+  bool GetUseWidgetH() const;
 
   /**
    * 虚拟宽度。
@@ -13163,6 +13390,267 @@ class TNamedValue : public TValue {
 };
 
 /**
+ * 设置元素事件。
+ *
+ */
+class TObjectFifoSetEvent : public TEvent {
+ public:
+  TObjectFifoSetEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoSetEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoSetEvent(const object_fifo_set_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoSetEvent Cast(event_t* nativeObj) {
+    return TObjectFifoSetEvent(nativeObj);
+  }
+
+  static TObjectFifoSetEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoSetEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoSetEvent Cast(TEvent& obj) {
+    return TObjectFifoSetEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoSetEvent Cast(const TEvent& obj) {
+    return TObjectFifoSetEvent(obj.nativeObj);
+  }
+
+  /**
+   * 设置元素时的指定位置。
+   *
+   */
+  uint32_t GetIndex() const;
+
+  /**
+   * 设置元素的个数。
+   *
+   */
+  uint32_t GetNr() const;
+
+  /**
+   * 设置数据。
+   *
+   */
+  void* GetData() const;
+};
+
+/**
+ * 追加元素事件。
+ *
+ */
+class TObjectFifoPushEvent : public TEvent {
+ public:
+  TObjectFifoPushEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoPushEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoPushEvent(const object_fifo_push_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoPushEvent Cast(event_t* nativeObj) {
+    return TObjectFifoPushEvent(nativeObj);
+  }
+
+  static TObjectFifoPushEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoPushEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoPushEvent Cast(TEvent& obj) {
+    return TObjectFifoPushEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoPushEvent Cast(const TEvent& obj) {
+    return TObjectFifoPushEvent(obj.nativeObj);
+  }
+
+  /**
+   * 追加元素的个数。
+   *
+   */
+  uint32_t GetNr() const;
+
+  /**
+   * 追加数据。
+   *
+   */
+  void* GetData() const;
+};
+
+/**
+ * 在头部插入元素事件。
+ *
+ */
+class TObjectFifoPushHeadEvent : public TEvent {
+ public:
+  TObjectFifoPushHeadEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoPushHeadEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoPushHeadEvent(const object_fifo_push_head_event_t* nativeObj)
+      : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoPushHeadEvent Cast(event_t* nativeObj) {
+    return TObjectFifoPushHeadEvent(nativeObj);
+  }
+
+  static TObjectFifoPushHeadEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoPushHeadEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoPushHeadEvent Cast(TEvent& obj) {
+    return TObjectFifoPushHeadEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoPushHeadEvent Cast(const TEvent& obj) {
+    return TObjectFifoPushHeadEvent(obj.nativeObj);
+  }
+
+  /**
+   * 插入元素的个数。
+   *
+   */
+  uint32_t GetNr() const;
+
+  /**
+   * 插入数据。
+   *
+   */
+  void* GetData() const;
+};
+
+/**
+ * 弹出元素事件。
+ *
+ */
+class TObjectFifoPopEvent : public TEvent {
+ public:
+  TObjectFifoPopEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoPopEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoPopEvent(const object_fifo_pop_event_t* nativeObj) : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoPopEvent Cast(event_t* nativeObj) {
+    return TObjectFifoPopEvent(nativeObj);
+  }
+
+  static TObjectFifoPopEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoPopEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoPopEvent Cast(TEvent& obj) {
+    return TObjectFifoPopEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoPopEvent Cast(const TEvent& obj) {
+    return TObjectFifoPopEvent(obj.nativeObj);
+  }
+
+  /**
+   * 弹出元素的个数。
+   *
+   */
+  uint32_t GetNr() const;
+};
+
+/**
+ * 从末尾弹出元素事件。
+ *
+ */
+class TObjectFifoPopTailEvent : public TEvent {
+ public:
+  TObjectFifoPopTailEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoPopTailEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoPopTailEvent(const object_fifo_pop_tail_event_t* nativeObj)
+      : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoPopTailEvent Cast(event_t* nativeObj) {
+    return TObjectFifoPopTailEvent(nativeObj);
+  }
+
+  static TObjectFifoPopTailEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoPopTailEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoPopTailEvent Cast(TEvent& obj) {
+    return TObjectFifoPopTailEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoPopTailEvent Cast(const TEvent& obj) {
+    return TObjectFifoPopTailEvent(obj.nativeObj);
+  }
+
+  /**
+   * 弹出元素的个数。
+   *
+   */
+  uint32_t GetNr() const;
+};
+
+/**
+ * 值改变事件。
+ *
+ */
+class TObjectFifoValueChangeEvent : public TEvent {
+ public:
+  TObjectFifoValueChangeEvent(event_t* nativeObj) : TEvent(nativeObj) {
+  }
+
+  TObjectFifoValueChangeEvent() {
+    this->nativeObj = (event_t*)NULL;
+  }
+
+  TObjectFifoValueChangeEvent(const object_fifo_value_change_event_t* nativeObj)
+      : TEvent((event_t*)nativeObj) {
+  }
+
+  static TObjectFifoValueChangeEvent Cast(event_t* nativeObj) {
+    return TObjectFifoValueChangeEvent(nativeObj);
+  }
+
+  static TObjectFifoValueChangeEvent Cast(const event_t* nativeObj) {
+    return TObjectFifoValueChangeEvent((event_t*)nativeObj);
+  }
+
+  static TObjectFifoValueChangeEvent Cast(TEvent& obj) {
+    return TObjectFifoValueChangeEvent(obj.nativeObj);
+  }
+
+  static TObjectFifoValueChangeEvent Cast(const TEvent& obj) {
+    return TObjectFifoValueChangeEvent(obj.nativeObj);
+  }
+
+  /**
+   * 具体的事件类型。
+   *
+   */
+  uint32_t GetType() const;
+};
+
+/**
  * app_bar控件。
  *
  *一个简单的容器控件，一般在窗口的顶部，用于显示本窗口的状态和信息。
@@ -14380,6 +14868,14 @@ class TEdit : public TWidget {
   int32_t GetInt();
 
   /**
+   * 获取int64类型的值。
+   * 
+   *
+   * @return 返回int的值。
+   */
+  int64_t GetInt64();
+
+  /**
    * 获取double类型的值。
    * 
    *
@@ -15126,9 +15622,9 @@ class TLabel : public TWidget {
   ret_t SetLineWrap(bool line_wrap);
 
   /**
-   * 设置是否允许整个单词换行。(需要开启自动换行才有效果)
+   * 设置是否只允许在单词之间自动换行(需要开启自动换行才有效果)。
    * 
-   * @param word_wrap 是否允许整个单词换行。
+   * @param word_wrap 是否只允许在单词之间自动换行。
    *
    * @return 返回RET_OK表示成功，否则表示失败。
    */
@@ -15158,7 +15654,6 @@ class TLabel : public TWidget {
   /**
    * 显示字符的个数(小于0时全部显示)。
    *主要用于动态改变显示字符的个数，来实现类似[拨号中...]的动画效果。
-   *> 和换行是冲突的，换行后，该属性不生效
    *
    */
   int32_t GetLength() const;
@@ -15170,7 +15665,7 @@ class TLabel : public TWidget {
   bool GetLineWrap() const;
 
   /**
-   * 是否允许整个单词换行(默认FALSE)。
+   * 是否只允许在单词之间自动换行(默认FALSE)。
    *> 需要开启自动换行才有效果
    *
    */
@@ -16249,9 +16744,7 @@ class TView : public TWidget {
  *
  *如果dialog有透明或半透效果则不支持窗口动画。
  *
- *> 由于浏览器中无法实现主循环嵌套，因此无法实现模态对话框。
- *如果希望自己写的AWTK应用程序可以在浏览器(包括各种小程序)中运行或演示，
- *请避免使用模态对话框。
+ *> 由于浏览器中无法实现主循环嵌套，dialog_modal() 不会阻塞等待返回值，而是立即返回。如果业务逻辑依赖模态对话框的返回值，在浏览器中会失效。
  *
  *对话框通常由对话框标题和对话框客户区两部分组成：
  *
@@ -16411,6 +16904,8 @@ class TDialog : public TWindowBase {
    *dialog_modal返回后，dialog对象将在下一个idle函数中回收。
    *也就是在dialog_modal调用完成后仍然可以访问dialog中控件，直到本次事件结束。
    *调用该函数会使线程进入阻塞状态，需要调用dialog_quit来解除阻塞。
+   *> 建议尽量少用模态对话框，特别不要多级嵌套模态对话框，部分平台(如WEB)不支持模态对话框。
+   *> AWTK本身是不能操作对话框后面的窗口的，相当于是模态的，只是事件是异步的，传统模态对话框都是可以用非模态对话框实现的。
    * 
    *
    * @return 返回退出码，值为dialog_quit函数中传入的参数。
@@ -16805,6 +17300,7 @@ class TWindow : public TWindowBase {
 /**
  * 扩展edit控件。支持以下功能：
  ** 支持搜索建议功能。
+ ** 支持多行编辑功能。
  *
  */
 class TEditEx : public TEdit {
@@ -16849,6 +17345,16 @@ class TEditEx : public TEdit {
   static TWidget Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h);
 
   /**
+   * 设置多行编辑。
+   *> 与搜索建议功能互斥。
+   * 
+   * @param multiline 是否多行编辑。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetMultiline(bool multiline);
+
+  /**
    * 设置输入建议词源。
    *> EVT_VALUE_CHANGED 事件请求词源更新，new_value 为 edit 输入内容。
    * 
@@ -16878,6 +17384,15 @@ class TEditEx : public TEdit {
   ret_t SetSuggestWordsInputName(const char* name);
 
   /**
+   * 请求刷新显示建议词窗口。
+   *> suggest_words 为空时关闭窗口。
+   * 
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t UpdateSuggestWordsPopup();
+
+  /**
    * 输入建议词。
    *
    */
@@ -16895,6 +17410,19 @@ class TEditEx : public TEdit {
    *
    */
   char* GetSuggestWordsInputName() const;
+
+  /**
+   * 是否选中输入建议词。
+   *
+   */
+  bool GetIsSelectSuggestWord() const;
+
+  /**
+   * 多行编辑。
+   *> 与搜索建议功能互斥。
+   *
+   */
+  bool GetMultiline() const;
 };
 
 /**
@@ -17015,10 +17543,25 @@ class TGifImage : public TImageBase {
   ret_t SetLoop(uint32_t loop);
 
   /**
+   * 设置是否使用部分加载模式。
+   * 
+   * @param part_buffer_load_mode 循环播放次数。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetPartBufferLoadMode(bool part_buffer_load_mode);
+
+  /**
    * 循环播放的次数。
    *
    */
   uint32_t GetLoop() const;
+
+  /**
+   * 边加载边播放模式。（比较耗费性能，但占用内存较小）
+   *
+   */
+  bool GetPartBufferLoadMode() const;
 };
 
 /**
@@ -17867,6 +18410,15 @@ class TObjectHash : public TObject {
    * @return 返回RET_OK表示成功，否则表示失败。
    */
   ret_t SetKeepPropType(bool keep_prop_type);
+
+  /**
+   * 设置属性名是否大小写不敏感。
+   * 
+   * @param name_case_insensitive 属性名是否大小写不敏感。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetNameCaseInsensitive(bool name_case_insensitive);
 
   /**
    * 设置是否保持属性间的顺序。

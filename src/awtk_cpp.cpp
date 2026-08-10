@@ -128,19 +128,19 @@ TObject TObject::Ref(TObject& obj) {
 }
 
 const char* TObject::GetType() {
-  return object_get_type(((object_t*)(this->nativeObj)));
+  return object_get_type(((const object_t*)(this->nativeObj)));
 }
 
 const char* TObject::GetDesc() {
-  return object_get_desc(((object_t*)(this->nativeObj)));
+  return object_get_desc(((const object_t*)(this->nativeObj)));
 }
 
 uint32_t TObject::GetSize() {
-  return object_get_size(((object_t*)(this->nativeObj)));
+  return object_get_size(((const object_t*)(this->nativeObj)));
 }
 
 bool TObject::IsCollection() {
-  return object_is_collection(((object_t*)(this->nativeObj)));
+  return object_is_collection(((const object_t*)(this->nativeObj)));
 }
 
 ret_t TObject::SetName(const char* name) {
@@ -375,12 +375,12 @@ ret_t TObject::ClearProps() {
   return object_clear_props(((object_t*)(this->nativeObj)));
 }
 
-int32_t TObject::GetRefCount() const {
-  return ((object_t*)(this->nativeObj))->ref_count;
-}
-
 char* TObject::GetName() const {
   return ((object_t*)(this->nativeObj))->name;
+}
+
+int32_t TObject::GetRefCount() const {
+  return ((object_t*)(this->nativeObj))->ref_count;
 }
 
 TValue TValue::SetBool(bool value) {
@@ -480,11 +480,15 @@ const char* TValue::StrEx(char* buff, uint32_t size) {
 }
 
 bool TValue::IsNull() {
-  return value_is_null(((value_t*)(this->nativeObj)));
+  return value_is_null(((const value_t*)(this->nativeObj)));
 }
 
 bool TValue::Equal(TValue& other) {
   return value_equal(((const value_t*)(this->nativeObj)), ((const value_t*)(other.nativeObj)));
+}
+
+int TValue::Compare(TValue& other) {
+  return value_compare(((const value_t*)(this->nativeObj)), ((const value_t*)(other.nativeObj)));
 }
 
 TValue TValue::SetInt(int32_t value) {
@@ -931,6 +935,10 @@ ret_t TTimer::Modify(uint32_t timer_id, uint32_t duration) {
   return timer_modify(timer_id, duration);
 }
 
+ret_t TTimer::ModifyEx(uint32_t timer_id, uint32_t duration, bool reset_timer) {
+  return timer_modify_ex(timer_id, duration, reset_timer);
+}
+
 ret_t TVgcanvas::Flush() {
   return vgcanvas_flush(((vgcanvas_t*)(this->nativeObj)));
 }
@@ -1177,7 +1185,7 @@ char* TVgcanvas::GetTextBaseline() const {
 }
 
 int32_t TWidget::CountChildren() {
-  return widget_count_children(((widget_t*)(this->nativeObj)));
+  return widget_count_children(((const widget_t*)(this->nativeObj)));
 }
 
 TWidget TWidget::GetChild(int32_t index) {
@@ -1201,7 +1209,7 @@ TNativeWindow TWidget::GetNativeWindow() {
 }
 
 int32_t TWidget::IndexOf() {
-  return widget_index_of(((widget_t*)(this->nativeObj)));
+  return widget_index_of(((const widget_t*)(this->nativeObj)));
 }
 
 ret_t TWidget::CloseWindow() {
@@ -1266,6 +1274,18 @@ ret_t TWidget::AddValueInt(int32_t delta) {
 
 ret_t TWidget::AnimateValueTo(float_t value, uint32_t duration) {
   return widget_animate_value_to(((widget_t*)(this->nativeObj)), value, duration);
+}
+
+ret_t TWidget::AnimatePropFloatTo(const char* name, float_t value, uint32_t duration) {
+  return widget_animate_prop_float_to(((widget_t*)(this->nativeObj)), name, value, duration);
+}
+
+ret_t TWidget::AnimatePositionTo(xy_t x, xy_t y, uint32_t duration) {
+  return widget_animate_position_to(((widget_t*)(this->nativeObj)), x, y, duration);
+}
+
+ret_t TWidget::AnimateSizeTo(wh_t w, wh_t h, uint32_t duration) {
+  return widget_animate_size_to(((widget_t*)(this->nativeObj)), w, h, duration);
 }
 
 bool TWidget::IsStyleExist(const char* style_name, const char* state_name) {
@@ -1550,11 +1570,13 @@ bool TWidget::IsWindowCreated() {
 }
 
 bool TWidget::IsParentOf(TWidget& child) {
-  return widget_is_parent_of(((widget_t*)(this->nativeObj)), ((widget_t*)(child.nativeObj)));
+  return widget_is_parent_of(((const widget_t*)(this->nativeObj)),
+                             ((const widget_t*)(child.nativeObj)));
 }
 
 bool TWidget::IsDirectParentOf(TWidget& child) {
-  return widget_is_direct_parent_of(((widget_t*)(this->nativeObj)), ((widget_t*)(child.nativeObj)));
+  return widget_is_direct_parent_of(((const widget_t*)(this->nativeObj)),
+                                    ((const widget_t*)(child.nativeObj)));
 }
 
 bool TWidget::IsWindow() {
@@ -1587,6 +1609,14 @@ bool TWidget::IsOverlay() {
 
 bool TWidget::IsAlwaysOnTop() {
   return widget_is_always_on_top(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::IsSuspendDialog() {
+  return widget_is_suspend_dialog(((widget_t*)(this->nativeObj)));
+}
+
+bool TWidget::IsSuspendPopup() {
+  return widget_is_suspend_popup(((widget_t*)(this->nativeObj)));
 }
 
 bool TWidget::IsOpenedDialog() {
@@ -1640,6 +1670,10 @@ ret_t TWidget::Destroy() {
 
 ret_t TWidget::DestroyAsync() {
   return widget_destroy_async(((widget_t*)(this->nativeObj)));
+}
+
+TWidget TWidget::Ref() {
+  return TWidget((widget_t*)(widget_ref(((widget_t*)(this->nativeObj)))));
 }
 
 ret_t TWidget::Unref() {
@@ -1877,6 +1911,10 @@ ret_t TAppConf::Remove(const char* key) {
   return app_conf_remove(key);
 }
 
+ret_t TConfUtils::ObjectLoadConf(TObject& obj, const char* url, const char* type) {
+  return object_load_conf(((object_t*)(obj.nativeObj)), url, type);
+}
+
 ret_t TExtWidgets::Init() {
   return tk_ext_widgets_init();
 }
@@ -2049,6 +2087,14 @@ int32_t TDateTime::GetYear() const {
   return ((date_time_t*)(this->nativeObj))->year;
 }
 
+tk_log_level_t TLog::GetLogLevel() {
+  return log_get_log_level();
+}
+
+ret_t TLog::SetLogLevel(tk_log_level_t log_level) {
+  return log_set_log_level(log_level);
+}
+
 TRlog TRlog::Create(const char* filename_pattern, uint32_t max_size, uint32_t buff_size) {
   return TRlog((rlog_t*)(rlog_create(filename_pattern, max_size, buff_size)));
 }
@@ -2152,7 +2198,7 @@ xy_t TPointerEvent::GetY() const {
   return ((pointer_event_t*)(this->nativeObj))->y;
 }
 
-xy_t TPointerEvent::GetButton() const {
+int32_t TPointerEvent::GetButton() const {
   return ((pointer_event_t*)(this->nativeObj))->button;
 }
 
@@ -3213,6 +3259,26 @@ uint32_t TMledit::GetCurrentRowIndex() {
   return mledit_get_current_row_index(((widget_t*)(this->nativeObj)));
 }
 
+int32_t TMledit::GetStartLineIndex() {
+  return mledit_get_start_line_index(((widget_t*)(this->nativeObj)));
+}
+
+int32_t TMledit::GetStartRowIndex() {
+  return mledit_get_start_row_index(((widget_t*)(this->nativeObj)));
+}
+
+int32_t TMledit::GetLineAt(uint32_t offset) {
+  return mledit_get_line_at(((widget_t*)(this->nativeObj)), offset);
+}
+
+int32_t TMledit::GetRowAt(uint32_t offset) {
+  return mledit_get_row_at(((widget_t*)(this->nativeObj)), offset);
+}
+
+int32_t TMledit::GetRowOfLine(uint32_t line) {
+  return mledit_get_row_of_line(((widget_t*)(this->nativeObj)), line);
+}
+
 ret_t TMledit::InsertText(uint32_t offset, const char* text) {
   return mledit_insert_text(((widget_t*)(this->nativeObj)), offset, text);
 }
@@ -3267,6 +3333,10 @@ bool TMledit::GetAcceptReturn() const {
 
 bool TMledit::GetAcceptTab() const {
   return ((mledit_t*)(this->nativeObj))->accept_tab;
+}
+
+bool TMledit::GetAutoAdjustHeight() const {
+  return ((mledit_t*)(this->nativeObj))->auto_adjust_height;
 }
 
 TWidget TProgressCircle::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3355,12 +3425,20 @@ ret_t TRichText::SetYslidable(bool yslidable) {
   return rich_text_set_yslidable(((widget_t*)(this->nativeObj)), yslidable);
 }
 
+ret_t TRichText::SetWordWrap(bool word_wrap) {
+  return rich_text_set_word_wrap(((widget_t*)(this->nativeObj)), word_wrap);
+}
+
 uint32_t TRichText::GetLineGap() const {
   return ((rich_text_t*)(this->nativeObj))->line_gap;
 }
 
 bool TRichText::GetYslidable() const {
   return ((rich_text_t*)(this->nativeObj))->yslidable;
+}
+
+bool TRichText::GetWordWrap() const {
+  return ((rich_text_t*)(this->nativeObj))->word_wrap;
 }
 
 TWidget THscrollLabel::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3607,6 +3685,10 @@ ret_t TScrollBar::SetScrollDelta(uint32_t scroll_delta) {
   return scroll_bar_set_scroll_delta(((widget_t*)(this->nativeObj)), scroll_delta);
 }
 
+ret_t TScrollBar::SetScrollRows(uint8_t scroll_rows) {
+  return scroll_bar_set_scroll_rows(((widget_t*)(this->nativeObj)), scroll_rows);
+}
+
 int32_t TScrollBar::GetVirtualSize() const {
   return ((scroll_bar_t*)(this->nativeObj))->virtual_size;
 }
@@ -3627,6 +3709,10 @@ uint32_t TScrollBar::GetScrollDelta() const {
   return ((scroll_bar_t*)(this->nativeObj))->scroll_delta;
 }
 
+uint8_t TScrollBar::GetScrollRows() const {
+  return ((scroll_bar_t*)(this->nativeObj))->scroll_rows;
+}
+
 bool TScrollBar::GetAnimatable() const {
   return ((scroll_bar_t*)(this->nativeObj))->animatable;
 }
@@ -3637,6 +3723,10 @@ bool TScrollBar::GetAutoHide() const {
 
 bool TScrollBar::GetWheelScroll() const {
   return ((scroll_bar_t*)(this->nativeObj))->wheel_scroll;
+}
+
+char* TScrollBar::GetWheelModifierKey() const {
+  return ((scroll_bar_t*)(this->nativeObj))->wheel_modifier_key;
 }
 
 TWidget TScrollView::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -3698,6 +3788,22 @@ ret_t TScrollView::ScrollTo(int32_t xoffset_end, int32_t yoffset_end, int32_t du
 ret_t TScrollView::ScrollDeltaTo(int32_t xoffset_delta, int32_t yoffset_delta, int32_t duration) {
   return scroll_view_scroll_delta_to(((widget_t*)(this->nativeObj)), xoffset_delta, yoffset_delta,
                                      duration);
+}
+
+bool TScrollView::GetUseVirtualW() const {
+  return ((scroll_view_t*)(this->nativeObj))->use_virtual_w;
+}
+
+bool TScrollView::GetUseWidgetW() const {
+  return ((scroll_view_t*)(this->nativeObj))->use_widget_w;
+}
+
+bool TScrollView::GetUseVirtualH() const {
+  return ((scroll_view_t*)(this->nativeObj))->use_virtual_h;
+}
+
+bool TScrollView::GetUseWidgetH() const {
+  return ((scroll_view_t*)(this->nativeObj))->use_widget_h;
 }
 
 wh_t TScrollView::GetVirtualW() const {
@@ -4382,6 +4488,46 @@ char* TNamedValue::GetName() const {
   return ((named_value_t*)(this->nativeObj))->name;
 }
 
+uint32_t TObjectFifoSetEvent::GetIndex() const {
+  return ((object_fifo_set_event_t*)(this->nativeObj))->index;
+}
+
+uint32_t TObjectFifoSetEvent::GetNr() const {
+  return ((object_fifo_set_event_t*)(this->nativeObj))->nr;
+}
+
+void* TObjectFifoSetEvent::GetData() const {
+  return ((object_fifo_set_event_t*)(this->nativeObj))->data;
+}
+
+uint32_t TObjectFifoPushEvent::GetNr() const {
+  return ((object_fifo_push_event_t*)(this->nativeObj))->nr;
+}
+
+void* TObjectFifoPushEvent::GetData() const {
+  return ((object_fifo_push_event_t*)(this->nativeObj))->data;
+}
+
+uint32_t TObjectFifoPushHeadEvent::GetNr() const {
+  return ((object_fifo_push_head_event_t*)(this->nativeObj))->nr;
+}
+
+void* TObjectFifoPushHeadEvent::GetData() const {
+  return ((object_fifo_push_head_event_t*)(this->nativeObj))->data;
+}
+
+uint32_t TObjectFifoPopEvent::GetNr() const {
+  return ((object_fifo_pop_event_t*)(this->nativeObj))->nr;
+}
+
+uint32_t TObjectFifoPopTailEvent::GetNr() const {
+  return ((object_fifo_pop_tail_event_t*)(this->nativeObj))->nr;
+}
+
+uint32_t TObjectFifoValueChangeEvent::GetType() const {
+  return ((object_fifo_value_change_event_t*)(this->nativeObj))->type;
+}
+
 TWidget TAppBar::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TAppBar((widget_t*)(app_bar_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -4572,6 +4718,10 @@ TWidget TEdit::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
 
 int32_t TEdit::GetInt() {
   return edit_get_int(((widget_t*)(this->nativeObj)));
+}
+
+int64_t TEdit::GetInt64() {
+  return edit_get_int64(((widget_t*)(this->nativeObj)));
 }
 
 double TEdit::GetDouble() {
@@ -5248,6 +5398,10 @@ TWidget TEditEx::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TEditEx((widget_t*)(edit_ex_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
 
+ret_t TEditEx::SetMultiline(bool multiline) {
+  return edit_ex_set_multiline(((widget_t*)(this->nativeObj)), multiline);
+}
+
 ret_t TEditEx::SetSuggestWords(TObject& suggest_words) {
   return edit_ex_set_suggest_words(((widget_t*)(this->nativeObj)),
                                    ((object_t*)(suggest_words.nativeObj)));
@@ -5261,6 +5415,10 @@ ret_t TEditEx::SetSuggestWordsInputName(const char* name) {
   return edit_ex_set_suggest_words_input_name(((widget_t*)(this->nativeObj)), name);
 }
 
+ret_t TEditEx::UpdateSuggestWordsPopup() {
+  return edit_ex_update_suggest_words_popup(((widget_t*)(this->nativeObj)));
+}
+
 TObject TEditEx::GetSuggestWords() const {
   return TObject(((edit_ex_t*)(this->nativeObj))->suggest_words);
 }
@@ -5271,6 +5429,14 @@ char* TEditEx::GetSuggestWordsItemFormats() const {
 
 char* TEditEx::GetSuggestWordsInputName() const {
   return ((edit_ex_t*)(this->nativeObj))->suggest_words_input_name;
+}
+
+bool TEditEx::GetIsSelectSuggestWord() const {
+  return ((edit_ex_t*)(this->nativeObj))->is_select_suggest_word;
+}
+
+bool TEditEx::GetMultiline() const {
+  return ((edit_ex_t*)(this->nativeObj))->multiline;
 }
 
 TWidget TGifImage::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -5293,8 +5459,16 @@ ret_t TGifImage::SetLoop(uint32_t loop) {
   return gif_image_set_loop(((widget_t*)(this->nativeObj)), loop);
 }
 
+ret_t TGifImage::SetPartBufferLoadMode(bool part_buffer_load_mode) {
+  return gif_image_set_part_buffer_load_mode(((widget_t*)(this->nativeObj)), part_buffer_load_mode);
+}
+
 uint32_t TGifImage::GetLoop() const {
   return ((gif_image_t*)(this->nativeObj))->loop;
+}
+
+bool TGifImage::GetPartBufferLoadMode() const {
+  return ((gif_image_t*)(this->nativeObj))->part_buffer_load_mode;
 }
 
 TWidget TKeyboard::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
@@ -5450,6 +5624,11 @@ TObject TObjectHash::CreateEx(bool enable_path) {
 
 ret_t TObjectHash::SetKeepPropType(bool keep_prop_type) {
   return object_hash_set_keep_prop_type(((object_t*)(this->nativeObj)), keep_prop_type);
+}
+
+ret_t TObjectHash::SetNameCaseInsensitive(bool name_case_insensitive) {
+  return object_hash_set_name_case_insensitive(((object_t*)(this->nativeObj)),
+                                               name_case_insensitive);
 }
 
 ret_t TObjectHash::SetKeepPropsOrder(bool keep_props_order) {
