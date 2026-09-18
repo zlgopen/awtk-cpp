@@ -3098,6 +3098,21 @@ class TVgcanvas {
   ret_t FillText(const char* text, float_t x, float_t y, float_t max_width);
 
   /**
+   * 绘制文本。
+   * 
+   * @param glyphs 字模列表对象。
+   * @param start 字模开始序号。
+   * @param len 字模长度。
+   * @param x x坐标。
+   * @param y y坐标。
+   * @param max_width 最大宽度。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t FillTextByGlyphs(glyphs_t* glyphs, uint32_t start, uint32_t len, xy_t x, xy_t y,
+                         float_t max_width);
+
+  /**
    * 测量文本的宽度。
    * 
    * @param text text
@@ -12149,6 +12164,12 @@ class TSlideView : public TWidget {
    *
    */
   uint32_t GetAnimatingTime() const;
+
+  /**
+   * 当前活跃的page。
+   *
+   */
+  uint32_t GetActive() const;
 };
 
 /**
@@ -15109,6 +15130,15 @@ class TEdit : public TWidget {
   ret_t SetFocusNextWhenEnter(bool focus_next_when_enter);
 
   /**
+   * 设置编辑器是否在失去焦点时滚动回开头。
+   * 
+   * @param scroll_to_begin_on_blur 是否在失去焦点时滚动回开头。
+   *
+   * @return 返回RET_OK表示成功，否则表示失败。
+   */
+  ret_t SetScrollToBeginOnBlur(bool scroll_to_begin_on_blur);
+
+  /**
    * 输入提示。
    *
    */
@@ -15224,6 +15254,12 @@ class TEdit : public TWidget {
    *
    */
   bool GetFocusNextWhenEnter() const;
+
+  /**
+   * 失去焦点时是否滚动回开头(默认 FALSE)
+   *
+   */
+  bool GetScrollToBeginOnBlur() const;
 };
 
 /**

@@ -1065,6 +1065,12 @@ ret_t TVgcanvas::FillText(const char* text, float_t x, float_t y, float_t max_wi
   return vgcanvas_fill_text(((vgcanvas_t*)(this->nativeObj)), text, x, y, max_width);
 }
 
+ret_t TVgcanvas::FillTextByGlyphs(glyphs_t* glyphs, uint32_t start, uint32_t len, xy_t x, xy_t y,
+                                  float_t max_width) {
+  return vgcanvas_fill_text_by_glyphs(((vgcanvas_t*)(this->nativeObj)), glyphs, start, len, x, y,
+                                      max_width);
+}
+
 float_t TVgcanvas::MeasureText(const char* text) {
   return vgcanvas_measure_text(((vgcanvas_t*)(this->nativeObj)), text);
 }
@@ -4138,6 +4144,10 @@ uint32_t TSlideView::GetAnimatingTime() const {
   return ((slide_view_t*)(this->nativeObj))->animating_time;
 }
 
+uint32_t TSlideView::GetActive() const {
+  return ((slide_view_t*)(this->nativeObj))->active;
+}
+
 TWidget TSwitch::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   return TSwitch((widget_t*)(switch_create(((widget_t*)(parent.nativeObj)), x, y, w, h)));
 }
@@ -4825,6 +4835,10 @@ ret_t TEdit::SetFocusNextWhenEnter(bool focus_next_when_enter) {
   return edit_set_focus_next_when_enter(((widget_t*)(this->nativeObj)), focus_next_when_enter);
 }
 
+ret_t TEdit::SetScrollToBeginOnBlur(bool scroll_to_begin_on_blur) {
+  return edit_set_scroll_to_begin_on_blur(((widget_t*)(this->nativeObj)), scroll_to_begin_on_blur);
+}
+
 char* TEdit::GetTips() const {
   return ((edit_t*)(this->nativeObj))->tips;
 }
@@ -4891,6 +4905,10 @@ bool TEdit::GetCancelable() const {
 
 bool TEdit::GetFocusNextWhenEnter() const {
   return ((edit_t*)(this->nativeObj))->focus_next_when_enter;
+}
+
+bool TEdit::GetScrollToBeginOnBlur() const {
+  return ((edit_t*)(this->nativeObj))->scroll_to_begin_on_blur;
 }
 
 TWidget TGridItem::Create(TWidget& parent, xy_t x, xy_t y, wh_t w, wh_t h) {
